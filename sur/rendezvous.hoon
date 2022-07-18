@@ -11,28 +11,44 @@
   ==
 ::
 :: Ship record types 
-+$  ghosted-them    ?       :: 
 +$  ghosted-us      ?       :: 
++$  ghosted-them    ?       :: 
 +$  distance        @ud     :: 
 +$  note            @t      :: brief sharable note
 +$  share-location  ?       :: willing to share location with a specific ship?
 +$  lat             @rs     :: latitude
 +$  lon             @rs     :: longitude 
++$  pal             ?       :: did they come from %pals?
++$  group           ?       :: did they come from %landscape?
++$  group-name      @t      :: display group name, if they're from %landscape
 ::
 :: Ship statuses for records
-+$  ship-info 
++$  gang-info 
   $:  =share-location       :: are we willing to share our location with this ship?
       =status               :: determines whether to show tile on our dashboard or not
       =lat                  :: their latitude
       =lon                  :: their longitude
       =distance             :: their distance from us
-      =ghosted-them         :: we ghosted them; don't send a %wave to these ships
-      =ghosted-us           :: they ghosted us; don't send a %wave to these ships
       =note                 :: their note
+      =ghosted-us           :: they ghosted us; don't send a %wave to these ships; can only be switched to %.n if we receive a new %wave from them
+      =ghosted-them         :: we ghosted them
+      =pal                  ::
+      =group                ::
+      =group-name           :: 
+  ==
++$  mutual-info
+  $:  =ghosted-us           :: 
+      =ghosted-them         :: 
+      =pal                  ::
+      =group                ::
+      =group-name           :: 
   ==
 ::
 :: Structure and states
-+$  records      gang=(map @p ship-info)            :: POSSIBLE EDIT: mutual %pals and/or group members           
++$  records      
+  $%  gang=(map @p gang-info)                       :: selected mutual %pals and/or group members  
+      mutual=(map @p mutual-info)                  :: ships not in our gang, pulled in from %pals and Groups
+  ==
 +$  tile         [who=@p =note =distance =status]   :: tile structure
 +$  locals       (set tile)                         :: tile collection to display
 ::
@@ -69,7 +85,7 @@
       [%set-status who=@p =status]                   :: change a ship's status; used based on responses
       [%set-note who=@p =note]                       :: initial note received
       [%set-distance who=@p =distance]               :: changed after %proximity-check completes
-      [%ghost who=@p =ghosted-them]                  :: ghost a ship
+      [%ghost who=@p]                                :: ghost a ship
       [%wave who=@p =lat =lon]                       :: begins process of determining %local ships; sent to ships in gang when =on:config is %.y
       [%wave-queue who=@p]                           :: unsolicited %waves (i.e. non-gang ships we receive a %wave from) are put into a waving queue, which can then either be ghosted or added to the gang list and sent a %wave with our =lat and =lon
       [%off who=@p]                                  :: if =on:config is %.n, send this in response to a %wave
