@@ -2,7 +2,7 @@
 |%
 +$  tsunami
   $:
-    =wave
+    =waves
     location=position
     max-people=@ud
     time=@da
@@ -15,8 +15,6 @@
     =position
     =radius
     default-ships=(map address ship-info)
-    ghosted-them=(set address)
-    ghosted-us=(set address)
   ==
 :: 
 +$  state
