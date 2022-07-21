@@ -1,49 +1,26 @@
+/-  *waves
 |%
-+$  address  @p
-+$  status
-  $?  
-      %pending              :: waiting for coordinates after confirming we're %in-range
-      %denied            :: ship is %out-of-range
-      %accepted                :: ship is %in-range
-  ==
-+$  position  [lon=@ud lat=@ud]
-+$  radius  @ud
-+$  ship-info
-  $:  
-    address
-    position
-    radius=@ud
-    active=?
-    =status
-  :: note ?
-  ==
-+$  wave
++$  tsunami
   $:
-    ships=(list ship-info)
-    :: votes?
-  ==
-
-+$  init
-  $:
-    ships=(list ship-info)
-    max-people=@ud
+    =wave
     location=position
+    max-people=@ud
     time=@da
-    :: note
-  ==
-+$  receive
-  $:
-    waves=(list wave)
+    note=tape
+    :: votes?
   ==
 +$  settings
   $:
-  :: init and receive filters
-    active=?
+    =active
     =position
     =radius
-    ghosted-them=(list address)
-    ghosted-us=(list address)
-    :: timer ?
+    default-ships=(map address ship-info)
+    ghosted-them=(set address)
+    ghosted-us=(set address)
   ==
 :: 
++$  state
+  init=tsunami
+  receive=(list tsunami)
+  =settings
 --
