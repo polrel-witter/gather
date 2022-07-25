@@ -126,7 +126,7 @@
      [%out-of-range who=ship]
      [%unaccept =id]                                    :: unaccept a Gathering invite
      [%cancel-invite =id]                               :: Gathering was canceled by host
-     [%off who=@p]
+     [%off who=ship]
      [%ghost who=ship]                                  :: ship receives this when they're ghosted by us
      [%un-ghost who=ship]                               :: ship receives this when they're unghosted by us
      [%new-status-note who=ship =status-note]           :: beamed out when status note updates
