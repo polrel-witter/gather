@@ -6,9 +6,9 @@
 +$  status-active  ?
 +$  paused         ?
 +$  status-note    @t
-+$  radius         @rs    :: ? 
++$  radius         @rs 
 +$  position       [lat=@rs lon=@rs]
-+$  distance       @ud
++$  distance       @rs
 +$  address        [street=@t city=@t state=@t country=@t zip=@ud]
 ::
 :: Ship statuses
@@ -18,7 +18,7 @@
       %local
       %not-local
   ==
-+$  invite-status
++$  gathering-status
   $?  
       %pending
       %denied
@@ -31,11 +31,10 @@
   $:  
       =status-active
       =position
-      =distance
       =status-note
       =paused
       =location-status
-      =invite-status
+      =gathering-status
   ==
 +$  status
   $:
@@ -75,7 +74,7 @@
 :: Gall actions
 +$  act
   $%
-    $:  %toggle
+    $:  %toggle                                            :: TODO determine best direction with setting settings
         =status-active:settings
         =address:settings
         =position:settings
@@ -88,9 +87,6 @@
         their-position=position:ship-info
         our-position=position:settings
         our-radius=radius:settings
-    ==
-    $:  %get-lat-lon
-        =address:settings
     ==
       [%add-gang who=ship]                                 :: add ship to gang
       [%remove-gang who=ship]                              :: remove ship from gang
