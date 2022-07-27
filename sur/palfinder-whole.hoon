@@ -16,6 +16,7 @@
     =position
     =radius
     =status
+    :: note?
   ==
 +$  wave
   $:
@@ -33,6 +34,7 @@
     =active
     =position
     =radius
+    :: note?
     default-ships=(map address ship-info)
     ghosted-us=(set address)
     ghosted-them=(set address)
