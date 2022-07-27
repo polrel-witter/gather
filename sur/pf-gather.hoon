@@ -5,50 +5,60 @@
 +$  id             @
 +$  status-active  ?
 +$  paused         ?
-+$  status-note    @t
++$  note           @t
 +$  radius         @rs 
 +$  position       [lat=@rs lon=@rs]
 +$  distance       @rs
 +$  address        [street=@t city=@t state=@t country=@t zip=@ud]
 ::
 :: Ship statuses
-+$  location-status
++$  status-status
   $?  
       %pending
       %local
       %not-local
   ==
-+$  gathering-status
++$  invite-status
   $?  
       %pending
       %denied
       %accepted
       %not-local
   ==
-::
-:: States and structures
-+$  ship-info
-  $:  
-      =status-active
-      =position
-      =status-note
-      =paused
-      =location-status
-      =gathering-status
-  ==
-+$  status
+::  ship-x means information about the other ship
+::  
++$  ship-location  :: General info, like radius etc.
   $:
-     init-ship=[ship ship-info]           :: would we not send the setting structure? Or take what applies from settings structure and fit it into ship-info structure?
-     receive-ships=(map ship ship-info)   :: should we break into gang and foreign here?  
+      =position
+      =radius
+      =address 
+      :: =paused  :: what is this used for?
+      :: =location-status
+      :: =gathering-status
   ==
++$  ship-status
+  $:
+      =status-active
+      =note
+      =status-status
+  ==
++$  ship-invite
+  $:
+      =invite-status
+  ==
+::
 +$  invite
   $: 
-     =id
-     init-ship=[ship ship-info]            :: do we need to include ship info?  
-     receive-ships=(map ship ship-info)   
+     init-ship=ship
+     receive-ships=(map ship ship-invite)
      max-accepted=@ud
      invite-note=@t
+     :: finalized=?
   ==
+::
++$  ships  (map ship ship-info)
++$  gather  (map id invite)
++$  status  (map ship ship-status)
 +$  settings
   $: 
      =status-active
@@ -56,20 +66,21 @@
      =position
      =radius
      =status-note
-     gang=(map ship ship-info)
+     gang=(set ship)
      default-group=(set @ta)         :: not sure if this is correct; thinking we store the ship link as a knot?
      ghosted-them=(set ship)
      ghosted-us=(set ship)
      receive-invite=?(%anyone %only-gang %only-in-radius)
   ==
-+$  state                            :: should we separate state by gathering and status feature?
+::
++$  state
   $:
-     gathering-init=invite
-     gathering-receive=(list invite)
-     status-init=status
-     status-receive=(list status)
+     =ships
+     =gather
+     =status
      =settings
   ==
+::
 ::
 :: Gall actions
 +$  act
