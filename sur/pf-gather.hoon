@@ -5,46 +5,46 @@
 +$  id             @
 +$  status-active  ?
 +$  paused         ?
++$  ghosted        ?
 +$  note           @t
 +$  radius         @rs 
 +$  position       [lat=@rs lon=@rs]
 +$  distance       @rs
 +$  address        [street=@t city=@t state=@t country=@t zip=@ud]
++$  group          @ta
 ::
 :: Ship statuses
-+$  status-status
-  $?  
-      %pending
-      %local
-      %not-local
-  ==
 +$  invite-status
   $?  
       %pending
       %denied
       %accepted
-      %not-local
   ==
 ::  ship-x means information about the other ship
 ::  
-+$  ship-location  :: General info, like radius etc.
++$  ship-info  :: info about other ships
   $:
       =position
       =radius
       =address 
-      :: =paused  :: what is this used for?
-      :: =location-status
-      :: =gathering-status
-  ==
-+$  ship-status
-  $:
       =status-active
-      =note
-      =status-status
+      gather-active
+      status-note=note
+      paused=?
+      our-gang=?  
+      their-gang=?
+      we-ghosted=?
+      they-ghosted=?
+  ==
++$  group-info
+  $:
+      default=?
+      allowed=?
   ==
 +$  ship-invite
   $:
       =invite-status
+      :: anything else?
   ==
 ::
 +$  invite
@@ -52,32 +52,31 @@
      init-ship=ship
      receive-ships=(map ship ship-invite)
      max-accepted=@ud
-     invite-note=@t
-     :: finalized=?
+     note=@t
+     finalized=?
   ==
 ::
-+$  ships  (map ship ship-info)
-+$  gather  (map id invite)
-+$  status  (map ship ship-status)
++$  ships    (map ship ship-info)
++$  groups   (map group group-info)
++$  invites  (map id invite)
 +$  settings
   $: 
-     =status-active
-     =address
+     status-active=?  :: is the app active?
+     gather-active=?
      =position
      =radius
+     =address
      =status-note
-     gang=(set ship)
-     default-group=(set @ta)         :: not sure if this is correct; thinking we store the ship link as a knot?
-     ghosted-them=(set ship)
-     ghosted-us=(set ship)
-     receive-invite=?(%anyone %only-gang %only-in-radius)
+     :: default-groups=(set @ta)
+     receive-invite=?(%anyone %only-gang)
+     receive-status=?(%anyone %only-gang %only-in-radius)
   ==
 ::
 +$  state
   $:
      =ships
-     =gather
-     =status
+     =groups
+     =invites
      =settings
   ==
 ::
@@ -85,7 +84,8 @@
 :: Gall actions
 +$  act
   $%
-    $:  %toggle                                            :: TODO determine best direction with setting settings
+    $:  %settings                                            :: TODO determine best direction with setting settings
+    $?
         =status-active:settings
         =address:settings
         =position:settings
@@ -93,6 +93,7 @@
         =status-note:settings
         =receive-invite:settings
     ==     
+    ==
     $:  %proximity-check
         who=ship
         their-position=position:ship-info
@@ -138,4 +139,10 @@
      [%un-ghost who=ship]                               :: ship receives this when they're unghosted by us
      [%new-status-note who=ship =status-note]           :: beamed out when status note updates
   ==
+::  My actions
+  $:  %settings
+    
+  ==
+
+::
 --
