@@ -35,11 +35,7 @@
       their-gang=?
       we-ghosted=?
       they-ghosted=?
-  ==
-+$  group-info
-  $:
-      default=?
-      allowed=?
+      :: groups=(set @ta)
   ==
 +$  ship-invite
   $:
@@ -48,7 +44,7 @@
   ==
 ::
 +$  invite
-  $: 
+  $:
      init-ship=ship
      receive-ships=(map ship ship-invite)
      max-accepted=@ud
@@ -57,7 +53,6 @@
   ==
 ::
 +$  ships    (map ship ship-info)
-+$  groups   (map group group-info)
 +$  invites  (map id invite)
 +$  settings
   $: 
@@ -67,7 +62,6 @@
      =radius
      =address
      =status-note
-     :: default-groups=(set @ta)
      receive-invite=?(%anyone %only-gang)
      receive-status=?(%anyone %only-gang %only-in-radius)
   ==
@@ -75,7 +69,6 @@
 +$  state
   $:
      =ships
-     =groups
      =invites
      =settings
   ==
@@ -84,16 +77,21 @@
 :: Gall actions
 +$  act
   $%
-    $:  %settings                                            :: TODO determine best direction with setting settings
-    $?
-        =status-active:settings
-        =address:settings
-        =position:settings
-        =radius:settings
-        =status-note:settings
-        =receive-invite:settings
-    ==     
+    $:  %settings       
+        $%
+            [%status-active =status-active:settings]
+            [%address =address:settings]
+            [%position =position:settings]
+            [%radius =radius:settings]
+            [%status-note =status-note:settings]
+            [%receive-invite =receive-invite:settings]
+        ==
     ==
+    :: [%subscribe-to-ship (set ship)]
+    [%subscribe-to-ship ship]
+    [%ghost =ship]
+    [%wave  =ship]  ::
+    ::
     $:  %proximity-check
         who=ship
         their-position=position:ship-info
@@ -108,8 +106,8 @@
       [%un-ghosted-them who=ship]                          :: unghost a ship
       [%add-ghosted-us who=ship]                           :: mark a ship that ghosted us
       [%un-ghosted-us who=ship]                            :: unmark a ship that stopped ghosting us
-      [%add-group @ta]                                     :: add a new group to default-group
-      [%remove-group @ta]                                  :: remove a group from default-group
+      :: [%add-group @ta]                                     :: add a new group to default-group
+      :: [%remove-group @ta]                                  :: remove a group from default-group
       [%set-distance who=ship =distance]                   :: after %proximity-check set a ship's distance from our position
       [%set-location-status who=ship =location-status]     :: change a ship's location status
       [%set-invite-status who=ship =invite-status]         :: change a ship's invite status
@@ -130,19 +128,18 @@
 :: Possible updates
 +$  upd
   $%
-     [%in-range who=ship =position =status-note]
-     [%out-of-range who=ship]
-     [%unaccept =id]                                    :: unaccept a Gathering invite
-     [%cancel-invite =id]                               :: Gathering was canceled by host
-     [%off who=ship]
-     [%ghost who=ship]                                  :: ship receives this when they're ghosted by us
-     [%un-ghost who=ship]                               :: ship receives this when they're unghosted by us
-     [%new-status-note who=ship =status-note]           :: beamed out when status note updates
+     [%ship-info ship | =status-note =position =radius ...]
+     [%invite =id | max-people=@ud =receive-ships ...]
+     [%update ]
+     ::
+     :: [%in-range who=ship =position =status-note]
+     :: [%out-of-range who=ship]
+     :: [%unaccept =id]                                    :: unaccept a Gathering invite
+     :: [%cancel-invite =id]                               :: Gathering was canceled by host
+     :: [%off who=ship]
+     :: [%ghost who=ship]                                  :: ship receives this when they're ghosted by us
+     :: [%un-ghost who=ship]                               :: ship receives this when they're unghosted by us
+     :: [%new-status-note who=ship =status-note]           :: beamed out when status note updates
   ==
-::  My actions
-  $:  %settings
-    
-  ==
-
 ::
 --
