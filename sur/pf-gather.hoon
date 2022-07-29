@@ -87,10 +87,31 @@
             [%receive-invite =receive-invite:settings]
         ==
     ==
-    :: [%subscribe-to-ship (set ship)]
     [%subscribe-to-ship ship]
     [%ghost =ship]
-    [%wave  =ship]  ::
+    [%wave  =ship]
+    :: Status
+
+    ::
+    ::
+    ::
+    ::
+    ::
+    ::
+    ::
+    ::
+    ::
+    ::
+    ::
+    ::
+    ::
+    ::
+    ::
+    ::
+    ::
+    ::
+    ::
+    ::
     ::
     $:  %proximity-check
         who=ship
