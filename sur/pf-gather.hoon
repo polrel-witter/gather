@@ -28,7 +28,7 @@
       =radius
       =address 
       =status-active
-      gather-active
+      =gather-active
       status-note=note
       paused=?
       our-gang=?  
@@ -77,90 +77,53 @@
 :: Gall actions
 +$  act
   $%
-    $:  %settings       
-        $%
-            [%status-active =status-active:settings]
-            [%address =address:settings]
-            [%position =position:settings]
-            [%radius =radius:settings]
-            [%status-note =status-note:settings]
-            [%receive-invite =receive-invite:settings]
-        ==
+    $:  %settings
+      $%
+         [%status-active =status-active:settings]
+         [%gather-active =gather-active:settings]
+         [%address =address:settings]
+         [%position =position:settings]
+         [%radius =radius:settings]
+         :: [%change-pause =ship =paused:ship-info]
+         :: [%change-gang =ship =our-gang:ship-info =their-gang:ship-info]
+         :: [%change-ghost =ship =we-ghosted:ship-info =they-ghosted:ship-info]
+         [%status-note =status-note:settings]
+         [%receive-invite =receive-invite:settings]
+      ==
+    ::
+    :: Gathering
+    == 
+    $:  %edit-invite
+      $%
+        [%cancel ~]
+        [%finalize ?]
+      ==
     ==
-    [%subscribe-to-ship ship]
-    [%ghost =ship]
-    [%wave  =ship]
-    :: Status
-
-    ::
-    ::
-    ::
-    ::
-    ::
-    ::
-    ::
-    ::
-    ::
-    ::
-    ::
-    ::
-    ::
-    ::
-    ::
-    ::
-    ::
-    ::
-    ::
-    ::
-    ::
-    $:  %proximity-check
-        who=ship
-        their-position=position:ship-info
-        our-position=position:settings
-        our-radius=radius:settings
-    ==
-      [%add-gang who=ship]                                 :: add ship to gang
-      [%remove-gang who=ship]                              :: remove ship from gang
-      [%pause-gang who=ship]                               :: pause a gang member 
-      [%unpause-gang who=ship]                             :: unpause a gang member
-      [%add-ghosted-them who=ship]                         :: mark a ship to ghost
-      [%un-ghosted-them who=ship]                          :: unghost a ship
-      [%add-ghosted-us who=ship]                           :: mark a ship that ghosted us
-      [%un-ghosted-us who=ship]                            :: unmark a ship that stopped ghosting us
-      :: [%add-group @ta]                                     :: add a new group to default-group
-      :: [%remove-group @ta]                                  :: remove a group from default-group
-      [%set-distance who=ship =distance]                   :: after %proximity-check set a ship's distance from our position
-      [%set-location-status who=ship =location-status]     :: change a ship's location status
-      [%set-invite-status who=ship =invite-status]         :: change a ship's invite status
-      [%ignore-status who=ship]                            :: ignore a received status
-      [%ignore-invite =id]                                 :: ignore a Gathering invite
-      [%message who=ship]                                  :: open Landscape to create message channel
-      [%accept =id]                                        :: accept an invite
-      [%decline =id]                                       :: decline invite
-      [%send-invite =invite]                               :: send a Gathering invite
-      [%cancel-invite =id]                                 :: cancel a Gathering invite
-      [%finalize-invite =id]                               :: finalize a Gathering invite
-      [%wave =status]                                      :: send status to Gang and selected Groups
-      [%in-range who=ship =position =status-note]          :: response to a received %wave
-      [%out-of-range who=ship]                             :: sent if distance is greater than our radius
-      [%off ~]                                             :: sent if our active:settings=%.n
-  ==
-::
-:: Possible updates
-+$  upd
-  $%
-     [%ship-info ship | =status-note =position =radius ...]
-     [%invite =id | max-people=@ud =receive-ships ...]
-     [%update ]
+     [%send-invite =invite]                    :: frontend to backend
+     [%notify-invitees =id]                    :: sent to invitees
+     [%subscribe-to-invite =id]
+     [%accept =id]
+     [%deny =id]
+     [%done ~]
+     :: [%kick-invite ~]
      ::
-     :: [%in-range who=ship =position =status-note]
-     :: [%out-of-range who=ship]
-     :: [%unaccept =id]                                    :: unaccept a Gathering invite
-     :: [%cancel-invite =id]                               :: Gathering was canceled by host
-     :: [%off who=ship]
-     :: [%ghost who=ship]                                  :: ship receives this when they're ghosted by us
-     :: [%un-ghost who=ship]                               :: ship receives this when they're unghosted by us
-     :: [%new-status-note who=ship =status-note]           :: beamed out when status note updates
+     :: Status
+     [%share-status =ship]                     :: frontend to backend
+     [%notify-gang-member =ship]               :: send status to gang member
+     [%subscribe-to-gang-member =ship]         :: two-way
+     ::
+     :: Both
+     [%ghost =ship]
   ==
-::
++$  upd
+  $% 
+     [%update-invite =id =invite]
+     $:  %update-status
+         =status-active:settings
+         =position:settings
+         =radius:settings
+         =address:settings
+         =status-note:settings
+     ==
+  ==
 --
