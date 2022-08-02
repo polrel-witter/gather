@@ -1,0 +1,10 @@
+:~
+  title+'Gather'
+  info+'Meetup like app'
+  color+0x7c.afc2
+  version+[0 1 0]
+  website+'https://urbit.org'
+  license+'MIT'
+  base+'gather'
+  glob-ames+[~zod 0v0]
+==
