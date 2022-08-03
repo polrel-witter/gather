@@ -1,4 +1,4 @@
-/-  *gather,
+/-  *gather
 /+  default-agent, dbug, agentio
 |%
 +$  versioned-state
@@ -17,110 +17,162 @@
     def   ~(. (default-agent this %.n) bol)
     io    ~(. agentio bol)
     hc    ~(. +> bol)
-++  on-init  on-init:def
+++  on-init  on-init:def  :: TODO initialize default settings
 ++  on-save  !>(state)
-++  on-load
+++  on-load  
   |=  old-vase=vase
   ^-  (quip card _this)
   [~ this(state !<(state-0 old-vase))]
 ::
 ++  on-poke
   |=  [=mark =vase]
-  |^  ^-  (quip card _this)
-  :: =^  cards  state
-  ::  ?+  mark  (on-poke:def mark vase)                         :: calling an arm based on mark type
-  ::    %tally-action        (handle-action !<(action vase))
-  ::    %handle-http-request  (handle-http !<([@ta inbound-request:eyre] vase))
-  ::  ==
-  :: [cards state]
-  :: ?>  ?=(%gather-action mark)      :: TODO defined marks: %gather-action and %gather-update
-  ?:  =(our.bol src.bol)
-     (local !<(act vase))
-  (remote !<(act vase))
-  ++  local
+  |^  ^-  (quip card _this)      
+  =^  cards  state
+    ?+  mark  (on-poke:def mark vase)
+      %gather-action  (handle-action !<(act vase))
+    ==
+  [cards this]
+  ++  handle-action
     |=  =act
     ^-  (quip card _this)
     ?-  -.act
        %settings
          ?-  -.+.act
               %status-active
+            ?>  =(our.bol src.bol)
             :_  this(settings status-active(status-active !status-active.settings))
             :~  %+  fact:io  %gather-update
                 !>  ^-  upd
-                :-  %update-status
+                :*  %update-status
                     status-active.settings
-                    position.settings      :: QUESTION is it possible to reference position since in sur it only references the type; there's no 'position' face. same for ones below this
+                    position.settings   
                     radius.settings
                     address.settings
                     status-note.settings
                 ==
-               ~[/status]  :: TODO settle on name for this
+               ~[status]  :: TODO settle on name for this
             ==  
-          ::    
+         ::    
               %gather-active
+            ?>  =(our.bol src.bol)
             :_  this(settings gather-active(gather-active !gather-active.settings))
-            :~  (fact:io %gather-update+!>(`upd`[%update-gather gather-active.settings]) ~[/gather])  :: TODO settle on name for this path
-          ::
+            :~  (fact:io gather-update+!>(`upd`[%update-gather gather-active.settings]) ~[gather])  :: TODO settle on name for this path
+            ==
+         ::
               %address
-            :_  this(settings +62:settings(address:settings.settings.act)
+            ?>  =(our.bol src.bol)
+            :_  this(settings address(address address.settings.act))
             :~  %+  fact:io  %gather-update
                 !>  ^-  upd
-                :-  %update-status
+                :*  %update-status
                     status-active.settings
-                    position.settings      :: QUESTION is it possible to reference position since in sur it only references the type; there's no 'position' face. same for ones below this
+                    position.settings    
                     radius.settings
                     address.settings
                     status-note.settings
                 ==
-               ~[/status]  :: TODO settle on name for this
+               ~[status]  
             == 
-          ::
+         ::
               %position
+            ?>  =(our.bol src.bol)
+            :_  this(settings position(position position.settings.act))
+            :~  %+  fact:io  %gather-update
+                !>  ^-  upd
+                :*  %update-status
+                    status-active.settings
+                    position.settings    
+                    radius.settings
+                    address.settings
+                    status-note.settings
+                ==
+               ~[status]  
+            ==
+         ::
               %radius
+            ?>  =(our.bol src.bol)
+            :_  this(settings radius(radius radius.settings.act))
+            :~  %+  fact:io  %gather-update
+                !>  ^-  upd
+                :*  %update-status
+                    status-active.settings
+                    position.settings    
+                    radius.settings
+                    address.settings
+                    status-note.settings
+                ==
+               ~[status]  
+            == 
+         ::
               %status-note
+            ?>  =(our.bol src.bol)
+            :_  this(settings status-note(status-note note.settings.act))
+            :~  %+  fact:io  %gather-update
+                !>  ^-  upd
+                :*  %update-status
+                    status-active.settings
+                    position.settings    
+                    radius.settings
+                    address.settings
+                    status-note.settings
+                ==
+               ~[status]  
+            ==
+         ::
               %receive-invite
-     ::
+            ?>  =(our.bol src.bol)
+            `this(settings receive-invite(receive-invite receive-invite.settings.act)) 
+         :: 
+              %receive-status
+            ?>  =(our.bol src.bol)
+            `this(settings receive-status(receive-status receive-status.settings.act))  
+         ==
+   ::  
        %edit-invite
          ?-  -.+.act
-            %cancel
-            %finalize
-     ::
+              %cancel
+            ?>  =(our.bol src.bol)
+            :-  [%give %kick ~[gather] ~]
+            %=  this
+               invites  %+  ~(jab by invites)
+                           our.bol
+                        |=(                   :: TODO call initial state of invite to wipe the fields 
+            ==
+         ::
+              %done
+         ::
+              %finalize
+   ::
        %send-invite
-     ::
-       %notify-invitees
-     ::
+   ::
        %accept
-     ::
+   ::
        %deny
-     ::
+   ::
        %done
-     ::
+   ::
        %share-status
-     ::
-       %ghost
-
-  ::
-  ++  remote
-    |=  =act
-    ^-  (quip card _this)
-    ?-  -.act
+   ::
        %subscribe-to-invite
-     ::
+   ::
        %subscribe-to-gang-member
-     ::
-       %notify-invitees
-     ::
-       %notify-gang-member
-    ==
+   ::
+         %ghost
+      ?>  =(our.bol src.bol)
+      ?>  (~(has by ships) ship.act)
+      :-  ~  
+      %=  this
+        ships  %+  ~(jab by ships) 
+                 ship.act 
+               |=(=ship-info ship-info(they-ghosted %.y))
+      ==  
+    ==    
   --
 ::
-++  on-watch
-::
-++  on-agent
-::
-++  on-arvo
-::
+++  on-watch  on-watch:def
+++  on-agent  on-agent:def
+++  on-arvo   on-arvo:def
 ++  on-leave  on-leave:def
-++  on-peek  on-peek:def
-++  on-fail  on-fail:def
+++  on-peek   on-peek:def
+++  on-fail   on-fail:def
 --
