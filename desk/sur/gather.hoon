@@ -89,13 +89,15 @@
          :: [%change-ghost =ship =we-ghosted:ship-info =they-ghosted:ship-info]
          [%status-note =status-note:settings]
          [%receive-invite =receive-invite:settings]
-      ==
+         [%receive-status =receive-status:settings]  :: ADDITION; seems like we forgot to include this earlier
+       ==
     ::
     :: Gathering
     == 
     $:  %edit-invite
       $%
         [%cancel ~]
+        [%done ~]          :: MOVED HERE FROM BELOW
         [%finalize ?]
       ==
     ==
@@ -104,7 +106,6 @@
      [%subscribe-to-invite =id]
      [%accept =id]
      [%deny =id]
-     [%done ~]
      :: [%kick-invite ~]
      ::
      :: Status
@@ -117,6 +118,7 @@
   ==
 +$  upd
   $% 
+     [%update-gather =gather-active:settings]  :: ADDITION; figured we need an update structure for settings related to the Gathering feature, and doesn't make sense to include with the update-invite structure
      [%update-invite =id =invite]
      $:  %update-status
          =status-active:settings

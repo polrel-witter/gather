@@ -11,8 +11,7 @@
    	- give update-gather fact to subscribers
    - %address
    	- change address:settings
-   	- gather coordinates 
-   	- call %position:settings to update
+   	- send to frontend to gather coordinates, which will then call %position once it retrieves them 
    - %position
    	- update position:settings
    	- give update-status fact to subscribers
