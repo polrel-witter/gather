@@ -4,7 +4,7 @@
 +$  versioned-state
   $%  state-0
   ==
-+$  state-0  [%0 =ships =invites =settings]
++$  state-0  [%0 =ships =invites our-invite=invite =settings]
 +$  card  card:agent:gall
 --
 ::
@@ -132,19 +132,29 @@
          ?-  -.+.act
               %cancel
             ?>  =(our.bol src.bol)
-            :-  [%give %kick ~[gather] ~]
-            %=  this
-               invites  %+  ~(jab by invites)
-                           our.bol
-                        |=(                   :: TODO call initial state of invite to wipe the fields 
+            :_  this
+            :~  [%give %kick ~[gather] ~]
             ==
          ::
               %done
+            ?>  =(our.bol src.bol)
+            :_  this
+            :~  [%give %kick ~[gather] ~]
+            ==
          ::
               %finalize
+            ?>  =(our.bol src.bol) 
+   TODO   ::    :_  this(settings gather-active(gather-active !gather-active.settings))
+   TODO   ::    :~  (fact:io gather-update+!>(`upd`[%update-gather gather-active.settings]) ~[gather])
    ::
        %send-invite
-   ::
+     ?>  =(our.bol src.bol)
+     ?>  =(our.bol init-ship.our-invite)
+     =/  remove-ships=(map @p @)  (bulk-ghost-check-either ships)
+     :: a=ships b=remove-ships; pass (~(dif by ships) remove-ships), which produces map of ships to send invite to   
+     :: convert map to set of ships to send the invite to
+     :: poke each of these ships' %subscribe-to-invite
+     :: make sure ++ghost-check works in dojo before continuing
        %accept
    ::
        %deny

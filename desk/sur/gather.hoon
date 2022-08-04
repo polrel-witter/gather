@@ -11,7 +11,7 @@
 +$  radius         @rs 
 +$  position       [lat=@rs lon=@rs]
 +$  distance       @rs
-+$  address        [street=@t city=@t state=@t country=@t zip=@ud]
++$  address        [street=@t city=@t state=@t country=@t zip=@]
 +$  group          @ta
 ::
 :: Ship statuses
@@ -46,7 +46,7 @@
 +$  invite
   $:
      init-ship=ship
-     receive-ships=(map ship ship-invite)
+     receive-ships=(map =ship =ship-invite)
      max-accepted=@ud
      note=@t
      finalized=?
@@ -54,8 +54,8 @@
 +$  receive-invite  ?(%anyone %only-gang)                   :: ADDITION didn't previously define
 +$  receive-status  ?(%anyone %only-gang %only-in-radius)   :: ADDITION didn't previously define
 ::
-+$  ships    (map ship ship-info)
-+$  invites  (map id invite)
++$  ships    (map =ship =ship-info)
++$  invites  (map =id =invite)
 +$  settings
   $: 
      status-active=?  :: is the app active?
