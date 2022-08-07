@@ -4,7 +4,7 @@
 +$  versioned-state
   $%  state-0
   ==
-+$  state-0  [%0 =ships =invites our-invite=invite =settings]
++$  state-0  [%0 =ships =invites =settings]
 +$  card  card:agent:gall
 --
 ::
@@ -39,6 +39,7 @@
        %settings
          ?-  -.+.act
               %status-active
+            =/  =path  /(scot @p our.bol)/[%status]
             ?>  =(our.bol src.bol)
             :_  this(settings status-active(status-active !status-active.settings))
             :~  %+  fact:io  %gather-update
@@ -50,16 +51,18 @@
                     address.settings
                     status-note.settings
                 ==
-               ~[status]  :: TODO settle on name for this
+               path
             ==  
          ::    
-              %gather-active
+              %gather-active  :: TODO thinking we should get rid of gathering toggle; too much for user to think about and plan
+            =/  =path  /(scot @p our.bol)/[%gather]
             ?>  =(our.bol src.bol)
             :_  this(settings gather-active(gather-active !gather-active.settings))
-            :~  (fact:io gather-update+!>(`upd`[%update-gather gather-active.settings]) ~[gather])  :: TODO settle on name for this path
+            :~  (fact:io gather-update+!>(`upd`[%update-gather gather-active.settings]) path)
             ==
          ::
               %address
+            =/  =path  /(scot @p our.bol)/[%status]
             ?>  =(our.bol src.bol)
             :_  this(settings address(address address.settings.act))
             :~  %+  fact:io  %gather-update
@@ -71,10 +74,11 @@
                     address.settings
                     status-note.settings
                 ==
-               ~[status]  
+               path  
             == 
          ::
               %position
+            =/  =path  /(scot @p our.bol)/[%status]
             ?>  =(our.bol src.bol)
             :_  this(settings position(position position.settings.act))
             :~  %+  fact:io  %gather-update
@@ -86,10 +90,11 @@
                     address.settings
                     status-note.settings
                 ==
-               ~[status]  
+               path 
             ==
          ::
               %radius
+            =/  =path  /(scot @p our.bol)/[%status]
             ?>  =(our.bol src.bol)
             :_  this(settings radius(radius radius.settings.act))
             :~  %+  fact:io  %gather-update
@@ -101,10 +106,11 @@
                     address.settings
                     status-note.settings
                 ==
-               ~[status]  
+               path  
             == 
          ::
               %status-note
+            =/  =path  /(scot @p our.bol)/[%status]
             ?>  =(our.bol src.bol)
             :_  this(settings status-note(status-note note.settings.act))
             :~  %+  fact:io  %gather-update
@@ -116,7 +122,7 @@
                     address.settings
                     status-note.settings
                 ==
-               ~[status]  
+               path 
             ==
          ::
               %receive-invite
@@ -131,35 +137,75 @@
        %edit-invite
          ?-  -.+.act
               %cancel
+            =/  =path  /(scot %p our.bol)/[%gather]/[id.act]
             ?>  =(our.bol src.bol)
             :_  this
-            :~  [%give %kick ~[gather] ~]
+            :~  [%give %kick path ~]
             ==
          ::
               %done
+            =/  =path  /(scot %p our.bol)/[%gather]/[id.act]
             ?>  =(our.bol src.bol)
             :_  this
-            :~  [%give %kick ~[gather] ~]
+            :~  [%give %kick path ~]
             ==
          ::
               %finalize
-            ?>  =(our.bol src.bol) 
-   TODO   ::    :_  this(settings gather-active(gather-active !gather-active.settings))
-   TODO   ::    :~  (fact:io gather-update+!>(`upd`[%update-gather gather-active.settings]) ~[gather])
+            =/  =path  /(scot %p our.bol)/[%gather]/[id.act]
+            ?>  =(our.bol src.bol)
+            :-  :~  (fact:io gather-update+!>(`upd`[%update-invite id.act invite.act]) path)
+                ==
+            %=  this
+              invites  %+  ~(jab by invites)
+                         id.act
+                        (invite(finalized %.y))  :: this may work
+            ==    
    ::
-       %send-invite
+       %send-invite            :: TODO when expanded to multiple invites from single host, will need to specify invite id to send
+     =/  =path  /(scot %p our.bol)/[%gather]/[id.act]
      ?>  =(our.bol src.bol)
-     ?>  =(our.bol init-ship.our-invite)
-     =/  remove-ships=(map @p @)  (bulk-ghost-check-either ships)
-     :: a=ships b=remove-ships; pass (~(dif by ships) remove-ships), which produces map of ships to send invite to   
-     :: convert map to set of ships to send the invite to
-     :: poke each of these ships' %subscribe-to-invite
-     :: make sure ++ghost-check works in dojo before continuing
+     ?>  =(our.bol init-ship.invite.act)
+     =/  ghosted-ships=(list @p)  (bulk-ghosted-check ships)
+     =/  receive-ships=(map @p =ship-invite)
+     %+  remove-ships   [receive-ships.invite.act ghosted-ships]  :: TODO make sure receive-ships.act comes in with invite-status=%pending; if not make sure it is set to this before updating state
+     :-  :~  (~(poke pass:io path) [our.bol %gather] [%subscribe-to-invite vase]) :: TODO define vase; also is it possible/advisable to send a poke to many ships all at once?
+         ==
+     %=  this 
+       invites  %+  ~(put by invites)
+                  id.act
+                  :~  our.bol
+                      receive-ships
+                      max-accepted.act
+                      note.act
+                      %.n
+                  == 
+     ==
+   ::
        %accept
+     =/  init-ship=@p  init-ship.invite:(need (~(get by invites) id.act)) 
+     =/  =path  /(scot %p init-ship)/[%gather]/[id.act]
+     :-  :~  (fact:io gather-update+!>(`upd`[%update-invite id.act ...]) path) :: TODO not sure how to embed the =invite in the fact
+         ==
+            %=  this
+              invites  %+  ~(jab by invites)
+                         id.act
+                        %+  ~(jab by receive-ships)        :: this may work
+                          our.bol 
+                         (ship-invite(invite-status %accepted))  :: this may work
+            ==
    ::
        %deny
-   ::
-       %done
+     =/  init-ship=@p  init-ship.invite:(need (~(get by invites) id.act)) 
+     =/  =path  /(scot %p init-ship)/[%gather]/[id.act]
+     :-  :~  (fact:io gather-update+!>(`upd`[%update-invite id.act ...]) path) :: TODO not sure how to embed the =invite in the fact
+         ==
+            %=  this
+              invites  %+  ~(jab by invites)
+                         id.act
+                        %+  ~(jab by receive-ships)        :: this may work
+                          our.bol 
+                         (ship-invite(invite-status %denied))  :: this may work
+            ==
    ::
        %share-status
    ::
@@ -180,7 +226,9 @@
   --
 ::
 ++  on-watch  on-watch:def
+:: TODO by wednesday
 ++  on-agent  on-agent:def
+:: TODO by wednesday
 ++  on-arvo   on-arvo:def
 ++  on-leave  on-leave:def
 ++  on-peek   on-peek:def
