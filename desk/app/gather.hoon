@@ -133,7 +133,7 @@
             ?>  =(our.bol src.bol)
             `this(settings receive-status(receive-status receive-status.settings.act))  
          ==
-   ::  
+    ::  
        %edit-invite
          ?-  -.+.act
               %cancel
@@ -158,9 +158,9 @@
             %=  this
               invites  %+  ~(jab by invites)
                          id.act
-                        (invite(finalized %.y))  :: this may work
+                        (invite(finalized %.y))  :: TODO this may work
             ==    
-   ::
+    ::
        %send-invite            :: TODO when expanded to multiple invites from single host, will need to specify invite id to send
      =/  =path  /(scot %p our.bol)/[%gather]/[id.act]
      ?>  =(our.bol src.bol)
@@ -173,14 +173,14 @@
      %=  this 
        invites  %+  ~(put by invites)
                   id.act
-                  :~  our.bol
+                  :*  our.bol
                       receive-ships
                       max-accepted.act
                       note.act
                       %.n
                   == 
      ==
-   ::
+    ::
        %accept
      =/  init-ship=@p  init-ship.invite:(need (~(get by invites) id.act)) 
      =/  =path  /(scot %p init-ship)/[%gather]/[id.act]
@@ -189,11 +189,11 @@
             %=  this
               invites  %+  ~(jab by invites)
                          id.act
-                        %+  ~(jab by receive-ships)        :: this may work
+                        %+  ~(jab by receive-ships)        :: TODO this may work
                           our.bol 
-                         (ship-invite(invite-status %accepted))  :: this may work
+                         (ship-invite(invite-status %accepted))  :: TODO this may work
             ==
-   ::
+    ::
        %deny
      =/  init-ship=@p  init-ship.invite:(need (~(get by invites) id.act)) 
      =/  =path  /(scot %p init-ship)/[%gather]/[id.act]
@@ -206,22 +206,124 @@
                           our.bol 
                          (ship-invite(invite-status %denied))  :: this may work
             ==
-   ::
-       %share-status
-   ::
+    ::
+       %share-status  :: TODO currently setup to receive single ship; may change if frontend is sending more than one; or if we can send pokes in bulk (ideal) 
+     =/  =path  /(scot %p our.bol)/[%status]
+     ?>  =(our.bol src.bol)
+     ?:  (ship-info-check [ship.act %ghosted ships])                :: TODO what if they're not in ships yet?
+       `this
+     :_  this
+     :~  (~(poke pass:io path) [our.bol %gather] [%subscribe-to-gang-member vase]) :: TODO define vase
+     ==  
+    ::
        %subscribe-to-invite
-   ::
-       %subscribe-to-gang-member
-   ::
-         %ghost
-      ?>  =(our.bol src.bol)
-      ?>  (~(has by ships) ship.act)
-      :-  ~  
-      %=  this
+     ?<  =(our.bol src.bol)                           :: TODO possibly check whether we already have the same ID in $invites
+     =/  =path /(scot %p src.bol)/[%gather]/[id.act]
+     ?.  (~(has by ships) src.bol)
+       ?-  receive-invite.settings
+            %anyone
+          :_  this(ships (solo-add-ships [src.bol ships]))
+          :~  (~(watch pass:io path) [src.bol %gather] path) 
+          ==  
+            %only-gang 
+          `this(ships (solo-add-ships [src.bol ships]))
+       ==
+     =/  upd-they-ghosted  
+     ?.  (ship-info-check [src.bol %they-ghosted ships]) 
+       `this
+     :-  ~
+     %=  this
         ships  %+  ~(jab by ships) 
-                 ship.act 
-               |=(=ship-info ship-info(they-ghosted %.y))
-      ==  
+                  src.bol 
+               |=(=ship-info ship-info(they-ghosted %.n))
+     ==  
+     ?:  (ship-info-check [src.bol %we-ghosted ships])
+       :_  upd-they-ghosted                                        :: TODO this may work
+       :~  (~(poke pass:io path) [src.bol %gather] [%ghost vase])  :: TODO may need to adjust path here; not sure; also, not sure if anything needs to go in vase
+       ==
+     ?-  receive-invite.settings
+          %anyone
+        :_  upd-they-ghosted
+        :~  (~(watch pass:io path) [src.bol %gather] path) 
+        ==
+          %only-gang 
+        ?.  (ship-info-check [src.bol %our-gang ships])
+          upd-they-ghosted
+        :_  upd-they-ghosted
+        :~  (~(watch pass:io path) [src.bol %gather] path) 
+        ==
+     ==
+    ::
+       %subscribe-to-gang-member
+     ?<  =(our.bol src.bol)                           :: TODO possibly check whether we already have the same ID in $invites
+     =/  =path /(scot %p src.bol)/[%status]
+     ?.  (~(has by ships) src.bol)
+       ?-  receive-invite.settings
+            %anyone
+          :_  this(ships (solo-add-ships [src.bol ships]))
+          :~  (~(watch pass:io path) [src.bol %gather] path) 
+          ==  
+            %only-gang 
+          `this(ships (solo-add-ships [src.bol ships]))
+        ::  %only-in-radius                                       :: TODO done on frontend? How would this call work?
+       ==
+     =/  upd-they-ghosted  
+     ?.  (ship-info-check [src.bol %they-ghosted ships]) 
+       `this
+     :-  ~
+     %=  this
+        ships  %+  ~(jab by ships) 
+                  src.bol 
+               |=(=ship-info ship-info(they-ghosted %.n))
+     ==  
+     ?:  (ship-info-check [src.bol %we-ghosted ships])
+       :_  upd-they-ghosted                                        :: TODO this may work
+       :~  (~(poke pass:io path) [src.bol %gather] [%ghost vase])  :: TODO may need to adjust path here; not sure; also, not sure if anything needs to go in vase
+       ==
+     ?-  receive-invite.settings
+          %anyone
+        :_  upd-they-ghosted
+        :~  (~(watch pass:io path) [src.bol %gather] path) 
+        ==
+          %only-gang 
+        ?.  (ship-info-check [src.bol %our-gang ships])
+          upd-they-ghosted
+        :_  upd-they-ghosted
+        :~  (~(watch pass:io path) [src.bol %gather] path) 
+        ==
+      ::  %only-in-radius                                          :: TODO done on frontend? 
+     == 
+    ::
+         %ghost
+      ?:  =(our.bol src.bol)
+        ?:  (~(has by ships) ship.act)
+          :-  ~                                                    :: TODO how will the facts work in this act? 
+          %=  this
+            ships  %+  ~(jab by ships) 
+                     ship.act 
+                   |=(=ship-info ship-info(we-ghosted %.y))
+          ==  
+        :-  ~
+        %=  this
+           ships  (solo-add-ships [ship.act ships])                :: TODO I think we can call the same map twice to update, not sure
+           ships  %+  ~(jab by ships)
+                    ship.act
+                  |=(=ship-info ship-info(we-ghosted %.y))
+        ==
+      ?:  (~(has by ships) src.bol)
+         :-  ~  
+         %=  this
+           ships  %+  ~(jab by ships) 
+                    src.bol 
+                  |=(=ship-info ship-info(they-ghosted %.y))
+         ==  
+      :-  ~
+      %=  this
+         ships  (solo-add-ships [src.bol ships])                :: TODO I think we can call the same map twice to update, not sure
+         ships  %+  ~(jab by ships)
+                  src.bol
+                |=(=ship-info ship-info(they-ghosted %.y))
+      ==
     ==    
   --
 ::
