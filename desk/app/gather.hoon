@@ -213,7 +213,7 @@
      ?:  (ship-info-check [ship.act %ghosted ships])                :: TODO what if they're not in ships yet?
        `this
      :_  this
-     :~  (~(poke pass:io path) [our.bol %gather] [%subscribe-to-gang-member vase]) :: TODO define vase
+     :~  (~(poke pass:io path) [our.bol %gather] [%subscribe-to-status vase]) :: TODO define vase
      ==  
     ::
        %subscribe-to-invite
@@ -254,7 +254,7 @@
         ==
      ==
     ::
-       %subscribe-to-gang-member
+       %subscribe-to-status
      ?<  =(our.bol src.bol)                           :: TODO possibly check whether we already have the same ID in $invites
      =/  =path /(scot %p src.bol)/[%status]
      ?.  (~(has by ships) src.bol)
@@ -297,13 +297,16 @@
          %ghost
       ?:  =(our.bol src.bol)
         ?:  (~(has by ships) ship.act)
-          :-  ~                                                    :: TODO how will the facts work in this act? 
+          :-  :~  (~(poke pass:io path) [src.bol %gather] [%ghost vase]) :: TODO define vase                                                    :: TODO how will the facts work in this act? 
+                  (kick:io       :: TODO input kick for status and invite
+              ==
           %=  this
             ships  %+  ~(jab by ships) 
                      ship.act 
                    |=(=ship-info ship-info(we-ghosted %.y))
           ==  
-        :-  ~
+        :-  :~  (~(poke pass:io path) [src.bol %gather] [%ghost vase]) :: TODO define vase
+            ==
         %=  this
            ships  (solo-add-ships [ship.act ships])                :: TODO I think we can call the same map twice to update, not sure
            ships  %+  ~(jab by ships)
@@ -327,12 +330,132 @@
     ==    
   --
 ::
-++  on-watch  on-watch:def
-:: TODO by wednesday
 ++  on-agent  on-agent:def
-:: TODO by wednesday
+  |=  [=wire =sign:agent:gall]
+  ^-  (quip card _this)
+  ?>  ?=([@ @ ~] wire)
+  ?+  i.t.wire  (on-agent:def wire sign)
+     %gather                                                    :: TODO do we need to check the invite ID?
+   ?+  -.sign  (on-agent:def wire sign)
+      %watch-ack
+    ?~  p.sign
+      `this
+    ~&  '%gather: invite subscription to [i.wire] failed'
+    `this
+  ::
+      %kick
+    :_  this
+    :~  (~(watch pass:io wire) [src.bol %gather] wire)
+    ==
+  ::
+      %fact
+    ?>  =(%gather-update p.cage.sign)
+    =/  upd  !<(upd q.cage.sign)
+    ?>  =(%update-invite -.upd)
+    ?:  =(our.bol i.wire)
+       =/  invite-status-upd=ship-invite  (~(get by receive-ships.invite.upd) src.bol)  :: TODO this may work
+       :-  ~
+       %=  this
+         invites  %+  ~(jab by invites)
+                    id.upd
+                  %+  ~(jab by receive-ships)
+                    src.bol
+                  (ship-invite(invite-status invite-status-upd))
+       ==  
+    ?>  (~(has by invites) id.upd)
+    =/  init-ship=@p  init-ship.invite:(need (~(get by invites) id.upd))
+    ?>  (init-ship i.wire)
+    :-  ~
+    %=  this
+      invites  %+  ~(jab by invites)
+                  id.upd
+               (invite invite.upd)
+    ==
+ ::  
+     %status
+   ?+  -.sign  (on-agent:def wire sign)
+      %watch-ack
+    ?~  p.sign
+      `this
+    ~&  '%gather: status subscription to [i.wire] failed'
+    `this
+  ::
+      %kick
+    :_  this
+    :~  (~(watch pass:io wire) [src.bol %gather] wire)
+    ==
+  ::   
+      %fact
+    ?>  =(%gather-update p.cage.sign)
+    =/  upd  !<(upd q.cage.sign)
+    ?>  =(%update-status -.upd)
+    ?<  =(our.bol i.wire)
+    :-  ~
+    %=  this
+      ships  (bulk-update-status [i.wire ~[upd] ships])
+    ==
+::
+++  on-watch  on-watch:def
+  |=  =path
+  ^-  (quip card _this)
+  ?>  ?=([@ @ ~] path)
+  ?+  i.t.path  (on-watch:def path)
+     %gather                              :: TODO how to send error message in nack tang, if any of the following fail? not necessary, but would be nice for receiving end
+   =/  invite-id=id  t.t.path
+   ?>  =(our.bol (slav %p i.path))
+   ?>  (~(has by invites) invite-id)
+   ?>  (~(has by receive-ships.invite:(need (~(get by invites) invite-id))) src.bol) 
+   ?<  finalized.invite:(need (~(get by invites) invite-id))
+   =/  invite-detail=invite  (need (~(get by invites) invite-id))
+   :_  `this
+   :~  (fact:io gather-update+!>(`upd`[%update-invite invite-id invite-detail]) ~[path])
+   ==
+ ::
+     %status
+   ?<  =(our.bol src.bol)
+   ?>  =(our.bol (slav %p i.path))   :: makes sure we initiated sharing status with src.bol
+                                     :: TODO possible check against $ships for share-status=%.y
+   :_  `this
+   :~  %+  fact:io  %gather-update
+                !>  ^-  upd
+                :*  %update-status
+                    status-active.settings
+                    position.settings    
+                    radius.settings
+                    address.settings
+                    status-note.settings
+                ==
+               ~[path] 
+   ==
+  == 
+::
 ++  on-arvo   on-arvo:def
 ++  on-leave  on-leave:def
 ++  on-peek   on-peek:def
 ++  on-fail   on-fail:def
 --
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
