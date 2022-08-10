@@ -158,7 +158,7 @@
             %=  this
               invites  %+  ~(jab by invites)
                          id.act
-                        (invite(finalized %.y))  :: TODO this may work
+                       |=(=invite invite(finalized %.y))  :: TODO this may work
             ==    
     ::
        %send-invite            :: TODO when expanded to multiple invites from single host, will need to specify invite id to send
@@ -222,11 +222,11 @@
      ?.  (~(has by ships) src.bol)
        ?-  receive-invite.settings
             %anyone
-          :_  this(ships (solo-add-ships [src.bol ships]))
+          :_  this(ships (add-ships [~[src.bol] ships]))
           :~  (~(watch pass:io path) [src.bol %gather] path) 
           ==  
             %only-gang 
-          `this(ships (solo-add-ships [src.bol ships]))
+          `this(ships (add-ships [~[src.bol] ships]))
        ==
      =/  upd-they-ghosted  
      ?.  (ship-info-check [src.bol %they-ghosted ships]) 
@@ -260,11 +260,11 @@
      ?.  (~(has by ships) src.bol)
        ?-  receive-invite.settings
             %anyone
-          :_  this(ships (solo-add-ships [src.bol ships]))
+          :_  this(ships (add-ships [~[src.bol] ships]))
           :~  (~(watch pass:io path) [src.bol %gather] path) 
           ==  
             %only-gang 
-          `this(ships (solo-add-ships [src.bol ships]))
+          `this(ships (add-ships [~[src.bol] ships]))
         ::  %only-in-radius                                       :: TODO done on frontend? How would this call work?
        ==
      =/  upd-they-ghosted  
@@ -308,7 +308,7 @@
         :-  :~  (~(poke pass:io path) [src.bol %gather] [%ghost vase]) :: TODO define vase
             ==
         %=  this
-           ships  (solo-add-ships [ship.act ships])                :: TODO I think we can call the same map twice to update, not sure
+           ships  (add-ships [~[ship.act] ships])                :: TODO I think we can call the same map twice to update, not sure
            ships  %+  ~(jab by ships)
                     ship.act
                   |=(=ship-info ship-info(we-ghosted %.y))
@@ -322,7 +322,7 @@
          ==  
       :-  ~
       %=  this
-         ships  (solo-add-ships [src.bol ships])                :: TODO I think we can call the same map twice to update, not sure
+         ships  (add-ships [~[src.bol] ships])                :: TODO I think we can call the same map twice to update, not sure
          ships  %+  ~(jab by ships)
                   src.bol
                 |=(=ship-info ship-info(they-ghosted %.y))
@@ -358,7 +358,7 @@
        %=  this
          invites  %+  ~(jab by invites)
                     id.upd
-                  %+  ~(jab by receive-ships)
+                  %+  ~(jab by receive-ships)                    :: TODO this won't work
                     src.bol
                   (ship-invite(invite-status invite-status-upd))
        ==  
@@ -369,7 +369,7 @@
     %=  this
       invites  %+  ~(jab by invites)
                   id.upd
-               (invite invite.upd)
+               |=(=invite (invite invite.upd))
     ==
  ::  
      %status
@@ -392,7 +392,16 @@
     ?<  =(our.bol i.wire)
     :-  ~
     %=  this
-      ships  (bulk-update-status [i.wire ~[upd] ships])
+      ships  %+  ~(jab by ships)
+               i.wire
+             |=  =ship-info 
+             %=  ship-info
+                status-active  status-active.upd
+                position       position.upd
+                radius         radius.upd
+                address        address.upd
+                note           note.upd
+             ==
     ==
 ::
 ++  on-watch  on-watch:def

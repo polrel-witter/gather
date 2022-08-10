@@ -5,13 +5,10 @@
 +$  id             @da
 +$  status-active  ?
 +$  gather-active  ?
-+$  paused         ?
-+$  ghosted        ?
 +$  note           @t
 +$  radius         @rs 
 +$  position       [lat=@rs lon=@rs]
-+$  distance       @rs
-+$  address        [street=@t city=@t state=@t country=@t zip=@]
++$  address        [street=@t city=@t state=@t country=@t zip=@t]
 +$  group          @ta
 ::
 :: Ship statuses
@@ -27,7 +24,7 @@
   $:
       position=position
       radius=@rs
-      address=address 
+      address=address
       status-active=?
       gather-active=?
       status-note=@t
@@ -45,8 +42,8 @@
 ::
 +$  invite
   $:
-     init-ship=ship
-     receive-ships=(map =ship =ship-invite)
+     init-ship=@p
+     receive-ships=(map @p =ship-invite)
      max-accepted=@ud
      note=@t
      finalized=?
@@ -54,27 +51,19 @@
 +$  receive-invite  ?(%anyone %only-gang)                   :: ADDITION didn't previously define
 +$  receive-status  ?(%anyone %only-gang %only-in-radius)   :: ADDITION didn't previously define
 ::
-+$  ships    (map =ship =ship-info)
++$  ships    (map @p =ship-info)
 +$  invites  (map =id =invite)
 +$  settings
   $: 
-     status-active=?  :: is the app active?
+     status-active=?  
      gather-active=?
      position=position
-     radius=radius
+     radius=@rs
      address=address
-     status-note=note
+     status-note=@t
      receive-invite=receive-invite
      receive-invite=receive-status
   ==
-::
-+$  state
-  $:
-     =ships
-     =invites
-     =settings
-  ==
-::
 ::
 :: Gall actions
 +$  act
@@ -88,7 +77,7 @@
          [%radius =radius]
          [%status-note =note]
          [%receive-invite =receive-invite]
-         [%receive-status =receive-status]     :: ADDITION; seems like we forgot to include this earlier
+         [%receive-status =receive-status]     :: ADDITION; forgot to include this earlier
        ==
     ::
     :: Gathering
@@ -105,19 +94,19 @@
      [%subscribe-to-invite =id]
      [%accept =id]
      [%deny =id]
-     :: [%kick-invite ~]
+     :: [%kick-invite ~]                       :: DONT NEED
      ::
      :: Status
      [%share-status =ship]                     :: frontend to backend
-     :: [%notify-gang-member =ship]               :: send status to gang member
-     [%subscribe-to-gang-member =ship]         :: two-way
+     :: [%notify-gang-member =ship]            :: DONT NEED
+     [%subscribe-to-status =ship]              :: changed name
      ::
      :: Both
      [%ghost =ship]
   ==
 +$  upd
   $% 
-     [%update-gather =gather-active]  :: ADDITION; figured we need an update structure for settings related to the Gathering feature, and doesn't make sense to include with the update-invite structure
+     [%update-gather =gather-active]           :: ADDITION; figured we need an update structure for settings related to the Gathering feature, and doesn't make sense to include with the update-invite structure
      [%update-invite =id =invite]
      $:  %update-status
          =status-active
