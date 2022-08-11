@@ -11,8 +11,7 @@
    	- give update-gather fact to subscribers
    - %address
    	- change address:settings
-   	- gather coordinates 
-   	- call %position:settings to update
+   	- send to frontend to gather coordinates, which will then call %position once it retrieves them 
    - %position
    	- update position:settings
    	- give update-status fact to subscribers
@@ -23,10 +22,9 @@
    	- change status-note:settings
    	- give update-status fact to subscribers
    - %receive-invite
-   	- change receive-invite:settings                                            :: frontend tells backend; should frontend just display based on what's set here? i.e. no backend work required?
+   	- change receive-invite:settings                                      
    - %receive-status
    	- change receive-status:settings
-   		- if %only-in-radius: proximity check each ship before displaying   :: maybe this happens on frontend since we don't have markers indicating whether they're in range or not?
  - %edit-invite
    - %cancel
    	- give kick to all subscribers of this invite
