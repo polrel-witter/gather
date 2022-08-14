@@ -263,7 +263,7 @@
                |=(=ship-info ship-info(they-ghosted %.n))
      ==  
      ?:  (ship-info-check [src.bol ships %we-ghosted])
-        :_  upd-they-ghosted                                        :: TODO this may work
+        :_  upd-they-ghosted  
         :~  (~(poke pass:io path) [src.bol %gather] gather-action+!>(`action`[%ghost src.bol]))  
         ==
      :_  upd-they-ghosted
@@ -286,7 +286,7 @@
                |=(=ship-info ship-info(they-ghosted %.n))
      ==  
      ?:  (ship-info-check [src.bol ships %we-ghosted])
-        :_  upd-they-ghosted                                        :: TODO this may work
+        :_  upd-they-ghosted 
         :~  (~(poke pass:io path) [src.bol %gather] gather-action+!>(`action`[%ghost src.bol]))
         ==
      :_  upd-they-ghosted
