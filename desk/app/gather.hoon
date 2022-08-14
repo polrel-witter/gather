@@ -426,7 +426,7 @@
  ::               note           note.upd
  ::            ==
  ::     ==
-  ==
+::  ==
 ::
 ++  on-watch  on-watch:def
  :: |=  =path
