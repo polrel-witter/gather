@@ -1,5 +1,5 @@
 /-  *gather
-/+  default-agent, dbug, agentio
+/+  *gather, default-agent, dbug, agentio
 |%
 +$  versioned-state
   $%  state-0
@@ -27,293 +27,293 @@
 ++  on-poke
   |=  [=mark =vase]
   |^  ^-  (quip card _this)      
-  =^  cards  state
+  =^  cards  this
     ?+  mark  (on-poke:def mark vase)
-      %gather-action  (handle-action !<(act vase))
+      %gather-action  (handle-action !<(action vase))
     ==
   [cards this]
   ++  handle-action
-    |=  =act
+    |=  act=action
     ^-  (quip card _this)
     ?-  -.act
        %settings
          ?-  -.+.act
               %status-active
-            =/  =path  /(scot @p our.bol)/[%status]
+            =/  =path  /(scot %p our.bol)/[%status]
             ?>  =(our.bol src.bol)
-            :_  this(settings status-active(status-active !status-active.settings))
-            :~  %+  fact:io  %gather-update
-                !>  ^-  upd
-                :*  %update-status
-                    status-active.settings
-                    position.settings   
-                    radius.settings
-                    address.settings
-                    status-note.settings
-                ==
-               path
+            :_  this(status-active.settings status-active.act)
+            :~  :*
+               %give
+               %fact
+               ~[path]
+               :-  %gather-update
+                 !>  ^-  update
+                 :*  %update-status
+                     status-active.act
+                     position.settings   
+                     radius.settings
+                     address.settings
+                     status-note.settings
+                ==  ==
             ==  
-         ::    
-              %gather-active  :: TODO thinking we should get rid of gathering toggle; too much for user to think about and plan
-            =/  =path  /(scot @p our.bol)/[%gather]
-            ?>  =(our.bol src.bol)
-            :_  this(settings gather-active(gather-active !gather-active.settings))
-            :~  (fact:io gather-update+!>(`upd`[%update-gather gather-active.settings]) path)
-            ==
          ::
               %address
-            =/  =path  /(scot @p our.bol)/[%status]
+            =/  =path  /(scot %p our.bol)/[%status]
             ?>  =(our.bol src.bol)
-            :_  this(settings address(address address.settings.act))
-            :~  %+  fact:io  %gather-update
-                !>  ^-  upd
-                :*  %update-status
-                    status-active.settings
-                    position.settings    
-                    radius.settings
-                    address.settings
-                    status-note.settings
-                ==
-               path  
-            == 
+            :_  this(address.settings address.act)
+            :~  :*
+               %give
+               %fact
+               ~[path]
+               :-  %gather-update
+                 !>  ^-  update
+                 :*  %update-status
+                     status-active.settings
+                     position.settings   
+                     radius.settings
+                     address.act
+                     status-note.settings
+                ==  ==
+            ==          
          ::
               %position
-            =/  =path  /(scot @p our.bol)/[%status]
+            =/  =path  /(scot %p our.bol)/[%status]
             ?>  =(our.bol src.bol)
-            :_  this(settings position(position position.settings.act))
-            :~  %+  fact:io  %gather-update
-                !>  ^-  upd
-                :*  %update-status
-                    status-active.settings
-                    position.settings    
-                    radius.settings
-                    address.settings
-                    status-note.settings
-                ==
-               path 
+            :_  this(position.settings position.act)
+            :~  :*
+               %give
+               %fact
+               ~[path]
+               :-  %gather-update
+                 !>  ^-  update
+                 :*  %update-status
+                     status-active.settings
+                     position.act   
+                     radius.settings
+                     address.settings
+                     status-note.settings
+                ==  ==
             ==
          ::
               %radius
-            =/  =path  /(scot @p our.bol)/[%status]
+            =/  =path  /(scot %p our.bol)/[%status]
             ?>  =(our.bol src.bol)
-            :_  this(settings radius(radius radius.settings.act))
-            :~  %+  fact:io  %gather-update
-                !>  ^-  upd
-                :*  %update-status
-                    status-active.settings
-                    position.settings    
-                    radius.settings
-                    address.settings
-                    status-note.settings
-                ==
-               path  
-            == 
+            :_  this(radius.settings radius.act)
+            :~  :*
+               %give
+               %fact
+               ~[path]
+               :-  %gather-update
+                 !>  ^-  update
+                 :*  %update-status
+                     status-active.settings
+                     position.settings   
+                     radius.act
+                     address.settings
+                     status-note.settings
+                ==  ==
+            ==
          ::
               %status-note
-            =/  =path  /(scot @p our.bol)/[%status]
+            =/  =path  /(scot %p our.bol)/[%status]
             ?>  =(our.bol src.bol)
-            :_  this(settings status-note(status-note note.settings.act))
-            :~  %+  fact:io  %gather-update
-                !>  ^-  upd
-                :*  %update-status
-                    status-active.settings
-                    position.settings    
-                    radius.settings
-                    address.settings
-                    status-note.settings
-                ==
-               path 
-            ==
+            :_  this(status-note.settings status-note.act)
+            :~  :*
+               %give
+               %fact
+               ~[path]
+               :-  %gather-update
+                 !>  ^-  update
+                 :*  %update-status
+                     status-active.settings
+                     position.settings   
+                     radius.settings
+                     address.settings
+                     status-note.act
+                ==  ==
+            ==            
          ::
               %receive-invite
             ?>  =(our.bol src.bol)
-            `this(settings receive-invite(receive-invite receive-invite.settings.act)) 
+            `this(receive-invite.settings receive-invite.act) 
          :: 
               %receive-status
             ?>  =(our.bol src.bol)
-            `this(settings receive-status(receive-status receive-status.settings.act))  
+            `this(receive-status.settings receive-status.act)  
          ==
-    ::  
+  ::  
        %edit-invite
          ?-  -.+.act
               %cancel
-            =/  =path  /(scot %p our.bol)/[%gather]/[id.act]
+            =/  =path  /(scot %p our.bol)/[%gather]/(scot %da id.act)
             ?>  =(our.bol src.bol)
-            :_  this
-            :~  [%give %kick path ~]
+            :_  this(invites (~(del by invites) id.act))     
+            :~  [%give %kick ~[path] ~]
             ==
          ::
               %done
-            =/  =path  /(scot %p our.bol)/[%gather]/[id.act]
+            =/  =path  /(scot %p our.bol)/[%gather]/(scot %da id.act)
             ?>  =(our.bol src.bol)
             :_  this
-            :~  [%give %kick path ~]
+            :~  [%give %kick ~[path] ~]
             ==
          ::
-              %finalize
-            =/  =path  /(scot %p our.bol)/[%gather]/[id.act]
+              %finalize    
+            =/  =path  /(scot %p our.bol)/[%gather]/(scot %da id.act)
             ?>  =(our.bol src.bol)
-            :-  :~  (fact:io gather-update+!>(`upd`[%update-invite id.act invite.act]) path)
+            =/  upd-details=invite  (need (~(get by invites) id.act))
+            =.  finalized.upd-details  %.y
+            :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd-details]) ~[path])
                 ==
             %=  this
-              invites  %+  ~(jab by invites)
+              invites  %+  ~(jab by invites)                        :: TODO possible :by function to simply replace the invite with updated?
                          id.act
-                       |=(=invite invite(finalized %.y))  :: TODO this may work
-            ==    
-    ::
-       %send-invite            :: TODO when expanded to multiple invites from single host, will need to specify invite id to send
-     =/  =path  /(scot %p our.bol)/[%gather]/[id.act]
+                       |=(=invite invite(finalized %.y)) 
+            ==
+        ==
+  ::
+       %send-invite            
+     =/  =path  /(scot %p our.bol)/[%gather]/(scot %da id.act)
      ?>  =(our.bol src.bol)
-     ?>  =(our.bol init-ship.invite.act)
-     =/  ghosted-ships=(list @p)  (bulk-ghosted-check ships)
-     =/  receive-ships=(map @p =ship-invite)
-     %+  remove-ships   [receive-ships.invite.act ghosted-ships]  :: TODO make sure receive-ships.act comes in with invite-status=%pending; if not make sure it is set to this before updating state
-     :-  :~  (~(poke pass:io path) [our.bol %gather] [%subscribe-to-invite vase]) :: TODO define vase; also is it possible/advisable to send a poke to many ships all at once?
+     =/  new-ship-map=(map @p =ship-info)  (add-ships [send-to.act ships])
+     =/  send-to=(list @p)  (bulk-ship-info-check [send-to.act new-ship-map %ghosted %.n])
+     =/  receive-ships=(map @p =ship-invite)  (make-receive-ships-map send-to)
+     :-  :~  %+  ~(poke pass:io path) 
+               [-.send-to %gather]                                       :: TODO can only poke one ship at a time; need to configure sending multiple 
+             gather-action+!>(`action`[%subscribe-to-invite id.act]) 
          ==
-     %=  this 
+     %=  this
+       ships  new-ship-map
        invites  %+  ~(put by invites)
                   id.act
                   :*  our.bol
                       receive-ships
-                      max-accepted.act
-                      note.act
+                      max-accepted.invite.act
+                      note.invite.act
                       %.n
                   == 
      ==
-    ::
-       %accept
-     =/  init-ship=@p  init-ship.invite:(need (~(get by invites) id.act)) 
-     =/  =path  /(scot %p init-ship)/[%gather]/[id.act]
-     :-  :~  (fact:io gather-update+!>(`upd`[%update-invite id.act ...]) path) :: TODO not sure how to embed the =invite in the fact
+  ::
+       %accept 
+     =/  init-ship=@p  init-ship:(need (~(get by invites) id.act)) 
+     =/  =path  /(scot %p init-ship)/[%gather]/(scot %da id.act)
+     =/  upd-details=invite  (need (~(get by invites) id.act))
+     =.  receive-ships.upd-details
+     %+  ~(jab by receive-ships.upd-details)
+       our.bol
+     |=(=ship-invite ship-invite(invite-status %accepted))
+     :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd-details]) ~[path])
          ==
-            %=  this
-              invites  %+  ~(jab by invites)
-                         id.act
-                        %+  ~(jab by receive-ships)        :: TODO this may work
-                          our.bol 
-                         (ship-invite(invite-status %accepted))  :: TODO this may work
-            ==
-    ::
+     %=  this
+        invites  %+  ~(jab by invites)
+                   id.act
+                 |=  =invite
+                 %=  invite
+                   receive-ships  %+  ~(jab by receive-ships.invite)
+                                           our.bol
+                                         |=  =ship-invite 
+                                         ship-invite(invite-status %accepted)
+                 ==
+     ==
+  ::
        %deny
-     =/  init-ship=@p  init-ship.invite:(need (~(get by invites) id.act)) 
-     =/  =path  /(scot %p init-ship)/[%gather]/[id.act]
-     :-  :~  (fact:io gather-update+!>(`upd`[%update-invite id.act ...]) path) :: TODO not sure how to embed the =invite in the fact
+     =/  init-ship=@p  init-ship:(need (~(get by invites) id.act)) 
+     =/  =path  /(scot %p init-ship)/[%gather]/(scot %da id.act)
+     =/  upd-details=invite  (need (~(get by invites) id.act))
+     =.  receive-ships.upd-details
+     %+  ~(jab by receive-ships.upd-details)
+       our.bol
+     |=(=ship-invite ship-invite(invite-status %denied))
+     :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd-details]) ~[path])
          ==
-            %=  this
-              invites  %+  ~(jab by invites)
-                         id.act
-                        %+  ~(jab by receive-ships)        :: this may work
-                          our.bol 
-                         (ship-invite(invite-status %denied))  :: this may work
-            ==
-    ::
-       %share-status  :: TODO currently setup to receive single ship; may change if frontend is sending more than one; or if we can send pokes in bulk (ideal) 
+     %=  this
+        invites  %+  ~(jab by invites)
+                   id.act
+                 |=  =invite
+                 %=  invite
+                   receive-ships  %+  ~(jab by receive-ships.invite)
+                                     our.bol
+                                  |=  =ship-invite 
+                                  ship-invite(invite-status %denied)
+                 ==
+     ==
+  ::
+       %share-status                             :: TODO need to configure sending pokes to multiple ships 
      =/  =path  /(scot %p our.bol)/[%status]
      ?>  =(our.bol src.bol)
-     ?:  (ship-info-check [ship.act %ghosted ships])                :: TODO what if they're not in ships yet?
-       `this
-     :_  this
-     :~  (~(poke pass:io path) [our.bol %gather] [%subscribe-to-status vase]) :: TODO define vase
+     =/  new-ship-map=(map @p =ship-info)  (add-ships [send-to.act ships])
+     =/  send-to=(list @p)  (bulk-ship-info-check [send-to.act new-ship-map %ghosted %.n])
+     :_  this(ships new-ship-map)
+     :~  (~(poke pass:io path) [-.send-to %gather] gather-action+!>(`action`[%subscribe-to-status ~]))
      ==  
-    ::
+  ::
        %subscribe-to-invite
-     ?<  =(our.bol src.bol)                           :: TODO possibly check whether we already have the same ID in $invites
-     =/  =path /(scot %p src.bol)/[%gather]/[id.act]
+     ?<  =(our.bol src.bol)                                        :: TODO possibly check whether we already have the same ID in $invites
+     =/  =path  /(scot %p src.bol)/[%gather]/(scot %da id.act)
      ?.  (~(has by ships) src.bol)
-       ?-  receive-invite.settings
-            %anyone
-          :_  this(ships (add-ships [~[src.bol] ships]))
-          :~  (~(watch pass:io path) [src.bol %gather] path) 
-          ==  
-            %only-gang 
-          `this(ships (add-ships [~[src.bol] ships]))
-       ==
+        :_  this(ships (add-ships [~[src.bol] ships]))
+        :~  (~(watch pass:io path) [src.bol %gather] path) 
+        == 
      =/  upd-they-ghosted  
-     ?.  (ship-info-check [src.bol %they-ghosted ships]) 
-       `this
-     :-  ~
+     ?.  (ship-info-check [src.bol ships %they-ghosted]) 
+        this
      %=  this
         ships  %+  ~(jab by ships) 
                   src.bol 
                |=(=ship-info ship-info(they-ghosted %.n))
      ==  
-     ?:  (ship-info-check [src.bol %we-ghosted ships])
-       :_  upd-they-ghosted                                        :: TODO this may work
-       :~  (~(poke pass:io path) [src.bol %gather] [%ghost vase])  :: TODO may need to adjust path here; not sure; also, not sure if anything needs to go in vase
-       ==
-     ?-  receive-invite.settings
-          %anyone
-        :_  upd-they-ghosted
-        :~  (~(watch pass:io path) [src.bol %gather] path) 
+     ?:  (ship-info-check [src.bol ships %we-ghosted])
+        :_  upd-they-ghosted                                        :: TODO this may work
+        :~  (~(poke pass:io path) [src.bol %gather] gather-action+!>(`action`[%ghost src.bol]))  
         ==
-          %only-gang 
-        ?.  (ship-info-check [src.bol %our-gang ships])
-          upd-they-ghosted
-        :_  upd-they-ghosted
-        :~  (~(watch pass:io path) [src.bol %gather] path) 
-        ==
+     :_  upd-they-ghosted
+     :~  (~(watch pass:io path) [src.bol %gather] path) 
      ==
-    ::
+  ::
        %subscribe-to-status
-     ?<  =(our.bol src.bol)                           :: TODO possibly check whether we already have the same ID in $invites
-     =/  =path /(scot %p src.bol)/[%status]
+     ?<  =(our.bol src.bol)                                         :: TODO possibly check whether we already have the same ID in $invites
+     =/  =path  /(scot %p src.bol)/[%status]
      ?.  (~(has by ships) src.bol)
-       ?-  receive-invite.settings
-            %anyone
-          :_  this(ships (add-ships [~[src.bol] ships]))
-          :~  (~(watch pass:io path) [src.bol %gather] path) 
-          ==  
-            %only-gang 
-          `this(ships (add-ships [~[src.bol] ships]))
-        ::  %only-in-radius                                       :: TODO done on frontend? How would this call work?
-       ==
+        :_  this(ships (add-ships [~[src.bol] ships]))
+        :~  (~(watch pass:io path) [src.bol %gather] path) 
+        ==  
      =/  upd-they-ghosted  
-     ?.  (ship-info-check [src.bol %they-ghosted ships]) 
-       `this
-     :-  ~
+     ?.  (ship-info-check [src.bol ships %they-ghosted]) 
+        this
      %=  this
         ships  %+  ~(jab by ships) 
                   src.bol 
                |=(=ship-info ship-info(they-ghosted %.n))
      ==  
-     ?:  (ship-info-check [src.bol %we-ghosted ships])
-       :_  upd-they-ghosted                                        :: TODO this may work
-       :~  (~(poke pass:io path) [src.bol %gather] [%ghost vase])  :: TODO may need to adjust path here; not sure; also, not sure if anything needs to go in vase
-       ==
-     ?-  receive-invite.settings
-          %anyone
-        :_  upd-they-ghosted
-        :~  (~(watch pass:io path) [src.bol %gather] path) 
+     ?:  (ship-info-check [src.bol ships %we-ghosted])
+        :_  upd-they-ghosted                                        :: TODO this may work
+        :~  (~(poke pass:io path) [src.bol %gather] gather-action+!>(`action`[%ghost src.bol]))
         ==
-          %only-gang 
-        ?.  (ship-info-check [src.bol %our-gang ships])
-          upd-they-ghosted
-        :_  upd-they-ghosted
-        :~  (~(watch pass:io path) [src.bol %gather] path) 
-        ==
-      ::  %only-in-radius                                          :: TODO done on frontend? 
-     == 
-    ::
+     :_  upd-they-ghosted
+     :~  (~(watch pass:io path) [src.bol %gather] path) 
+     ==
+  ::
          %ghost
+      =/  =path  /(scot %p our.bol)/[%status]                        :: TODO using new path for %ghost is kind of messy; can be cleaned up
       ?:  =(our.bol src.bol)
-        ?:  (~(has by ships) ship.act)
-          :-  :~  (~(poke pass:io path) [src.bol %gather] [%ghost vase]) :: TODO define vase                                                    :: TODO how will the facts work in this act? 
-                  (kick:io       :: TODO input kick for status and invite
+        ?:  (~(has by ships) ship.act)   :: sending a %ghost
+          :-  :~  (~(poke pass:io path) [ship.act %gather] gather-action+!>(`action`[%ghost ship.act])) 
+                  (kick-only:io ship.act ~[/(scot %p our.bol)/[%status]])   :: TODO need to include kicking them from any open invites
               ==
           %=  this
             ships  %+  ~(jab by ships) 
                      ship.act 
                    |=(=ship-info ship-info(we-ghosted %.y))
           ==  
-        :-  :~  (~(poke pass:io path) [src.bol %gather] [%ghost vase]) :: TODO define vase
+        :-  :~  (~(poke pass:io path) [src.bol %gather] gather-action+!>(`action`[%ghost ship.act]))
             ==
         %=  this
-           ships  (add-ships [~[ship.act] ships])                :: TODO I think we can call the same map twice to update, not sure
+           ships  (add-ships [~[ship.act] ships]) 
            ships  %+  ~(jab by ships)
                     ship.act
                   |=(=ship-info ship-info(we-ghosted %.y))
         ==
-      ?:  (~(has by ships) src.bol)
+      ?:  (~(has by ships) src.bol)     :: receiving a %ghost
          :-  ~  
          %=  this
            ships  %+  ~(jab by ships) 
@@ -322,15 +322,15 @@
          ==  
       :-  ~
       %=  this
-         ships  (add-ships [~[src.bol] ships])                :: TODO I think we can call the same map twice to update, not sure
+         ships  (add-ships [~[src.bol] ships])
          ships  %+  ~(jab by ships)
                   src.bol
                 |=(=ship-info ship-info(they-ghosted %.y))
       ==
-    ==    
-  --
+    ==   
+  -- 
 ::
-++  on-agent  on-agent:def
+++  on-agent
   |=  [=wire =sign:agent:gall]
   ^-  (quip card _this)
   ?>  ?=([@ @ ~] wire)
@@ -342,101 +342,125 @@
       `this
     ~&  '%gather: invite subscription to [i.wire] failed'
     `this
-  ::
+ ::
       %kick
     :_  this
     :~  (~(watch pass:io wire) [src.bol %gather] wire)
     ==
-  ::
+ ::
       %fact
     ?>  =(%gather-update p.cage.sign)
-    =/  upd  !<(upd q.cage.sign)
+    =/  upd  !<(update q.cage.sign)
     ?>  =(%update-invite -.upd)
     ?:  =(our.bol i.wire)
-       =/  invite-status-upd=ship-invite  (~(get by receive-ships.invite.upd) src.bol)  :: TODO this may work
-       :-  ~
-       %=  this
+       =/  receive-ships=(map @p =ship-info)  +30:upd          :: TODO how the fuck do you grab the receive-ships map from the invite received in the upd?
+       =/  invite-status-upd=invite-status  +1:(ship-invite:(need (~(get by receive-ships) src.bol)))
+       ?-  invite-status-upd
+          %accepted  
+        :-  ~
+        %=  this
          invites  %+  ~(jab by invites)
                     id.upd
-                  %+  ~(jab by receive-ships)                    :: TODO this won't work
-                    src.bol
-                  (ship-invite(invite-status invite-status-upd))
-       ==  
+                  |=  =invite
+                  %=  invite
+                    receive-ships  %+  ~(jab by receive-ships.invite)
+                                     src.bol
+                                   |=  =ship-invite 
+                                   ship-invite(invite-status %accepted)
+                  ==
+        ==
+     ::
+           %denied
+        :-  ~
+        %=  this
+         invites  %+  ~(jab by invites)
+                    id.upd
+                  |=  =invite
+                  %=  invite
+                    receive-ships  %+  ~(jab by receive-ships.invite)
+                                     src.bol
+                                   |=  =ship-invite 
+                                   ship-invite(invite-status %denied)
+                  ==
+        ==
+       ==
     ?>  (~(has by invites) id.upd)
     =/  init-ship=@p  init-ship.invite:(need (~(get by invites) id.upd))
-    ?>  (init-ship i.wire)
+    ?>  =(init-ship i.wire)
     :-  ~
     %=  this
       invites  %+  ~(jab by invites)
                   id.upd
-               |=(=invite (invite invite.upd))
+               |=(=invite invite(finalized %.y))
     ==
+   ==
  ::  
-     %status
-   ?+  -.sign  (on-agent:def wire sign)
-      %watch-ack
-    ?~  p.sign
-      `this
-    ~&  '%gather: status subscription to [i.wire] failed'
-    `this
+     %status  !!
+ ::  ?+  -.sign  (on-agent:def wire sign)
+ ::     %watch-ack
+ ::   ?~  p.sign
+ ::     `this
+ ::   ~&  '%gather: status subscription to [i.wire] failed'
+ ::   `this
   ::
-      %kick
-    :_  this
-    :~  (~(watch pass:io wire) [src.bol %gather] wire)
-    ==
+ ::     %kick
+ ::   :_  this
+ ::   :~  (~(watch pass:io wire) [src.bol %gather] wire)
+ ::   ==
   ::   
-      %fact
-    ?>  =(%gather-update p.cage.sign)
-    =/  upd  !<(upd q.cage.sign)
-    ?>  =(%update-status -.upd)
-    ?<  =(our.bol i.wire)
-    :-  ~
-    %=  this
-      ships  %+  ~(jab by ships)
-               i.wire
-             |=  =ship-info 
-             %=  ship-info
-                status-active  status-active.upd
-                position       position.upd
-                radius         radius.upd
-                address        address.upd
-                note           note.upd
-             ==
-    ==
+ ::     %fact
+ ::   ?>  =(%gather-update p.cage.sign)
+ ::   =/  upd  !<(upd q.cage.sign)
+ ::   ?>  =(%update-status -.upd)
+ ::   ?<  =(our.bol i.wire)
+ ::   :-  ~
+ ::   %=  this
+ ::     ships  %+  ~(jab by ships)
+ ::              i.wire
+ ::            |=  =ship-info 
+ ::            %=  ship-info
+ ::               status-active  status-active.upd
+ ::               position       position.upd
+ ::               radius         radius.upd
+ ::               address        address.upd
+ ::               note           note.upd
+ ::            ==
+ ::     ==
+  ==
 ::
 ++  on-watch  on-watch:def
-  |=  =path
-  ^-  (quip card _this)
-  ?>  ?=([@ @ ~] path)
-  ?+  i.t.path  (on-watch:def path)
-     %gather                              :: TODO how to send error message in nack tang, if any of the following fail? not necessary, but would be nice for receiving end
-   =/  invite-id=id  t.t.path
-   ?>  =(our.bol (slav %p i.path))
-   ?>  (~(has by invites) invite-id)
-   ?>  (~(has by receive-ships.invite:(need (~(get by invites) invite-id))) src.bol) 
-   ?<  finalized.invite:(need (~(get by invites) invite-id))
-   =/  invite-detail=invite  (need (~(get by invites) invite-id))
-   :_  `this
-   :~  (fact:io gather-update+!>(`upd`[%update-invite invite-id invite-detail]) ~[path])
-   ==
+ :: |=  =path
+ :: ^-  (quip card _this)
+ :: ?>  ?=([@ @ ~] path)
+ :: ?+  i.t.path  (on-watch:def path)
+ ::    %gather                              :: TODO how to send error message in nack tang, if any of the following fail? not necessary, but would be nice for receiving end
+ ::  =/  invite-id=id  t.t.path
+ ::  ?>  =(our.bol (slav %p i.path))
+ ::  ?>  (~(has by invites) invite-id)
+ ::  ?>  (~(has by receive-ships.invite:(need (~(get by invites) invite-id))) src.bol) 
+ ::  ?<  finalized.invite:(need (~(get by invites) invite-id))
+ ::  =/  invite-detail=invite  (need (~(get by invites) invite-id))
+ ::  :_  `this
+ ::  :~  (fact:io gather-update+!>(`update`[%update-invite invite-id invite-detail]) ~[path])
+ ::  ==
  ::
-     %status
-   ?<  =(our.bol src.bol)
-   ?>  =(our.bol (slav %p i.path))   :: makes sure we initiated sharing status with src.bol
-                                     :: TODO possible check against $ships for share-status=%.y
-   :_  `this
-   :~  %+  fact:io  %gather-update
-                !>  ^-  upd
-                :*  %update-status
-                    status-active.settings
-                    position.settings    
-                    radius.settings
-                    address.settings
-                    status-note.settings
-                ==
-               ~[path] 
-   ==
-  == 
+ ::    %status
+ ::  ?<  =(our.bol src.bol)
+ ::  ?>  =(our.bol (slav %p i.path))   :: makes sure we initiated sharing status with src.bol
+ ::                                    :: TODO possible check against $ships for share-status=%.y
+ ::  :_  `this
+ ::  :~  %+  fact:io  %gather-update
+ ::               !>  ^-  update
+ ::               :*  %update-status
+ ::                   status-active.settings
+ ::                   position.settings    
+ ::                   radius.settings
+ ::                   address.settings
+ ::                   status-note.settings
+ ::               ==
+ ::              ~[path] 
+ ::  ==
+ :: == 
 ::
 ++  on-arvo   on-arvo:def
 ++  on-leave  on-leave:def
