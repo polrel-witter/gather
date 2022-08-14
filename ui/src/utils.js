@@ -1,7 +1,34 @@
-const curry = (f) => {
-	return (a) => {
-		return (b) => {
-      return f(a, b);
-    };
-  };
+const myShip = "pontus-fadpun";
+export const fetchMyInvite = (invites) => {
+	return invites.filter(x => x.initShip === myShip)[0];
 }
+
+export const fetchPendingInvites = (invites) => {
+	return invites.filter(x => {
+		const myInviteInReceivedShips = x.receivedShips.filter(y => y._ship === myShip)[0];
+		console.log(myInviteInReceivedShips);
+		if(myInviteInReceivedShips !== undefined &&
+			 myInviteInReceivedShips.inviteStatus === 'pending')
+			return true;
+		return false;
+	})
+};
+
+export const fetchAcceptedInvites = (invites) => {
+	return invites.filter(x => {
+		const myInviteInReceivedShips = x.receivedShips.filter(y => y._ship === myShip)[0];
+		console.log(myInviteInReceivedShips);
+		if(myInviteInReceivedShips !== undefined &&
+			 myInviteInReceivedShips.inviteStatus === 'accepted')
+			return true;
+		return false;
+	})
+};
+
+export const fetchGangMembers = (ships) => {
+	return ships.filter(x => x.ourGang === true);
+};
+
+export const fetchForeignShips = (ships) => {
+	return ships.filter(x => (x.ourGang === false && x.theirGang === true));
+};
