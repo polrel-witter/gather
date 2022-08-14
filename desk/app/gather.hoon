@@ -330,72 +330,72 @@
     ==   
   -- 
 ::
-++  on-agent
-  |=  [=wire =sign:agent:gall]
-  ^-  (quip card _this)
-  ?>  ?=([@ @ ~] wire)
-  ?+  i.t.wire  (on-agent:def wire sign)
-     %gather                                                    :: TODO do we need to check the invite ID?
-   ?+  -.sign  (on-agent:def wire sign)
-      %watch-ack
-    ?~  p.sign
-      `this
-    ~&  '%gather: invite subscription to [i.wire] failed'
-    `this
+++  on-agent  on-agent:def
+::  |=  [=wire =sign:agent:gall]
+::  ^-  (quip card _this)
+::  ?>  ?=([@ @ ~] wire)
+::  ?+  i.t.wire  (on-agent:def wire sign)
+::     %gather                                                    :: TODO do we need to check the invite ID?
+::   ?+  -.sign  (on-agent:def wire sign)
+::      %watch-ack
+::    ?~  p.sign
+::      `this
+::    ~&  '%gather: invite subscription to [i.wire] failed'
+::    `this
  ::
-      %kick
-    :_  this
-    :~  (~(watch pass:io wire) [src.bol %gather] wire)
-    ==
+::      %kick
+::    :_  this
+::    :~  (~(watch pass:io wire) [src.bol %gather] wire)
+::    ==
  ::
-      %fact
-    ?>  =(%gather-update p.cage.sign)
-    =/  upd  !<(update q.cage.sign)
-    ?>  =(%update-invite -.upd)
-    ?:  =(our.bol i.wire)
-       =/  receive-ships=(map @p =ship-info)  +30:upd          :: TODO how the fuck do you grab the receive-ships map from the invite received in the upd?
-       =/  invite-status-upd=invite-status  +1:(ship-invite:(need (~(get by receive-ships) src.bol)))
-       ?-  invite-status-upd
-          %accepted  
-        :-  ~
-        %=  this
-         invites  %+  ~(jab by invites)
-                    id.upd
-                  |=  =invite
-                  %=  invite
-                    receive-ships  %+  ~(jab by receive-ships.invite)
-                                     src.bol
-                                   |=  =ship-invite 
-                                   ship-invite(invite-status %accepted)
-                  ==
-        ==
+::      %fact
+::    ?>  =(%gather-update p.cage.sign)
+::    =/  upd  !<(update q.cage.sign)
+::    ?>  =(%update-invite -.upd)
+::    ?:  =(our.bol i.wire)
+::       =/  receive-ships=(map @p =ship-info)  +30:upd          :: TODO how the fuck do you grab the receive-ships map from the invite received in the upd?
+::       =/  invite-status-upd=invite-status  +1:(ship-invite:(need (~(get by receive-ships) src.bol)))
+::       ?-  invite-status-upd
+::          %accepted  
+::        :-  ~
+::        %=  this
+::         invites  %+  ~(jab by invites)
+::                    id.upd
+::                  |=  =invite
+::                  %=  invite
+::                    receive-ships  %+  ~(jab by receive-ships.invite)
+::                                     src.bol
+::                                   |=  =ship-invite 
+::                                   ship-invite(invite-status %accepted)
+::                  ==
+::        ==
      ::
-           %denied
-        :-  ~
-        %=  this
-         invites  %+  ~(jab by invites)
-                    id.upd
-                  |=  =invite
-                  %=  invite
-                    receive-ships  %+  ~(jab by receive-ships.invite)
-                                     src.bol
-                                   |=  =ship-invite 
-                                   ship-invite(invite-status %denied)
-                  ==
-        ==
-       ==
-    ?>  (~(has by invites) id.upd)
-    =/  init-ship=@p  init-ship.invite:(need (~(get by invites) id.upd))
-    ?>  =(init-ship i.wire)
-    :-  ~
-    %=  this
-      invites  %+  ~(jab by invites)
-                  id.upd
-               |=(=invite invite(finalized %.y))
-    ==
-   ==
+::           %denied
+::        :-  ~
+::        %=  this
+::         invites  %+  ~(jab by invites)
+::                    id.upd
+::                  |=  =invite
+::                  %=  invite
+::                    receive-ships  %+  ~(jab by receive-ships.invite)
+::                                     src.bol
+::                                   |=  =ship-invite 
+::                                   ship-invite(invite-status %denied)
+::                  ==
+::        ==
+::       ==
+::    ?>  (~(has by invites) id.upd)
+::    =/  init-ship=@p  init-ship.invite:(need (~(get by invites) id.upd))
+::    ?>  =(init-ship i.wire)
+::    :-  ~
+::    %=  this
+::      invites  %+  ~(jab by invites)
+::                  id.upd
+::               |=(=invite invite(finalized %.y))
+::    ==
+::   ==
  ::  
-     %status  !!
+::     %status  !!
  ::  ?+  -.sign  (on-agent:def wire sign)
  ::     %watch-ack
  ::   ?~  p.sign
