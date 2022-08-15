@@ -330,137 +330,144 @@
     ==   
   -- 
 ::
-++  on-agent  on-agent:def
-::  |=  [=wire =sign:agent:gall]
-::  ^-  (quip card _this)
-::  ?>  ?=([@ @ ~] wire)
-::  ?+  i.t.wire  (on-agent:def wire sign)
-::     %gather                                                    :: TODO do we need to check the invite ID?
-::   ?+  -.sign  (on-agent:def wire sign)
-::      %watch-ack
-::    ?~  p.sign
-::      `this
-::    ~&  '%gather: invite subscription to [i.wire] failed'
-::    `this
+++  on-agent
+  |=  [=wire =sign:agent:gall]
+  ^-  (quip card _this)
+  ?>  ?=([@ @ ~] wire)
+  ?+  i.t.wire  (on-agent:def wire sign)
+     %gather                                                    :: TODO may need to also check the invite ID
+   ?+  -.sign  (on-agent:def wire sign)
+      %watch-ack
+    ?~  p.sign
+      `this
+    ~&  '%gather: invite subscription to [i.wire] failed'
+    `this
  ::
-::      %kick
-::    :_  this
-::    :~  (~(watch pass:io wire) [src.bol %gather] wire)
-::    ==
+      %kick
+    :_  this
+    :~  (~(watch pass:io wire) [src.bol %gather] wire)
+    ==
  ::
-::      %fact
-::    ?>  =(%gather-update p.cage.sign)
-::    =/  upd  !<(update q.cage.sign)
-::    ?>  =(%update-invite -.upd)
-::    ?:  =(our.bol i.wire)
-::       =/  receive-ships=(map @p =ship-info)  +30:upd          :: TODO how the fuck do you grab the receive-ships map from the invite received in the upd?
-::       =/  invite-status-upd=invite-status  +1:(ship-invite:(need (~(get by receive-ships) src.bol)))
-::       ?-  invite-status-upd
-::          %accepted  
-::        :-  ~
-::        %=  this
-::         invites  %+  ~(jab by invites)
-::                    id.upd
-::                  |=  =invite
-::                  %=  invite
-::                    receive-ships  %+  ~(jab by receive-ships.invite)
-::                                     src.bol
-::                                   |=  =ship-invite 
-::                                   ship-invite(invite-status %accepted)
-::                  ==
-::        ==
+      %fact
+    ?>  ?=(%gather-update p.cage.sign)
+    =/  upd  !<(update q.cage.sign)
+    ?>  ?=(%update-invite -.upd)
+    ?:  =(our.bol i.wire)
+       =/  invite-status-upd=invite-status  +1:(need (~(get by receive-ships.invite.upd) src.bol))
+       ?-  invite-status-upd
+          %pending
+        `this
      ::
-::           %denied
-::        :-  ~
-::        %=  this
-::         invites  %+  ~(jab by invites)
-::                    id.upd
-::                  |=  =invite
-::                  %=  invite
-::                    receive-ships  %+  ~(jab by receive-ships.invite)
-::                                     src.bol
-::                                   |=  =ship-invite 
-::                                   ship-invite(invite-status %denied)
-::                  ==
-::        ==
-::       ==
-::    ?>  (~(has by invites) id.upd)
-::    =/  init-ship=@p  init-ship.invite:(need (~(get by invites) id.upd))
-::    ?>  =(init-ship i.wire)
-::    :-  ~
-::    %=  this
-::      invites  %+  ~(jab by invites)
-::                  id.upd
-::               |=(=invite invite(finalized %.y))
-::    ==
-::   ==
+          %accepted                                         :: TODO will frontend auto-finalize an invite when $max-accepted is reached? 
+        :-  ~
+        %=  this
+         invites  %+  ~(jab by invites)
+                    id.upd
+                  |=  =invite
+                  %=  invite
+                    receive-ships  %+  ~(jab by receive-ships.invite)
+                                     src.bol
+                                   |=  =ship-invite 
+                                   ship-invite(invite-status %accepted)
+                  ==
+        ==
+     ::
+          %denied
+        :-  ~
+        %=  this
+         invites  %+  ~(jab by invites)
+                    id.upd
+                  |=  =invite
+                  %=  invite
+                    receive-ships  %+  ~(jab by receive-ships.invite)
+                                     src.bol
+                                   |=  =ship-invite 
+                                   ship-invite(invite-status %denied)
+                  ==
+        ==
+       ==
+    ?>  (~(has by invites) id.upd)
+    =/  init-ship=@p  init-ship:(need (~(get by invites) id.upd))
+    ?>  =(init-ship i.wire)
+    :-  ~
+    %=  this
+      invites  %+  ~(jab by invites)
+                  id.upd
+               |=(=invite invite(finalized %.y))
+    ==
+   ==
  ::  
-::     %status  !!
- ::  ?+  -.sign  (on-agent:def wire sign)
- ::     %watch-ack
- ::   ?~  p.sign
- ::     `this
- ::   ~&  '%gather: status subscription to [i.wire] failed'
- ::   `this
+     %status
+   ?+  -.sign  (on-agent:def wire sign)
+      %watch-ack
+    ?~  p.sign
+      `this
+    ~&  '%gather: status subscription to [i.wire] failed'
+    `this
   ::
- ::     %kick
- ::   :_  this
- ::   :~  (~(watch pass:io wire) [src.bol %gather] wire)
- ::   ==
+      %kick
+    :_  this
+    :~  (~(watch pass:io wire) [src.bol %gather] wire)
+    ==
   ::   
- ::     %fact
- ::   ?>  =(%gather-update p.cage.sign)
- ::   =/  upd  !<(upd q.cage.sign)
- ::   ?>  =(%update-status -.upd)
- ::   ?<  =(our.bol i.wire)
- ::   :-  ~
- ::   %=  this
- ::     ships  %+  ~(jab by ships)
- ::              i.wire
- ::            |=  =ship-info 
- ::            %=  ship-info
- ::               status-active  status-active.upd
- ::               position       position.upd
- ::               radius         radius.upd
- ::               address        address.upd
- ::               note           note.upd
- ::            ==
- ::     ==
-::  ==
+      %fact
+    ?>  ?=(%gather-update p.cage.sign)
+    =/  upd  !<(update q.cage.sign)
+    ?>  ?=(%update-status -.upd)
+    ?<  =(our.bol i.wire)
+    :-  ~
+    %=  this
+      ships  %+  ~(jab by ships)
+               i.wire
+             |=  =ship-info 
+             %=  ship-info
+                status-active  status-active.upd
+                position       position.upd
+                radius         radius.upd
+                address        address.upd
+                status-note    status-note.upd
+             ==
+    ==
+   ==
+  ==
 ::
-++  on-watch  on-watch:def
- :: |=  =path
- :: ^-  (quip card _this)
- :: ?>  ?=([@ @ ~] path)
- :: ?+  i.t.path  (on-watch:def path)
- ::    %gather                              :: TODO how to send error message in nack tang, if any of the following fail? not necessary, but would be nice for receiving end
- ::  =/  invite-id=id  t.t.path
- ::  ?>  =(our.bol (slav %p i.path))
- ::  ?>  (~(has by invites) invite-id)
- ::  ?>  (~(has by receive-ships.invite:(need (~(get by invites) invite-id))) src.bol) 
- ::  ?<  finalized.invite:(need (~(get by invites) invite-id))
- ::  =/  invite-detail=invite  (need (~(get by invites) invite-id))
- ::  :_  `this
- ::  :~  (fact:io gather-update+!>(`update`[%update-invite invite-id invite-detail]) ~[path])
- ::  ==
+++  on-watch
+  |=  =path
+  ^-  (quip card _this)
+  ?>  ?=([@ @ ~] path)
+  ?+  i.t.path  (on-watch:def path)
+     %gather                                                    :: TODO how to send error message in nack tang, if any of the following fail? not necessary, but would be nice for receiving end
+   =/  invite-id=id  `@da`t.t.path
+   ?>  =(our.bol (slav %p i.path))
+   ?>  (~(has by invites) invite-id)
+   ?>  (~(has by receive-ships:(need (~(get by invites) invite-id))) src.bol) 
+   ?<  finalized:(need (~(get by invites) invite-id))
+   =/  invite-detail=invite  (need (~(get by invites) invite-id))
+   :_  this
+   :~  (fact:io gather-update+!>(`update`[%update-invite invite-id invite-detail]) ~[path])
+   ==
  ::
- ::    %status
- ::  ?<  =(our.bol src.bol)
- ::  ?>  =(our.bol (slav %p i.path))   :: makes sure we initiated sharing status with src.bol
- ::                                    :: TODO possible check against $ships for share-status=%.y
- ::  :_  `this
- ::  :~  %+  fact:io  %gather-update
- ::               !>  ^-  update
- ::               :*  %update-status
- ::                   status-active.settings
- ::                   position.settings    
- ::                   radius.settings
- ::                   address.settings
- ::                   status-note.settings
- ::               ==
- ::              ~[path] 
- ::  ==
- :: == 
+     %status
+   ?<  =(our.bol src.bol)
+   ?>  =(our.bol (slav %p i.path))                              :: makes sure we initiated sharing status with src.bol
+   ?<  =(ship-info-check [src.bol ships %we-ghosted])   
+                                                                :: TODO probably need to include in $settings share-status=%.y
+   :_  this
+   :~  :*
+      %give
+      %fact
+      ~[path]
+      :-  %gather-update
+      !>  ^-  update
+      :*  %update-status
+          status-active.settings
+          position.settings   
+          radius.settings
+          address.settings
+          status-note.settings
+      ==  ==
+   ==
+  == 
 ::
 ++  on-arvo   on-arvo:def
 ++  on-leave  on-leave:def
