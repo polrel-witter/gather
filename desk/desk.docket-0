@@ -1,6 +1,6 @@
 :~
   title+'Gather'
-  info+'Meetup like app'
+  info+'Hang with frens'
   color+0x7c.afc2
   version+[0 1 0]
   website+'https://urbit.org'
