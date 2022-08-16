@@ -1,4 +1,4 @@
-import React, {Component, useState} from "react";
+import React, {Component, useState, useEffect} from "react";
 import Urbit from "@urbit/http-api";
 import "./App.css";
 import Topbar from "./components/pages/Topbar"
@@ -11,6 +11,15 @@ import { useStore } from './data/store';
 
 const AppSwitch = () => {
 	const route = useStore(state => state.route);
+	
+  useEffect(() => {
+		window.urbit = new Urbit("");
+		window.urbit.ship = window.ship;
+		// window.urbit.onOpen = () => this.setState({conn: "ok"});
+    // window.urbit.onRetry = () => this.setState({conn: "try"});
+    // window.urbit.onError = () => this.setState({conn: "err"});
+  }, []);
+
 	switch(route) {
 		case "gather-init":
 		case "gather-received":

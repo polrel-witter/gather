@@ -11,7 +11,7 @@ const Location = () => {
 	// 	if(e.nativeEvent.data === null)
 			
 	// }
-	return(
+	return (
 		<Box borderBottom={1}>
 		<Text display="block"> My Location </Text>
 		<Text display="block"> 

@@ -1,5 +1,6 @@
 import { createStore } from 'zustand';
 import create from 'zustand';
+import { doPoke } from '../utils';
 
 export const useStore = create((set) => ({
 	/* FRONTEND ONLY STATE 
@@ -89,15 +90,14 @@ export const useStore = create((set) => ({
 	/*  ACTIONS
 	 *
 	 */
-	/*  GATHERING */
-	/*  STATUS */
-	/*  SETTINGS */
-	setStatusNote: (statusNote) => set(state => ({ settings: {...state.settings, statusNote}})),
-	// TODO enforce radius to be a number
-	setRadius: (radius) => set(state => ({ settings: {...state.settings, radius}})),
-	addGangMember: (radius) => set(state => ({ settings: {...state.settings, radius}})),
-	pauseGangMember: (radius) => set(state => ({ settings: {...state.settings, radius}})),
-	removeGangMember: (radius) => set(state => ({ settings: {...state.settings, radius}})),
-	ghostShip: (radius) => set(state => ({ settings: {...state.settings, radius}})),
-	unGhostShip: (radius) => set(state => ({ settings: {...state.settings, radius}})),
+	pSettings: (tas, data) => console.log(tas + data),
+	/*  GATHERING  */
+	pEditInvite: (action, id) => console.log(action, id),
+	// why send-to, aren't all invites in =invite ?
+	pSendInvite: (id, sendTo, invite) => console.log(invite),
+	pAccept: (id) => console.log(id),
+	pDeny: (id) => console.log(id),
+	/*  STATUS  */
+	// maybe it should be one @p for sharing status
+	pShareStatus: (sendTo) => console.log(sendTo),
 }));
