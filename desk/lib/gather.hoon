@@ -28,7 +28,7 @@
 :: Binary $ship-info check
 ++  ship-info-check
   |=  [ship=@p ship-map=ships check=ship-info-term]  :: TODO what happens if a ship is passed that's not in the $ships map?
-  ^-  ?                                    :: TODO may need to modify
+  ^-  ?  
   ?-  check
        %ghosted
      ?|  we-ghosted:(need (~(get by ship-map) ship)) 
