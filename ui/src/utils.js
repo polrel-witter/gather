@@ -36,10 +36,10 @@ export const fetchForeignShips = (ships) => {
 export const doPoke = (jon, succ) => {
 	console.log(jon);
 	console.log(succ);
-    // window.urbit.poke({
-    //   app: "gather",
-    //   mark: "hut-do",
-    //   json: jon,
-    //   onSuccess: succ
-    // })
+    window.urbit.poke({
+      app: "gather",
+      mark: "hut-do",
+      json: jon,
+      onSuccess: succ
+    })
 }

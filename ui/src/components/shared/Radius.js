@@ -4,8 +4,8 @@ import { useStore } from '../../data/store';
 
 const Radius = () => {
 	const radius = useStore(state => state.settings.radius);
-	const setRadius = useStore(state => state.setRadius);
 	const [_radius, _setRadius] = useState(radius);
+	const pSettings = useStore(state => state.pSettings);
 
 	return(
 		<Box borderBottom={1}>
@@ -15,13 +15,13 @@ const Radius = () => {
 	  Shared with Gang members when Status is turned on.
 		</Text>
 		<Text >Miles:</Text>
+		{/* TODO make sure the input is a number */}
 		<StatelessTextInput
 			display="block"
 			value={_radius}
 			onChange={(e) => _setRadius(e.currentTarget.value)}>
 			</StatelessTextInput>
-		<Button onClick={() => setRadius(_radius)}>Set</Button>
-		<Text >{radius}</Text>
+		<Button onClick={() => pSettings('radius', _radius)}>Set</Button>
 		</Box>
 	 );
 }

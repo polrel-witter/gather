@@ -10,7 +10,7 @@ export const useStore = create((set) => ({
 		 gather-init, gather-received,
 		 status-gang, status-foreign,
 		 settings */
-	route: "status-foreign",
+	route: "gather-init",
 	/* default, started, finalized */
 	inviteState: "default",
 	statusState: "on",
@@ -22,7 +22,7 @@ export const useStore = create((set) => ({
 			_ship: "polrel-witter",
 			position: { lat: 111, lon: 123 },
 			radius: 50,
-			address: "Just a string for now",
+			address: { street: "street", city: "Miami", state: "Florida", country: "USA", zip: "11111" }, 
 			statusActive: false,
 			gatherActive: false,
 			statusNote: "I'm over 9000!",
@@ -93,11 +93,25 @@ export const useStore = create((set) => ({
 	pSettings: (tas, data) => console.log(tas + data),
 	/*  GATHERING  */
 	pEditInvite: (action, id) => console.log(action, id),
-	// why send-to, aren't all invites in =invite ?
-	pSendInvite: (id, sendTo, invite) => console.log(invite),
+	pSendInvite: (myInvite) => console.log(''),
 	pAccept: (id) => console.log(id),
 	pDeny: (id) => console.log(id),
 	/*  STATUS  */
-	// maybe it should be one @p for sharing status
 	pShareStatus: (sendTo) => console.log(sendTo),
+	//
+	//
+	//
+	//
+	// QUESTIONS
+	// No marks
+	// pShareStatus: send only one @p, not a list?
+	// pSendInvite: why do we need sendTo?
+	// pShareStatus: share exist, where is unGang? unshare gang membership needed? what 		about pausing?
+	// pGhostShip: how to unGhost?
+	// TODO
+	// proper maps/address functionality (Location)
+	// unShare gang (GangMembers)
+	// unGhost (GhostedShips)
+	// 
+	// styling
 }));

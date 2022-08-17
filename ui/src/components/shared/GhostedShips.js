@@ -5,7 +5,7 @@ import GhostedShip from './GhostedShip';
 
 const GhostedShips = () => {
 	const ghostedShips = useStore(state => state.ships.filter(x => x.weGhosted === true));
-	const ghostShip = useStore(state => state.ghostShip);
+	const pGhostShip = useStore(state => state.pGhostShip);
 	const unGhostShip = useStore(state => state.unGhostShip);
 	const [_ghostedShip, _setGhostedShip] = useState("");
 
@@ -21,7 +21,7 @@ const GhostedShips = () => {
 			value={_ghostedShip}
 			onChange={(e) => _setGhostedShip(e.currentTarget.value)}>
 		</StatelessTextInput>
-		<Button onClick={() => ghostShip(_ghostedShip)}>Ghost</Button>
+		<Button onClick={() => pGhostShip(_ghostedShip)}>Ghost</Button>
 			{ghostedShips.map((ghostedShip) => <GhostedShip ghostedShip={ghostedShip}/>)}
 		</Box>
 	 );
