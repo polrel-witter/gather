@@ -1,6 +1,7 @@
 const myShip = "pontus-fadpun";
 export const fetchMyInvite = (invites) => {
-	return invites.filter(x => x.initShip === myShip)[0];
+	// return invites.filter(x => x.initShip === window.urbit.ship)[0];
+	return invites.filter(x => x.initShip === window.urbit.ship)[0];
 }
 
 export const fetchPendingInvites = (invites) => {

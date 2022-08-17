@@ -17,7 +17,7 @@ const TopButtons = (state) => {
 				<Button>Settings</Button>
 			</Box>
 			)
-			case "gather-init":
+			case "gather-received":
 			return(
 			<Box>
 				<Button>Gather</Button>

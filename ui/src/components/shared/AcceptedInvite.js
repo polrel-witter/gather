@@ -4,6 +4,7 @@ import { useStore } from '../../data/store';
 import { fetchPendingInvites, fetchAcceptedInvites } from '../../utils';
 
 const AcceptedInvite = (props) => {
+	const pDeny = useStore((state) => state.pDeny);
 	return(
 		<Box border={1}>
 			<Box>	<Text>{props.initShip}</Text> </Box>
@@ -11,9 +12,9 @@ const AcceptedInvite = (props) => {
 			<Box>
 				<Text>x/y Accepted</Text>
 				<Button>Message</Button>
-				{/* TODO RSVP List */}
+				{/* TODO RSVP List invite.receiveShips*/}
 				<Button>View RSVP List</Button>
-				<Button>Unaccept</Button>
+				<Button onClick={() => pDeny(props.id)}>Unaccept</Button>
 			</Box>
 		</Box>
 	 );

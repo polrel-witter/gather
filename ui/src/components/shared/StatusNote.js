@@ -4,8 +4,8 @@ import { useStore } from '../../data/store';
 
 const StatusNote = (state) => {
 	// TODO shouldn't be pontus-fadpun but the actual ship
-	const statusNote = useStore(state => state.ships.filter(x => x.initShip === "pontus-fadpun"))[0];
-	const setStatusNote = useStore(state => state.setStatusNote);
+	const statusNote = useStore(state => state.ships.filter(x => x.initShip === window.urbit.ship))[0];
+	const pSettings = useStore(state => state.pSettings);
 	const [_statusNote, _setStatusNote] = useState(statusNote);
 	return(
 		<Box>
@@ -14,7 +14,7 @@ const StatusNote = (state) => {
 			onChange={(e) => _setStatusNote(e.currentTarget.value)}>
 		>
   	</StatelessTextArea>
-		<Button onClick={() => setStatusNote(_statusNote)}>Edit</Button>
+		<Button onClick={() => pSettings('status-note', _statusNote)}>Edit</Button>
 		</Box>
 	 );
 }

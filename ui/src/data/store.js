@@ -10,9 +10,8 @@ export const useStore = create((set) => ({
 		 gather-init, gather-received,
 		 status-gang, status-foreign,
 		 settings */
-	route: "gather-init",
+	route: "status-gang",
 	/* default, started, finalized */
-	inviteState: "default",
 	statusState: "on",
 	/* STATE
 	 *
@@ -49,22 +48,24 @@ export const useStore = create((set) => ({
 	],
 	invites: [
 		{
+			id: '123',
 			initShip: "pontus-fadpun",
 			receivedShips: [
 				{ _ship: "polrel-witter", inviteStatus: "pending", group: "" },
 				{ _ship: "sampel-palnet", inviteStatus: "pending", group: "zod/testgroup" },
 			],
 			maxAccepted: 10,
-			inviteNote: "Having a Huge party tonight!",
+			note: "Having a Huge party tonight!",
 			finalized: false
 		},
 		{
+			id: '456',
 			initShip: "polrel-witter",
 			receivedShips: [
 				{ _ship: "pontus-fadpun", inviteStatus: "pending", group: "" },
 			],
 			maxAccepted: 10,
-			inviteNote: "Having a Huge party tonight!",
+			note: "Having a Huge party tonight!",
 			finalized: false
 		},
 		{
@@ -73,7 +74,7 @@ export const useStore = create((set) => ({
 				{ _ship: "pontus-fadpun", inviteStatus: "accepted", group: "" },
 			],
 			maxAccepted: 10,
-			inviteNote: "Having a Huge party tonight!",
+			note: "Having a Huge party tonight!",
 			finalized: false
 		}
 	],
@@ -98,6 +99,7 @@ export const useStore = create((set) => ({
 	pDeny: (id) => console.log(id),
 	/*  STATUS  */
 	pShareStatus: (sendTo) => console.log(sendTo),
+	pGhost: (ship) => console.log(ship),
 	//
 	//
 	//
@@ -108,10 +110,16 @@ export const useStore = create((set) => ({
 	// pSendInvite: why do we need sendTo?
 	// pShareStatus: share exist, where is unGang? unshare gang membership needed? what 		about pausing?
 	// pGhostShip: how to unGhost?
+	// How can I edit an invite after sending?
+	// (GangMember) pause ship? 
+	// (GangMember) what should happen when kicking someone out?
 	// TODO
 	// proper maps/address functionality (Location)
 	// unShare gang (GangMembers)
 	// unGhost (GhostedShips)
+	// gather-init state should depend on myInvite state
+	// ability to dm the inviter from message
+	// status on-off should be function of status-active setting
 	// 
 	// styling
 }));
