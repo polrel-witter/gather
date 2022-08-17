@@ -46,8 +46,8 @@
      note=@t
      finalized=?
   ==
-+$  receive-invite  ?(%anyone %only-gang)                   
-+$  receive-status  ?(%anyone %only-gang %only-in-radius)   
++$  receive-invite  ?(%only-gang %anyone)                   
++$  receive-status  ?(%only-in-radius %only-gang %anyone)   
 ::
 +$  ships    (map @p ship-info)
 +$  invites  (map id invite)
