@@ -1,65 +1,61 @@
 |%
 ::
 :: Basic types
-+$  ship           @p
-+$  id             @da
-+$  status-active  ?
-+$  status-note    @t
-+$  radius         @rs 
-+$  position       [lat=@rs lon=@rs]
-+$  address        [street=@t city=@t state=@t country=@t zip=@t]
-+$  group          @ta
++$  ship            @p
++$  id              @
++$  radius          @rs 
++$  position        [lat=@rs lon=@rs]
++$  address         [street=@t city=@t state=@t country=@t zip=@t]
++$  members         (set @p)
++$  group           @ta
++$  receive-invite  ?(%only-in-radius %anyone)   
++$  collection      [title=@t =members]          :: TODO may need to include group link for frontend display
++$  banned          (set @p)
 ::
-:: Ship statuses
-+$  invite-status
++$  invitee-status
   $?  
       %denied
       %accepted
       %pending
   ==
-:: 
-:: Info on other ships 
-+$  ship-info 
-  $:
-      =position
-      =radius
-      =address
-      =status-active
-      =status-note
-      paused=?
-      our-gang=?  
-      their-gang=?
-      we-ghosted=?
-      they-ghosted=?
-      :: groups=(set @ta)
+::
++$  host-status
+  $?
+     %finalized
+     %completed
+     %sent
   ==
+::
 +$  ship-invite
   $:
-      =invite-status
+      =invitee-status
   ==
 ::
 +$  invite
   $:
      init-ship=@p
+     :: title=@t
+     desc=@t
      receive-ships=(map @p ship-invite)
+     :: date=@da
+     :: location-type=?(%meatspace %virtual)
+     :: =position
+     :: =address
+     :: access-link=@ta
+     :: =radius
      max-accepted=@ud
-     note=@t
-     finalized=?
+     accepted-count=@ud                     :: ADDITION to keep track of # of accepted invites
+     =host-status
   ==
-+$  receive-invite  ?(%only-gang %anyone)                   
-+$  receive-status  ?(%only-in-radius %only-gang %anyone)   
 ::
-+$  ships    (map @p ship-info)
 +$  invites  (map id invite)
 +$  settings
   $: 
-     =status-active  
      =position
      =radius
      =address
-     =status-note
+     collections=(map id collection)
      =receive-invite
-     =receive-status
   ==
 ::
 :: Gall actions
@@ -67,45 +63,43 @@
   $%
     $:  %settings
       $%
-         [%status-active =status-active]
          [%address =address]
          [%position =position]
          [%radius =radius]
-         [%status-note =status-note]
+         :: [%collection actions]
          [%receive-invite =receive-invite]
-         [%receive-status =receive-status]     
        ==
     ==
   ::
   :: Gathering 
     $:  %edit-invite
       $%
+        [%del-receive-ship =id =ship]
+        [%add-receive-ship =id =ship]
+        [%edit-max-accepted =id qty=@ud]
+        [%edit-desc =id desc=@t]
         [%cancel =id]
-        [%done =id]                              
+        [%complete =id]                              
         [%finalize =id]
+        [%unfinalize =id]
       ==
     ==
-     [%send-invite =id send-to=(list @p) =invite]    
-     [%subscribe-to-invite =id]
+     $:  %send-invite 
+         =id 
+         send-to=(list @p)
+         max-accepted=@ud
+         desc=@t                              :: changed to desc (for description) because I think it maps better, and is preemptive for future additions such as venue name, title, etc.
+     ==
      [%accept =id]
      [%deny =id]
+     [%subscribe-to-invite =id]
   ::
-  :: Status
-     [%share-status send-to=(list @p)]               
-     [%subscribe-to-status ~]             
-  ::
-  :: Both
-     [%ghost =ship]
+  :: General
+     [%ban =ship]
+     [%unban =ship]
   ==
 +$  update
-  $% 
+  $%
      [%update-invite =id =invite]
-     $:  %update-status
-         =status-active
-         =position
-         =radius
-         =address
-         =status-note
-     ==
   ==
 --

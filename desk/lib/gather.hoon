@@ -3,9 +3,9 @@
 ::
 :: Used in ship-info checks
 +$  ship-info-term
-  $?  %ghosted 
-      %we-ghosted 
-      %they-ghosted 
+  $?  %banned 
+      %we-banned 
+      %they-banned 
       %our-gang 
       %their-gang 
       %status-active
@@ -30,12 +30,12 @@
   |=  [ship=@p ship-map=ships check=ship-info-term]  :: TODO what happens if a ship is passed that's not in the $ships map?
   ^-  ?  
   ?-  check
-       %ghosted
-     ?|  we-ghosted:(need (~(get by ship-map) ship)) 
-         they-ghosted:(need (~(get by ship-map) ship))
+       %banned
+     ?|  we-banned:(need (~(get by ship-map) ship)) 
+         they-banned:(need (~(get by ship-map) ship))
      ==
-       %we-ghosted     we-ghosted:(need (~(get by ship-map) ship))
-       %they-ghosted   they-ghosted:(need (~(get by ship-map) ship))
+       %we-banned     we-banned:(need (~(get by ship-map) ship))
+       %they-banned   they-banned:(need (~(get by ship-map) ship))
        %our-gang       our-gang:(need (~(get by ship-map) ship))
        %their-gang     their-gang:(need (~(get by ship-map) ship))
        %status-active  status-active:(need (~(get by ship-map) ship))
@@ -77,13 +77,17 @@
   $(ship-map (~(put by ship-map) i.to-add default-info), to-add t.to-add)  
 ::
 ::
-:: Remove ships from an invite
-++  remove-ships
-  |=  [to-remove=(list @p) receive=(map @p =ship-invite)]
-  ^-  (map @p =ship-invite)
-  |-
-  ?~  to-remove  receive
-  $(receive (~(del by receive) i.to-remove), to-remove t.to-remove)  
+:: Remove duplicates from a list
+++  remove-dupes
+  |=  import=(list @p)
+  =|  export=(list @p)
+  =/  sorted=(list @p)  (sort `(list @p)`import lth)
+  |-  ^-  (list @p)
+  ?~  sorted  export
+  =/  indexes=(list @)  (fand ~[i.sorted] sorted)
+  ?:  (gth (lent indexes) 1)
+    $(sorted (oust [-:indexes 1] `(list @p)`sorted))
+  $(export (weld export `(list @p)`~[i.sorted]), sorted t.sorted) 
 ::
 ::
 :: Constructs the receive-ships map for invites :: TODO probably can be faster using combo of ++turn and somehow pinning the [%pending] as value
