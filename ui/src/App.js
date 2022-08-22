@@ -1,4 +1,4 @@
-import React, {Component, useState} from "react";
+import React, {useState, useEffect, Component} from "react";
 import Urbit from "@urbit/http-api";
 import "./App.css";
 import Topbar from "./components/pages/Topbar"
@@ -11,6 +11,10 @@ import { useStore } from './data/store';
 
 const AppSwitch = () => {
 	const route = useStore(state => state.route);
+	
+  useEffect(() => {
+  }, []);
+
 	switch(route) {
 		case "gather-init":
 		case "gather-received":
@@ -32,7 +36,17 @@ const AppSwitch = () => {
 	}
 }
 
-const App = () => {
+class App extends Component {
+	  constructor(props) {
+    super(props);
+		window.urbit = new Urbit("");
+		// window.urbit.ship = window.ship;
+		window.urbit.ship = 'pontus-fadpun';
+		// window.urbit.onOpen = () => this.setState({conn: "ok"});
+    // window.urbit.onRetry = () => this.setState({conn: "try"});
+    // window.urbit.onError = () => this.setState({conn: "err"});
+		}
+	render() {
 	return(
 			<Box
 				display="flex"
@@ -47,6 +61,7 @@ const App = () => {
 			<AppSwitch/>
 			</Box>
 	)
+	}
 }
 
 export default App;

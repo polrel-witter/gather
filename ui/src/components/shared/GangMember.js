@@ -4,14 +4,17 @@ import { useStore } from '../../data/store';
 import { fetchGangMembers } from '../../utils';
 
 const GangMember = (props) => {
-	const messageShip = useStore(state => state.messageGangMember);
+	const messageShip = useStore(state => state.messageShip);
+	const pauseShip = useStore(state => state.pauseShip);
 	const ignoreShip = useStore(state => state.ignoreShip);
+	const pGhost = useStore((state) => state.pGhost);
 	return(
 		<Box border={1}>
 		<Text> {props._ship} </Text>
 		<Text> {props.statusNote} </Text>
-		<Button onClick={() => messageShip(props._ship)}>Pause</Button>
-		<Button onClick={() => ignoreShip(props._ship)}>Remove</Button>
+		<Button onClick={() => messageShip(props._ship)}>Message</Button>
+		<Button onClick={() => pauseShip(props._ship)}>Pause</Button>
+		<Button onClick={() => pGhost(props._ship)}>Remove</Button>
 		</Box>
 	 );
 }

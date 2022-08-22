@@ -1,5 +1,6 @@
 import { createStore } from 'zustand';
 import create from 'zustand';
+import { doPoke } from '../utils';
 
 export const useStore = create((set) => ({
 	/* FRONTEND ONLY STATE 
@@ -9,9 +10,8 @@ export const useStore = create((set) => ({
 		 gather-init, gather-received,
 		 status-gang, status-foreign,
 		 settings */
-	route: "status-foreign",
+	route: "status-gang",
 	/* default, started, finalized */
-	inviteState: "default",
 	statusState: "on",
 	/* STATE
 	 *
@@ -21,7 +21,7 @@ export const useStore = create((set) => ({
 			_ship: "polrel-witter",
 			position: { lat: 111, lon: 123 },
 			radius: 50,
-			address: "Just a string for now",
+			address: { street: "street", city: "Miami", state: "Florida", country: "USA", zip: "11111" }, 
 			statusActive: false,
 			gatherActive: false,
 			statusNote: "I'm over 9000!",
@@ -48,22 +48,24 @@ export const useStore = create((set) => ({
 	],
 	invites: [
 		{
+			id: '123',
 			initShip: "pontus-fadpun",
 			receivedShips: [
 				{ _ship: "polrel-witter", inviteStatus: "pending", group: "" },
 				{ _ship: "sampel-palnet", inviteStatus: "pending", group: "zod/testgroup" },
 			],
 			maxAccepted: 10,
-			inviteNote: "Having a Huge party tonight!",
+			note: "Having a Huge party tonight!",
 			finalized: false
 		},
 		{
+			id: '456',
 			initShip: "polrel-witter",
 			receivedShips: [
 				{ _ship: "pontus-fadpun", inviteStatus: "pending", group: "" },
 			],
 			maxAccepted: 10,
-			inviteNote: "Having a Huge party tonight!",
+			note: "Having a Huge party tonight!",
 			finalized: false
 		},
 		{
@@ -72,7 +74,7 @@ export const useStore = create((set) => ({
 				{ _ship: "pontus-fadpun", inviteStatus: "accepted", group: "" },
 			],
 			maxAccepted: 10,
-			inviteNote: "Having a Huge party tonight!",
+			note: "Having a Huge party tonight!",
 			finalized: false
 		}
 	],
@@ -89,15 +91,35 @@ export const useStore = create((set) => ({
 	/*  ACTIONS
 	 *
 	 */
-	/*  GATHERING */
-	/*  STATUS */
-	/*  SETTINGS */
-	setStatusNote: (statusNote) => set(state => ({ settings: {...state.settings, statusNote}})),
-	// TODO enforce radius to be a number
-	setRadius: (radius) => set(state => ({ settings: {...state.settings, radius}})),
-	addGangMember: (radius) => set(state => ({ settings: {...state.settings, radius}})),
-	pauseGangMember: (radius) => set(state => ({ settings: {...state.settings, radius}})),
-	removeGangMember: (radius) => set(state => ({ settings: {...state.settings, radius}})),
-	ghostShip: (radius) => set(state => ({ settings: {...state.settings, radius}})),
-	unGhostShip: (radius) => set(state => ({ settings: {...state.settings, radius}})),
+	pSettings: (tas, data) => console.log(tas + data),
+	/*  GATHERING  */
+	pEditInvite: (action, id) => console.log(action, id),
+	pSendInvite: (myInvite) => console.log(''),
+	pAccept: (id) => console.log(id),
+	pDeny: (id) => console.log(id),
+	/*  STATUS  */
+	pShareStatus: (sendTo) => console.log(sendTo),
+	pGhost: (ship) => console.log(ship),
+	//
+	//
+	//
+	//
+	// QUESTIONS
+	// No marks
+	// pShareStatus: send only one @p, not a list?
+	// pSendInvite: why do we need sendTo?
+	// pShareStatus: share exist, where is unGang? unshare gang membership needed? what 		about pausing?
+	// pGhostShip: how to unGhost?
+	// How can I edit an invite after sending?
+	// (GangMember) pause ship? 
+	// (GangMember) what should happen when kicking someone out?
+	// TODO
+	// proper maps/address functionality (Location)
+	// unShare gang (GangMembers)
+	// unGhost (GhostedShips)
+	// gather-init state should depend on myInvite state
+	// ability to dm the inviter from message
+	// status on-off should be function of status-active setting
+	// 
+	// styling
 }));

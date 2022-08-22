@@ -1,6 +1,7 @@
 const myShip = "pontus-fadpun";
 export const fetchMyInvite = (invites) => {
-	return invites.filter(x => x.initShip === myShip)[0];
+	// return invites.filter(x => x.initShip === window.urbit.ship)[0];
+	return invites.filter(x => x.initShip === window.urbit.ship)[0];
 }
 
 export const fetchPendingInvites = (invites) => {
@@ -32,3 +33,14 @@ export const fetchGangMembers = (ships) => {
 export const fetchForeignShips = (ships) => {
 	return ships.filter(x => (x.ourGang === false && x.theirGang === true));
 };
+
+export const doPoke = (jon, succ) => {
+	console.log(jon);
+	console.log(succ);
+    window.urbit.poke({
+      app: "gather",
+      mark: "hut-do",
+      json: jon,
+      onSuccess: succ
+    })
+}
