@@ -84,8 +84,7 @@
         [%unfinalize =id]
       ==
     ==
-     $:  %send-invite 
-         =id 
+     $:  %send-invite                         :: UPDATE removed the =id since it will be generated upon the poke 
          send-to=(list @p)
          max-accepted=@ud
          desc=@t                              :: changed to desc (for description) because I think it maps better, and is preemptive for future additions such as venue name, title, etc.
@@ -100,6 +99,7 @@
   ==
 +$  update
   $%
+     [%init-all =invites =settings]           :: ADDITION; for frontend to subscribe to state
      [%update-invite =id =invite]
   ==
 --
