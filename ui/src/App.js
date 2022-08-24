@@ -2,8 +2,8 @@ import React, {useState, useEffect, Component} from "react";
 import Urbit from "@urbit/http-api";
 import "./App.css";
 import Topbar from "./components/pages/Topbar"
-import Gathering from "./components/pages/Gathering"
-import Status from "./components/pages/Status"
+import Invites from "./components/pages/Invites"
+import Draft from "./components/pages/Draft"
 import Settings from "./components/pages/Settings"
 import patpValidate from "./patpValidate";
 import { Box } from "@tlon/indigo-react";
@@ -16,16 +16,14 @@ const AppSwitch = () => {
   }, []);
 
 	switch(route) {
-		case "gather-init":
-		case "gather-received":
+		case "invites":
 			return (
-			<Gathering/>
+			<Invites/>
 			);
 		break;
-		case "status-gang":
-		case "status-foreign":
+		case "draft":
 			return (
-			<Status />
+			<Draft />
 			);
 		break;
 		case "settings":
