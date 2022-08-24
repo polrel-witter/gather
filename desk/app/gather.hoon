@@ -106,7 +106,7 @@
             ?>  =(our.bol src.bol)
             ?>  =(our.bol init-ship)
             =/  upd-details=invite  (need (~(get by invites) id.act))
-            =.  receive-ships.upd-details
+            =.  receive-ships.upd-details  
             (~(put by receive-ships.upd-details) ship.act [%pending])        :: TODO update to add multiple at once  
             :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd-details]) ~[path])
                     %+  ~(poke pass:io path) 
@@ -270,6 +270,8 @@
        ==
      ?>  =(our.bol init-ship)
      ?>  (~(has by invites) id.act)
+     =/  host-status=host-status  host-status:(need (~(get by invites) id.act))
+     ?>  ?=([%sent] host-status)    
      ~&  "{<src.bol>} has declined their invite to event id: {<id.act>}"
      =/  upd-details=invite  (need (~(get by invites) id.act))
      =/  invitee-status=invitee-status  +1:(need (~(get by receive-ships.upd-details) src.bol))
