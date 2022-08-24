@@ -44,13 +44,22 @@ export const fetchForeignShips = (ships) => {
 	return ships.filter(x => (x.ourGang === false && x.theirGang === true));
 };
 
-export const doPoke = (jon, succ) => {
+export const doPoke = (jon, succ, err) => {
 	console.log(jon);
 	console.log(succ);
     window.urbit.poke({
       app: "gather",
-      mark: "hut-do",
+      mark: "gather-action",
       json: jon,
-      onSuccess: succ
+      onSuccess: succ,
+      onError: err,
     })
+}
+
+export const subscribe = (path, handler) => {
+  window.urbit.subscribe({
+    app: "gather",
+    path: path,
+    event: handler
+  });
 }

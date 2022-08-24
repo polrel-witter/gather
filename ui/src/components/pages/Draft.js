@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useState } from 'react';
 import StatusGang from "./StatusGang"
 import StatusForeignShips from "./StatusForeignShips"
 import { useStore } from '../../data/store';
@@ -17,10 +17,16 @@ const DateSelector = () => {
 
 const Draft = () => {
 	const route = useStore(state => state.route);
+	const pSendInvite = useStore(state => state.pSendInvite);
+	const pDeny = useStore(state => state.pDeny);
+	const [desc, setDesc] = useState("");
+	const [sendTo, setSendTo] = useState(["~polrel-witter"]);
+	const [maxAccepted, setMaxAccepted] = useState(0);
 	return (
 		<Box>
+			<Button onClick={() => pDeny({ "deny": "randomID"})}>Deny (delete this)</Button>
 		<Button>Cancel</Button>
-		<Button>Send</Button>
+			<Button onClick={() => pSendInvite({ "max-accepted": String(maxAccepted), "desc": desc, "send-to": sendTo })}>Send</Button>
 		<Text>Title</Text>
 			<StatelessTextInput/>
 		<Text>Note</Text>

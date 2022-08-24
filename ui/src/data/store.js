@@ -9,7 +9,7 @@ export const useStore = create((set) => ({
 	/* possible values for route: 
 		 invites, draft, settings
 	*/
-	route: "invites",
+	route: "draft",
 	/* all, hosting, received */
 	inviteRoute: "all",
 	/* default, started, finalized */
@@ -57,7 +57,7 @@ export const useStore = create((set) => ({
 			],
 			maxAccepted: 10,
 			radius: 0,
-			note: "Having a Huge party tonight!",
+			desc: "Having a Huge party tonight!",
 			address: "244 Andrew drive",
 			locationType: "meatspace",
 			accessLink: "https://developers.urbit.org",
@@ -72,7 +72,7 @@ export const useStore = create((set) => ({
 			],
 			maxAccepted: 10,
 			radius: 10,
-			note: "Having a Huge party tonight!",
+			desc: "Having a Huge party tonight!",
 			address: "111 Mulholland Drive",
 			locationType: "meatspace",
 			accessLink: "https://developers.urbit.org",
@@ -87,7 +87,7 @@ export const useStore = create((set) => ({
 			],
 			maxAccepted: 10,
 			radius: 30,
-			note: "Having a Huge party tonight!",
+			desc: "Having a Huge party tonight!",
 			locationType: "virtual",
 			accessLink: "https://developers.urbit.org",
 			address: "",
@@ -110,29 +110,13 @@ export const useStore = create((set) => ({
 	pSettings: (tas, data) => console.log(tas + data),
 	/*  GATHERING  */
 	pEditInvite: (action, id) => console.log(action, id),
-	pSendInvite: (myInvite) => console.log(''),
+	// pSendInvite: (myInvite) => doPoke({"send-invite": myInvite}, () => console.log('onSucc'), (err) => console.log(err)),
+	pSendInvite: (myInvite) => doPoke({"send-invite": myInvite}, () => console.log('onSucc'), ()=>{}),
 	pAccept: (id) => console.log(id),
-	pDeny: (id) => console.log(id),
-	/*  STATUS  */
-	pShareStatus: (sendTo) => console.log(sendTo),
-	pGhost: (ship) => console.log(ship),
-	//
-	// QUESTIONS
-	// No marks
-	// pShareStatus: send only one @p, not a list?
-	// pSendInvite: why do we need sendTo?
-	// pShareStatus: share exist, where is unGang? unshare gang membership needed? what 		about pausing?
-	// pGhostShip: how to unGhost?
-	// How can I edit an invite after sending?
-	// (GangMember) pause ship? 
-	// (GangMember) what should happen when kicking someone out?
-	// TODO
-	// proper maps/address functionality (Location)
-	// unShare gang (GangMembers)
-	// unGhost (GhostedShips)
-	// gather-init state should depend on myInvite state
-	// ability to dm the inviter from message
-	// status on-off should be function of status-active setting
-	// 
-	// styling
+	pDeny: (deny) => doPoke({"deny": 232434}, () => {console.log('onSucc')}),
+
+	/*  SUBSCRIPTIONS
+	 *
+	 */
+	sAll
 }));

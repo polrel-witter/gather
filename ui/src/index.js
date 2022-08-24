@@ -9,7 +9,7 @@ import { Reset } from "@tlon/indigo-react";
 import { createContext, useContext } from 'react'
 import { createStore, useStore } from 'zustand'
 
-const StoreContext = createContext();
+// const StoreContext = createContext();
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
