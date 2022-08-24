@@ -7,12 +7,12 @@ export const useStore = create((set) => ({
 	 *
 	 */
 	/* possible values for route: 
-		 gather-init, gather-received,
-		 status-gang, status-foreign,
-		 settings */
-	route: "status-gang",
+		 invites, draft, settings
+	*/
+	route: "invites",
+	/* all, hosting, received */
+	inviteRoute: "all",
 	/* default, started, finalized */
-	statusState: "on",
 	/* STATE
 	 *
 	 */
@@ -50,32 +50,48 @@ export const useStore = create((set) => ({
 		{
 			id: '123',
 			initShip: "pontus-fadpun",
+			title: "Huge Party!!4",
 			receivedShips: [
 				{ _ship: "polrel-witter", inviteStatus: "pending", group: "" },
 				{ _ship: "sampel-palnet", inviteStatus: "pending", group: "zod/testgroup" },
 			],
 			maxAccepted: 10,
+			radius: 0,
 			note: "Having a Huge party tonight!",
-			finalized: false
+			address: "244 Andrew drive",
+			locationType: "meatspace",
+			accessLink: "https://developers.urbit.org",
+			hostStatus: "sent"
 		},
 		{
 			id: '456',
+			title: "Huge Party!!4",
 			initShip: "polrel-witter",
 			receivedShips: [
 				{ _ship: "pontus-fadpun", inviteStatus: "pending", group: "" },
 			],
 			maxAccepted: 10,
+			radius: 10,
 			note: "Having a Huge party tonight!",
-			finalized: false
+			address: "111 Mulholland Drive",
+			locationType: "meatspace",
+			accessLink: "https://developers.urbit.org",
+			hostStatus: "finalized"
 		},
 		{
+			id: '789',
+			title: "Huge Party!!4",
 			initShip: "sampel-palnet",
 			receivedShips: [
 				{ _ship: "pontus-fadpun", inviteStatus: "accepted", group: "" },
 			],
 			maxAccepted: 10,
+			radius: 30,
 			note: "Having a Huge party tonight!",
-			finalized: false
+			locationType: "virtual",
+			accessLink: "https://developers.urbit.org",
+			address: "",
+			hostStatus: "completed"
 		}
 	],
 	settings: {
@@ -100,9 +116,6 @@ export const useStore = create((set) => ({
 	/*  STATUS  */
 	pShareStatus: (sendTo) => console.log(sendTo),
 	pGhost: (ship) => console.log(ship),
-	//
-	//
-	//
 	//
 	// QUESTIONS
 	// No marks

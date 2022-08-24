@@ -1,8 +1,18 @@
 const myShip = "pontus-fadpun";
-export const fetchMyInvite = (invites) => {
+export const fetchMyInvites = (invites) => {
 	// return invites.filter(x => x.initShip === window.urbit.ship)[0];
-	return invites.filter(x => x.initShip === window.urbit.ship)[0];
+	return invites.filter(x => x.initShip === window.urbit.ship);
 }
+
+export const fetchReceivedShips = (invites) => {
+	return invites.filter(x => {
+		const myInviteInReceivedShips = x.receivedShips.filter(y => y._ship === myShip)[0];
+		console.log(myInviteInReceivedShips);
+		if(myInviteInReceivedShips !== undefined)
+			return true;
+		return false;
+	})
+};
 
 export const fetchPendingInvites = (invites) => {
 	return invites.filter(x => {
