@@ -17,20 +17,19 @@
         %update-invite
       %+  frond  'updateInvite'
       %-  pairs 
-      :~  ['id' s+(scot %uv id.upd)] 
+      :~  ['id' (numb id.upd)] 
           ['invite' (en-invite invite.upd)]
       ==
     ==
     ++  en-invite
       |=  =invite
       ^-  ^json
-      :-  %a
       %-  pairs
       :~  ['initShip' s+(scot %p init-ship.invite)]
           ['desc' s+desc.invite]
           ['receiveShips' (en-receive-ships receive-ships.invite)]
-          ['maxAccepted' n+max-accepted.invite]
-          ['acceptedCount' n+accepted-count.invite]
+          ['maxAccepted' (numb max-accepted.invite)]
+          ['acceptedCount' (numb accepted-count.invite)]
           ['host-status' s+(scot %tas host-status.invite)]
       ==
     ++  en-invites
@@ -39,14 +38,13 @@
       :-  %a
       %+  turn  ~(tap by invites)
       |=  [=id =invite]
-      %-  pair
-      :~  ['id' s+(scot %uv id)]
+      %-  pairs
+      :~  ['id' (numb id)]
           ['invite' (en-invite invite)]
       == 
     ++  en-settings
       |=  =settings
       ^-  ^json
-      :-  %a
       %-  pairs
       :~  ['position' (en-position position.settings)] 
           ['radius' s+(scot %rs radius.settings)]
@@ -60,14 +58,13 @@
       :-  %a
       %+  turn  ~(tap by receive-ships)
       |=  [ship=@p =ship-invite]
-      %-  pair
+      %-  pairs
       :~  ['ship' s+(scot %p ship)]
-          ['shipInvite' a+(scot %tas invitee-status.ship-invite)]
+          ['shipInvite' s+(scot %tas invitee-status.ship-invite)]
       ==
     ++  en-position
       |=  =position
       ^-  ^json
-      :-  %a
       %-  pairs
       :~  ['lat' s+(scot %rs lat.position)]
           ['lon' s+(scot %rs lon.position)]
@@ -89,16 +86,16 @@
       %+  turn  ~(tap by collections)
       |=  [=id =collection]
       %-  pairs
-      :~  ['id' s+(scot %uv id)]
+      :~  ['id' (numb id)]
           ['collection' (en-collection collection)]
       ==
     ++  en-collection
       |=  =collection
       ^-  ^json
-      :-  %a
       %-  pairs
       :~  ['title' s+title.collection]
-          ['members' a+(turn (sort ~(tap in members.collection) aor) (lead %s))]   :: TODO not sure if this will format properly, may need (scot %p ...)
+          :-  'members'           
+          a+(sort (turn ~(tap in members.collection) |=(p=@p s+(scot %p p))) aor)
       ==
     --
   --
