@@ -50,9 +50,9 @@
     |=  act=action
     ^-  (quip card _this)
     ?-  -.act
-       %settings
+       %settings                             :: TODO how will frontend receive updates here?
          ?-  -.+.act
-              %address
+              %address    
             ~&  "address updated"
             ?>  =(our.bol src.bol)
             `this(address.settings address.act)
@@ -91,7 +91,7 @@
                                               ship.act
             ==       
             :-  :~  (kick-only:io ship.act ~[path]) 
-                    (fact:io gather-update+!>(`update`[%update-invite id.act upd-details]) ~[path]) 
+                    (fact:io gather-update+!>(`update`[%update-invite id.act upd-details]) ~[path /all]) 
                 ==
             %=  this
               invites  %+  ~(jab by invites)                        :: TODO possible :by function to simply replace the invite with updated?
@@ -108,7 +108,7 @@
             =/  upd-details=invite  (need (~(get by invites) id.act))
             =.  receive-ships.upd-details  
             (~(put by receive-ships.upd-details) ship.act [%pending])        :: TODO update to add multiple at once  
-            :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd-details]) ~[path])
+            :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd-details]) ~[path /all])
                     %+  ~(poke pass:io path) 
                       [ship.act %gather]                                       :: TODO can only poke one ship at a time; need to configure sending multiple 
                     gather-action+!>(`action`[%subscribe-to-invite id.act]) 
@@ -127,7 +127,7 @@
             =/  upd-details=invite  (need (~(get by invites) id.act))
             =.  max-accepted.upd-details  qty.act
             ~&  "changing max-accepted to {<qty.act>}"
-            :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd-details]) ~[path])
+            :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd-details]) ~[path /all])
                 ==
             %=  this
               invites  %+  ~(jab by invites)                        :: TODO possible :by function to simply replace the invite with updated?
@@ -143,7 +143,7 @@
             =/  upd-details=invite  (need (~(get by invites) id.act))
             =.  desc.upd-details  desc.act
             ~&  "changing description to {<desc.act>}"
-            :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd-details]) ~[path])
+            :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd-details]) ~[path /all])
                 ==
             %=  this
               invites  %+  ~(jab by invites)                        :: TODO possible :by function to simply replace the invite with updated?
@@ -156,7 +156,7 @@
             =/  =path  /(scot %p our.bol)/[%invite]/(scot %uv id.act)
             ?>  =(our.bol src.bol)
             :_  this(invites (~(del by invites) id.act))     
-            :~  [%give %kick ~[path] ~]                        :: TODO may also need to poke subscribed agents so they know it was canceled
+            :~  [%give %kick ~[path /all] ~]                        :: TODO may also need to poke subscribed agents so they know it was canceled
             ==
          ::
               %complete
@@ -165,7 +165,7 @@
             ?>  =(our.bol src.bol)
             =/  upd-details=invite  (need (~(get by invites) id.act))
             =.  host-status.upd-details  %completed
-            :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd-details]) ~[path])
+            :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd-details]) ~[path /all])
                 ==
             %=  this
               invites  %+  ~(jab by invites)  
@@ -179,7 +179,7 @@
             ?>  =(our.bol src.bol)
             =/  upd-details=invite  (need (~(get by invites) id.act))
             =.  host-status.upd-details  %finalized
-            :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd-details]) ~[path])
+            :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd-details]) ~[path /all])
                 ==
             %=  this
               invites  %+  ~(jab by invites) 
@@ -193,7 +193,7 @@
             ?>  =(our.bol src.bol)
             =/  upd-details=invite  (need (~(get by invites) id.act))
             =.  host-status.upd-details  %sent
-            :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd-details]) ~[path])
+            :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd-details]) ~[path /all])
                 ==
             %=  this
               invites  %+  ~(jab by invites) 
@@ -210,22 +210,23 @@
      :: =/  new-ship-map=(map @p =ship-info)  (add-ships [unique ships])
    :: TODO : change based on new banned set:
      :: =/  send-to=(list @p)  (bulk-ship-info-check [send-to.act new-ship-map %banned %.n])
-     =/  receive-ships=(map @p =ship-invite)  (make-receive-ships-map unique)
+     =/  receive-ships=(map @p =ship-invite)  
+       (make-receive-ships-map unique)
      ~&  "sending invite to {<unique>}"
-     :-  :~  %+  ~(poke pass:io path) 
+     =/  new-invite=invite 
+     :*  our.bol 
+         desc.act 
+         receive-ships 
+         max-accepted.act 
+         0 
+         %sent
+     ==
+     =.  invites  (~(put by invites) id new-invite)
+     :_  this
+     :~  (fact:io gather-update+!>(`update`[%update-invite id new-invite]) ~[/all])
+         %+  ~(poke pass:io path) 
                [+2:unique %gather]                                       :: TODO can only poke one ship at a time; need to configure sending multiple 
              gather-action+!>(`action`[%subscribe-to-invite id]) 
-         ==
-     %=  this
-       invites  %+  ~(put by invites)
-                  id
-                  :*  our.bol
-                      desc.act
-                      receive-ships
-                      max-accepted.act
-                      0 
-                      %sent
-                  == 
      ==
   ::
        %accept 
@@ -252,7 +253,7 @@
                          src.bol
                        |=(=ship-invite ship-invite(invitee-status %accepted))
      ==
-     :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd-details]) ~[path])
+     :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd-details]) ~[path /all])
          ==
      %=  this
         invites  %+  ~(jab by invites)
@@ -283,7 +284,7 @@
                                       src.bol
                                     |=(=ship-invite ship-invite(invitee-status %denied))
      ==
-     :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd-details]) ~[path])
+     :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd-details]) ~[path /all])
          ==
      %=  this
         invites  %+  ~(jab by invites)
@@ -401,11 +402,14 @@
     ?>  ?=(%update-invite -.upd)
     ?.  (~(has by invites) id.upd)
        ~&  "adding new invite from {<src.bol>}"
-       `this(invites (~(put by invites) id.upd invite.upd))
+       :_  this(invites (~(put by invites) id.upd invite.upd))
+       :~  (fact:io gather-update+!>(`update`[%update-invite id.upd invite.upd]) ~[/all])
+       ==
     ~&  "{<src.bol>} has updated their invite (id {<id.upd>})"
     =/  init-ship=@p  init-ship:(need (~(get by invites) id.upd))
     ?>  =(init-ship src.bol)
-    :-  ~
+    :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.upd invite.upd]) ~[/all]) 
+        ==
     %=  this
       invites  %+  ~(jab by invites)
                   id.upd
@@ -435,13 +439,13 @@
    =/  invite-detail=invite  (need (~(get by invites) invite-id))
    ~&  "sending invite details to {<src.bol>}"
    :_  this
-   :~  (fact:io gather-update+!>(`update`[%update-invite invite-id invite-detail]) ~[path])
+   :~  (fact:io gather-update+!>(`update`[%update-invite invite-id invite-detail]) ~[path /all])
    ==
   == 
 ::
 ++  on-arvo   on-arvo:def
 ++  on-leave  on-leave:def
-++  on-peek   on-peek:def
+++  on-peek   on-peek:def  
 ++  on-fail   on-fail:def
 --
 
