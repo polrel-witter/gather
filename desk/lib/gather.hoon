@@ -67,6 +67,14 @@
 ::  $(ship-map (~(put by ship-map) i.to-add default-info), to-add t.to-add)  
 ::
 ::
+:: Remove Banned ships from a list
+++  remove-banned
+  |=  [import=(list @p) banned=(set @p)]
+  ^-  (list @p)
+  =/  import=(set @p)  `(set @p)`(silt import)
+  ~(tap in (~(dif in import) banned))
+::
+::
 :: Remove duplicates from a list
 ++  remove-dupes
   |=  import=(list @p)
