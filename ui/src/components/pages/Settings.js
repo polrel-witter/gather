@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Text, Box } from "@tlon/indigo-react";
 import Location from "../shared/Location";
 import Radius from "../shared/Radius";
-import GangMembers from "../shared/GangMembers";
+import CustomGangs from "../shared/CustomGangs";
 import GhostedShips from "../shared/GhostedShips";
 // import { Col, Rule, Menu, MenuButton, Icon, MenuList, MenuItem} from "@tlon/indigo-react";
 // import { TwoUp, Anchor, Badge, Paragraph, Action} from "@tlon/indigo-react";
@@ -11,8 +11,7 @@ const Settings = () => {
 		<Box>
 				<Location/>
 				<Radius/>
-				<GangMembers/>
-				<GhostedShips/>
+				<CustomGangs/>
 		</Box>
 	 );
 }

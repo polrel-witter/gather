@@ -11,8 +11,10 @@ import { useStore } from './data/store';
 
 const AppSwitch = () => {
 	const route = useStore(state => state.route);
+	const sAll = useStore(state => state.sAll);
 	
   useEffect(() => {
+		sAll();
   }, []);
 
 	switch(route) {

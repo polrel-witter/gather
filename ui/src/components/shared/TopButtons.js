@@ -9,43 +9,27 @@ const TopButtons = (state) => {
 	const [_statusNote, _setStatusNote] = useState(statusNote);
 	const route = useStore(state => state.route);
 		switch(route) {
-			case "gather-init":
+			case "draft":
 			return(
 			<Box>
-				<Button>Gather</Button>
-				<Button>Status</Button>
+				<Button>Draft</Button>
+				<Button>Invites</Button>
 				<Button>Settings</Button>
 			</Box>
 			)
-			case "gather-received":
+			case "invites":
 			return(
 			<Box>
-				<Button>Gather</Button>
-				<Button>Status</Button>
+				<Button>Draft</Button>
+				<Button>Invites</Button>
 				<Button>Settings</Button>
 			</Box>
 			)
-			case "gather-init":
+			case "settings":
 			return(
 			<Box>
-				<Button>Gather</Button>
-				<Button>Status</Button>
-				<Button>Settings</Button>
-			</Box>
-			)
-			case "gather-init":
-			return(
-			<Box>
-				<Button>Gather</Button>
-				<Button>Status</Button>
-				<Button>Settings</Button>
-			</Box>
-			)
-			case "gather-init":
-			return(
-			<Box>
-				<Button>Gather</Button>
-				<Button>Status</Button>
+				<Button>Draft</Button>
+				<Button>Invites</Button>
 				<Button>Settings</Button>
 			</Box>
 			)

@@ -1,6 +1,5 @@
-import { createStore } from 'zustand';
 import create from 'zustand';
-import { doPoke } from '../utils';
+import { doPoke, subscribe, dedup} from '../utils';
 
 export const useStore = create((set) => ({
 	/* FRONTEND ONLY STATE 
@@ -12,87 +11,11 @@ export const useStore = create((set) => ({
 	route: "draft",
 	/* all, hosting, received */
 	inviteRoute: "all",
-	/* default, started, finalized */
+	setRoute: (route) => set(state => ({ route : route })),
 	/* STATE
 	 *
 	 */
-	ships: [
-		{
-			_ship: "polrel-witter",
-			position: { lat: 111, lon: 123 },
-			radius: 50,
-			address: { street: "street", city: "Miami", state: "Florida", country: "USA", zip: "11111" }, 
-			statusActive: false,
-			gatherActive: false,
-			statusNote: "I'm over 9000!",
-			paused: false,
-			ourGang: true,
-			theirGang: true,
-			weGhosted: true,
-			theyGhosted: false
-		},
-		{
-			_ship: "sampel-palnet",
-			position: { lat: 111, lon: 123 },
-			radius: 50,
-			address: "Just a string for now",
-			statusActive: false,
-			gatherActive: false,
-			statusNote: "I'm a sample!",
-			paused: false,
-			ourGang: false,
-			theirGang: true,
-			weGhosted: true,
-			theyGhosted: false
-		}
-	],
 	invites: [
-		{
-			id: '123',
-			initShip: "pontus-fadpun",
-			title: "Huge Party!!4",
-			receivedShips: [
-				{ _ship: "polrel-witter", inviteStatus: "pending", group: "" },
-				{ _ship: "sampel-palnet", inviteStatus: "pending", group: "zod/testgroup" },
-			],
-			maxAccepted: 10,
-			radius: 0,
-			desc: "Having a Huge party tonight!",
-			address: "244 Andrew drive",
-			locationType: "meatspace",
-			accessLink: "https://developers.urbit.org",
-			hostStatus: "sent"
-		},
-		{
-			id: '456',
-			title: "Huge Party!!4",
-			initShip: "polrel-witter",
-			receivedShips: [
-				{ _ship: "pontus-fadpun", inviteStatus: "pending", group: "" },
-			],
-			maxAccepted: 10,
-			radius: 10,
-			desc: "Having a Huge party tonight!",
-			address: "111 Mulholland Drive",
-			locationType: "meatspace",
-			accessLink: "https://developers.urbit.org",
-			hostStatus: "finalized"
-		},
-		{
-			id: '789',
-			title: "Huge Party!!4",
-			initShip: "sampel-palnet",
-			receivedShips: [
-				{ _ship: "pontus-fadpun", inviteStatus: "accepted", group: "" },
-			],
-			maxAccepted: 10,
-			radius: 30,
-			desc: "Having a Huge party tonight!",
-			locationType: "virtual",
-			accessLink: "https://developers.urbit.org",
-			address: "",
-			hostStatus: "completed"
-		}
 	],
 	settings: {
 		statusActive: true,
@@ -108,15 +31,41 @@ export const useStore = create((set) => ({
 	 *
 	 */
 	pSettings: (tas, data) => console.log(tas + data),
-	/*  GATHERING  */
-	pEditInvite: (action, id) => console.log(action, id),
-	// pSendInvite: (myInvite) => doPoke({"send-invite": myInvite}, () => console.log('onSucc'), (err) => console.log(err)),
+	pEditInvite: (tag, id) => {
+		// const obj = {'edit-invite': {}};
+		// obj['edit-invite'][tag] = action;
+		// console.log(obj);
+		console.log({'edit-invite': {'close': id}});
+		doPoke({'edit-invite': {'close': id}}, () => console.log('onSucc'), ()=>{})
+	},
+	// pEditInvite: (tag, action) => console.log({tag: action}),
 	pSendInvite: (myInvite) => doPoke({"send-invite": myInvite}, () => console.log('onSucc'), ()=>{}),
-	pAccept: (id) => console.log(id),
-	pDeny: (deny) => doPoke({"deny": 232434}, () => {console.log('onSucc')}),
-
+	pAccept: (id) => doPoke({"accept": {id}}, () => {console.log('onSucc')}, () => {}),
+	pDeny: (id) => doPoke({"deny": {id}}, () => {console.log('onSucc')}, () => {}),
+	pBan: (ship) => doPoke({"ban": {ship }}, () => {console.log('onSucc')}, () => {}),
+	pUnban: (ship) => doPoke({"unban": {ship}}, () => {console.log('onSucc')}, () => {}),
 	/*  SUBSCRIPTIONS
 	 *
 	 */
-	sAll
+	sAll: (handler) => subscribe('/all', (all) => {
+		if(Object.keys(all)[0] === 'initAll') {
+			set(state => ({ invites: all.initAll.invites.map(
+				item => ({id: item.id, initShip: item.invite.initShip, title: '', 
+				desc: item.invite.desc, radius: 0, maxAccepted: item.invite.maxAccepted, receiveShips: [], 
+				hostStatus: item.invite.hostStatus
+				})) }))
+		}
+		else if(Object.keys(all)[0] === 'updateInvite') {
+			const item = all.updateInvite;
+			console.log(item)
+			set(state => ({ invites: dedup('id', state.invites.concat(
+				{ id: item.id, hostStatus: item.invite.hostStatus,
+					initShip: item.invite.initShip, title: '',
+					desc: item.invite.desc, radius: 0, maxAccepted:
+					item.invite.maxAccepted, 
+					receiveShips: item.invite.receiveShips.map(x => ({ship: x.ship, shipInvite: x.shipInvite}))})),
+				settings: {
+				}}));
+		}
+	}),
 }));

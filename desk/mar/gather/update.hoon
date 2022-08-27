@@ -30,7 +30,7 @@
           ['receiveShips' (en-receive-ships receive-ships.invite)]
           ['maxAccepted' (numb max-accepted.invite)]
           ['acceptedCount' (numb accepted-count.invite)]
-          ['host-status' s+(scot %tas host-status.invite)]
+          ['hostStatus' s+(scot %tas host-status.invite)]
       ==
     ++  en-invites
       |=  =invites

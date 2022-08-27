@@ -4,54 +4,69 @@ import { Text, Box, Button } from "@tlon/indigo-react";
 import { fetchMyInvites, fetchReceivedShips } from '../../utils';
 
 const Actions = (props) => {
-	if(props.invite.initShip === window.urbit.ship)
+	const pBan = useStore(state => state.pBan);
+	const pEditInvite = useStore(state => state.pEditInvite);
+	if(props.invite.initShip === '~' + window.urbit.ship)
 		return (
 			<Box>
-			{ props.invite.status === "sent" && 
+			{ props.invite.hostStatus === "sent" && 
 				<Box>
-				<Button>Edit</Button>
-				<Button>Finalize</Button>
-				<Button>Cancel</Button>
+					<Button onClick={()=>{}}>Edit</Button>
+					<Button onClick={()=>{pEditInvite('close', {id: props.invite.id})}}>Close</Button>
+					{/* <Button onClick={()=>{pEditInvite('cancel', {id: props.invite.id})}}>Cancel</Button> */}
+					<Button onClick={()=>{pEditInvite('cancel', {id: String(123)})}}>Cancel</Button>
 				</Box>
 			}
-			{ props.invite.status === "finalized" && 
+			{ props.invite.hostStatus === "closed" && 
 				<Box>
-				<Button>Unfinalize</Button>
+				<Button>UnClose</Button>
+				<Button onClick={()=>{pEditInvite('reopen', props.invite.id)}}>UnClose</Button>
 				<Button>Complete</Button>
-				<Button>Cancel</Button>
+				<Button onClick={()=>{pEditInvite('cancel', props.invite.id)}}>Finalize</Button>
 				</Box>
 			}
-			{ props.invite.status === "completed" && 
+			{ props.invite.hostStatus === "completed" && 
 				<Box>
 				<Button>Delete</Button>
 				</Box>
 			}
 			</Box>
 	)
-	else
-		return (
-			<Box>
-			{ props.invite.note === '' &&
-			<Box>
-				<Button> RSVP </Button>
-				<Button> Decline </Button>
-				<Button> Ban </Button>
-			</Box>
-			}
-			{ props.invite.note === '' &&
-			<Box>
-				<Button> UnRSVP </Button>
-			</Box>
-			}
-			{ props.invite.note === '' &&
-			<Box>
-				<Button> RSVP </Button>
-				<Button> Delete </Button>
-				<Button> Ban </Button>
-			</Box>
-			}
-			</Box>
-	)
+	else {
+		const inviteeStatus = 'pending';
+		if (props.invite.hostStatus !== 'completed') {
+			return (
+				<Box>
+				{ inviteeStatus === 'pending' &&
+				<Box>
+					<Button> RSVP </Button>
+					<Button> Decline </Button>
+					<Button onClick={() => {pBan(props.invite.initShip)}} > Ban </Button>
+				</Box>
+				}
+				{ inviteeStatus === 'accepted' &&
+				<Box>
+					<Button> UnRSVP </Button>
+				</Box>
+				}
+				{ inviteeStatus === 'denied' &&
+				<Box>
+					<Button> RSVP </Button>
+					<Button> Delete </Button>
+					<Button> Ban </Button>
+				</Box>
+				}
+				</Box>
+			)
+		}
+		else {
+			return (
+				<Box>
+					<Button> Delete </Button>
+				</Box>
+			)
+		}
+	}
 
 	return (<h1></h1>);
 }
@@ -80,41 +95,43 @@ const Invite = (props) => {
 						<Text>{invite.title} </Text>
 						<Status invite={invite}/>
 						<Box>
-						<Text>From ~{invite.initShip} </Text>
+						<Text>From {invite.initShip} </Text>
 						</Box>
 						<Box>
-						<Text>{invite.note}</Text>
+						<Text>{invite.desc}</Text>
 						</Box>
 						<Box>==================</Box>
-						<Box>
-							<Text>
-								Happening in meatspace/virtual world on 
-								<Date invite={invite}/>
-								{ invite.locationType === "meatspace" && 
-									<Text> Location: {invite.location} </Text>
-								}
-							</Text>
-						</Box>
-						<Box>
-							<Text>
-								Access Link: {invite.accessLink}
-							</Text>
-						</Box>
-						{ invite.radius !== 0 && 
-						<Box>
-							<Text>
-								Delivery Radius: {invite.radius}
-							</Text>
-						</Box>
-						}
+						{/* <Box> */}
+						{/* 	<Text> */}
+						{/* 		Happening in meatspace/virtual world on */} 
+						{/* 		<Date invite={invite}/> */}
+						{/* 		{ invite.locationType === "meatspace" && */} 
+						{/* 			<Text> Location: {invite.location} </Text> */}
+						{/* 		} */}
+						{/* 	</Text> */}
+						{/* </Box> */}
+						{/* <Box> */}
+						{/* 	<Text> */}
+						{/* 		Access Link: {invite.accessLink} */}
+						{/* 	</Text> */}
+						{/* </Box> */}
+						{/* { invite.radius !== 0 && */} 
+						{/* <Box> */}
+						{/* 	<Text> */}
+						{/* 		Delivery Radius: {invite.radius} */}
+						{/* 	</Text> */}
+						{/* </Box> */}
+						{/* } */}
 						{ invite.initShip !== window.urbit.ship &&
 						<Box>
 							<Button> DM Host </Button>
 						</Box>
 						}
+						{ invite.maxAccepted !== 0 && 
 						<Box>
-							<Text> 2 / {invite.maxAccepted} RSVP'd </Text>
+							<Text> {invite.receiveShips.filter(x => x.shipInvite === 'accepted').length} / {invite.maxAccepted} RSVP'd </Text>
 						</Box>
+						}
 						<Box>
 							<Button>View Invite List</Button>
 						</Box>
@@ -126,9 +143,6 @@ const Invite = (props) => {
 				</Box>
 	)
 };
-
-const Hosting = (props) => {};
-const Received = (props) => {};
 
 const Invites = () => {
 	const inviteRoute = useStore(state => state.inviteRoute);
