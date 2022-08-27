@@ -21,7 +21,7 @@
 ::
 +$  host-status
   $?
-     %finalized
+     %closed
      %completed
      %sent
   ==
@@ -48,6 +48,7 @@
      =host-status
   ==
 ::
+:: State structures
 +$  invites  (map id invite)
 +$  settings
   $: 
@@ -55,6 +56,7 @@
      =radius
      =address
      collections=(map id collection)
+     =banned                                :: ADDITION added to state
      =receive-invite
   ==
 ::
@@ -80,14 +82,14 @@
         [%edit-desc =id desc=@t]
         [%cancel =id]
         [%complete =id]                              
-        [%finalize =id]
-        [%unfinalize =id]
+        [%close =id]                          :: UPDATE based on Thomas' suggestion
+        [%reopen =id]                         :: UPDATE based on Thomas' suggestion
       ==
     ==
      $:  %send-invite                         :: UPDATE removed the =id since it will be generated upon the poke 
          send-to=(list @p)
          max-accepted=@ud
-         desc=@t                              :: changed to desc (for description) because I think it maps better, and is preemptive for future additions such as venue name, title, etc.
+         desc=@t 
      ==
      [%accept =id]
      [%deny =id]
@@ -99,7 +101,7 @@
   ==
 +$  update
   $%
-     [%init-all =invites =settings]           :: ADDITION; for frontend to subscribe to state
+     [%init-all =invites =settings] 
      [%update-invite =id =invite]
   ==
 --

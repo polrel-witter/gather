@@ -27,6 +27,7 @@
                 *radius
                 *address
                 *(map id collection)
+                *banned
                 %anyone
               ==
   ==
@@ -173,12 +174,12 @@
                        |=(=invite upd-details) 
             == 
          ::
-              %finalize
-            ~&  "gathering with id {<id.act>} has been finalized"    
+              %close
+            ~&  "gathering with id {<id.act>} has been closed"    
             =/  =path  /(scot %p our.bol)/[%invite]/(scot %uv id.act)
             ?>  =(our.bol src.bol)
             =/  upd-details=invite  (need (~(get by invites) id.act))
-            =.  host-status.upd-details  %finalized
+            =.  host-status.upd-details  %closed
             :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd-details]) ~[path /all])
                 ==
             %=  this
@@ -187,8 +188,8 @@
                        |=(=invite upd-details) 
             ==
          ::
-              %unfinalize
-            ~&  "gathering with id {<id.act>} has been unfinalized"    
+              %reopen
+            ~&  "gathering with id {<id.act>} has been reopened"    
             =/  =path  /(scot %p our.bol)/[%invite]/(scot %uv id.act)
             ?>  =(our.bol src.bol)
             =/  upd-details=invite  (need (~(get by invites) id.act))
@@ -203,16 +204,14 @@
          ==
   ::
        %send-invite
+     ?>  =(our.bol src.bol)
      =/  =id  (scot %uv eny.bol)            
      =/  =path  /(scot %p our.bol)/[%invite]/id
-     ?>  =(our.bol src.bol)
-     =/  unique=(list @p)  (remove-dupes send-to.act)
-     :: =/  new-ship-map=(map @p =ship-info)  (add-ships [unique ships])
-   :: TODO : change based on new banned set:
-     :: =/  send-to=(list @p)  (bulk-ship-info-check [send-to.act new-ship-map %banned %.n])
+     =/  send-to=(list @p)
+       (remove-banned [(remove-dupes send-to.act) banned.settings])
      =/  receive-ships=(map @p =ship-invite)  
-       (make-receive-ships-map unique)
-     ~&  "sending invite to {<unique>}"
+       (make-receive-ships-map send-to)
+     ~&  "sending invite to {<send-to>}"
      =/  new-invite=invite 
      :*  our.bol 
          desc.act 
@@ -225,7 +224,7 @@
      :_  this
      :~  (fact:io gather-update+!>(`update`[%update-invite id new-invite]) ~[/all])
          %+  ~(poke pass:io path) 
-               [+2:unique %gather]                                       :: TODO can only poke one ship at a time; need to configure sending multiple 
+               [+2:send-to %gather]                                       :: TODO can only poke one ship at a time; need to configure sending multiple 
              gather-action+!>(`action`[%subscribe-to-invite id]) 
      ==
   ::
@@ -315,64 +314,22 @@
      :~  (~(watch pass:io path) [src.bol %gather] path) 
      ==
   ::
-       %ban  !!
-   :: TODO : update banning logic:
-  ::    =/  =path  /(scot %p our.bol)/[%status] 
-  ::    ?:  =(our.bol src.bol)
-  ::     ~&  "banning {<ship.act>}"
-  ::     ?:  (~(has by ships) ship.act)
-  ::       :-  :~  (kick-only:io ship.act ~[/(scot %p our.bol)/[%status]])   :: TODO need to include kicking them from any open invites
-  ::               (~(poke pass:io path) [ship.act %gather] gather-action+!>(`action`[%ban ship.act])) 
-  ::           ==
-  ::       %=  this
-  ::         ships  %+  ~(jab by ships) 
-  ::                  ship.act 
-  ::                |=(=ship-info ship-info(we-banned %.y))
-  ::       ==  
-  ::     :-  :~  (~(poke pass:io path) [src.bol %gather] gather-action+!>(`action`[%ban ship.act]))
-  ::         ==
-  ::     %=  this
-  ::        ships  (add-ships [~[ship.act] ships]) 
-  ::        ships  %+  ~(jab by ships)
-  ::                 ship.act
-  ::               |=(=ship-info ship-info(we-banned %.y))
-  ::     ==
-  ::   ~&  "{<src.bol>} is banning us"
-  ::   ?:  (~(has by ships) src.bol) 
-  ::      :-  ~  
-  ::      %=  this
-  ::        ships  %+  ~(jab by ships) 
-  ::                 src.bol 
-  ::               |=(=ship-info ship-info(they-banned %.y))
-  ::      ==  
-  ::   :-  ~
-  ::   %=  this
-  ::      ships  (add-ships [~[src.bol] ships])
-  ::      ships  %+  ~(jab by ships)
-  ::               src.bol
-  ::             |=(=ship-info ship-info(they-banned %.y))
-  ::   ==
+       %ban
+     ?>  =(our.bol src.bol)
+     ~&  "banning {<ship.act>}"
+     ?:  (~(has in banned.settings) ship.act)
+        `this
+     `this(banned.settings (~(put in banned.settings) ship.act))
+        :: TODO need to pull all wires this ship is subscribed to and kick them from each
+        :: TODO may need to include a new $update so frontend can subscribe to banned ships
   ::
-       %unban  !!
-  ::   =/  =path  /(scot %p our.bol)/[%status]
-  ::   ?:  =(our.bol src.bol)
-  ::     ?>  (~(has by ships) ship.act)
-  ::     ~&  "unbanning {<ship.act>}"
-  ::     :-  :~  (~(poke pass:io path) [ship.act %gather] gather-action+!>(`action`[%unban ship.act])) 
-  ::         ==
-  ::     %=  this
-  ::       ships  %+  ~(jab by ships) 
-  ::                ship.act 
-  ::              |=(=ship-info ship-info(we-banned %.n))
-  ::     ==
-  ::   ?>  (~(has by ships) src.bol) 
-  ::   ~&  "{<src.bol>} is unbanning us"
-  ::   :-  ~  
-  ::   %=  this
-  ::     ships  %+  ~(jab by ships) 
-  ::              src.bol  
-  ::            |=(=ship-info ship-info(they-banned %.n))
-  ::   ==   
+       %unban
+     ?>  =(our.bol src.bol)
+     ~&  "unbanning {<ship.act>}"
+     ?:  (~(has in banned.settings) ship.act)
+        `this(banned.settings (~(del in banned.settings) ship.act))
+     `this
+        :: TODO may need to include a new $update so frontend can subscribe to banned ships
     ==   
   -- 
 ::
