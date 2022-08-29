@@ -63,29 +63,25 @@
 :: Gall actions
 +$  action
   $%
-    $:  %settings
-      $%
-         [%address =address]
-         [%position =position]
-         [%radius =radius]
-         :: [%collection actions]
-         [%receive-invite =receive-invite]
-       ==
-    ==
   ::
-  :: Gathering 
-    $:  %edit-invite
-      $%
-        [%del-receive-ship =id =ship]
-        [%add-receive-ship =id =ship]
-        [%edit-max-accepted =id qty=@ud]
-        [%edit-desc =id desc=@t]
-        [%cancel =id]
-        [%complete =id]                              
-        [%close =id]                          :: UPDATE based on Thomas' suggestion
-        [%reopen =id]                         :: UPDATE based on Thomas' suggestion
-      ==
-    ==
+  :: Adjust Settings
+     [%address =address]
+     [%position =position]
+     [%radius =radius]
+     :: [%collection actions]
+     [%receive-invite =receive-invite]    
+  ::
+  :: Invite edit options
+     [%del-receive-ship =id =ship]
+     [%add-receive-ship =id =ship]
+     [%edit-max-accepted =id qty=@ud]
+     [%edit-desc =id desc=@t]
+     [%cancel =id]
+     [%complete =id]                              
+     [%close =id]                          :: UPDATE based on Thomas' suggestion
+     [%reopen =id]                         :: UPDATE based on Thomas' suggestion
+  ::
+  :: Invite communication 
      $:  %send-invite                         :: UPDATE removed the =id since it will be generated upon the poke 
          send-to=(list @p)
          max-accepted=@ud
