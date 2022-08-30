@@ -149,6 +149,8 @@
   ::   
        %cancel
      ~&  "cancelled invite with id {<id.act>}"
+     ~&  id.act
+     ~&  (scot %uv id.act)
      =/  =path  /(scot %p our.bol)/[%invite]/(scot %uv id.act)
      ?>  =(our.bol src.bol)
      :_  this(invites (~(del by invites) id.act))     
@@ -200,6 +202,9 @@
        %send-invite
      ?>  =(our.bol src.bol)
      =/  =id  (scot %uv eny.bol)
+     ~&  id
+     ~&  (trip id)
+     ~&  `@ta`id
      =/  =path  /(scot %p our.bol)/[%invite]/id
      =/  send-to=(list @p)
        (remove-banned [(remove-dupes send-to.act) banned.settings])

@@ -8,6 +8,8 @@ const Actions = (props) => {
 	const pUnban = useStore(state => state.pUnban);
 	const pCancel = useStore(state => state.pCancel);
 	const pClose = useStore(state => state.pClose);
+	const pReopen = useStore(state => state.pReopen);
+	const pComplete = useStore(state => state.pComplete);
 	const pEditDesc = useStore(state => state.pEditDesc);
 	const pEditInvite = useStore(state => state.pEditInvite);
 	if(props.invite.initShip === '~' + window.urbit.ship)
@@ -16,25 +18,20 @@ const Actions = (props) => {
 			{ props.invite.hostStatus === "sent" && 
 				<Box>
 					<Button onClick={()=>{}}>Edit</Button>
-					<Button onClick={()=>{pClose('close', {id: props.invite.id})}}>Close</Button>
-					{/* <Button onClick={()=>{pEditInvite('cancel', {id: props.invite.id})}}>Cancel</Button> */}
-					<Button onClick={()=>{pClose(props.invite.id)}}>Cancel-test</Button>
-					<Button onClick={()=>{pCancel(props.invite.id)}}>Cancel-test</Button>
-					<Button onClick={()=>{pEditDesc(props.invite.id, 'mydesc')}}>Cancel-test</Button>
-					<Button onClick={()=>{pCancel(String(props.invite.id))}}>Cancel</Button>
+					<Button onClick={()=>{pClose(props.invite.id)}}>Close</Button>
+					<Button onClick={()=>{pCancel(props.invite.id)}}>Cancel</Button>
 				</Box>
 			}
 			{ props.invite.hostStatus === "closed" && 
 				<Box>
-				<Button>UnClose</Button>
-				<Button onClick={()=>{pEditInvite('reopen', props.invite.id)}}>UnClose</Button>
-				<Button>Complete</Button>
-				<Button onClick={()=>{pEditInvite('cancel', props.invite.id)}}>Finalize</Button>
+				<Button onClick={()=>{pReopen(props.invite.id)}}>Reopen</Button>
+				<Button onClick={()=>{pComplete(props.invite.id)}}>Complete</Button>
+				<Button onClick={()=>{pCancel(props.invite.id)}}>Delete</Button>
 				</Box>
 			}
 			{ props.invite.hostStatus === "completed" && 
 				<Box>
-				<Button>Delete</Button>
+				<Button onClick={()=>{pCancel(props.invite.id)}}>Delete</Button>
 				</Box>
 			}
 			</Box>
