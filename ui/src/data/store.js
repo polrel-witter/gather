@@ -37,10 +37,10 @@ export const useStore = create((set) => ({
 	pDelReceiveShip: (id) => {doPoke({'cancel': {'id': id}}, () => console.log('onSucc'), ()=>{})},
 	pAddReceiveShip: (id) => {doPoke({'cancel': {'id': id}}, () => console.log('onSucc'), ()=>{})},
 	pEditMaxAccepted: (id) => {doPoke({'cancel': {'id': id}}, () => console.log('onSucc'), ()=>{})},
-	pEditDesc: (id) => {doPoke({'cancel': {'id': id}}, () => console.log('onSucc'), ()=>{})},
+	pEditDesc: (id, desc) => {doPoke({'edit-desc': {'id': id, 'desc': desc}}, () => console.log('onSucc'), ()=>{})},
 	pCancel: (id) => {doPoke({'cancel': {'id': id}}, () => console.log('onSucc'), ()=>{})},
 	pComplete: (id) => {doPoke({'cancel': {'id': id}}, () => console.log('onSucc'), ()=>{})},
-	pClose: (id) => {doPoke({'cancel': {'id': id}}, () => console.log('onSucc'), ()=>{})},
+	pClose: (id) => {doPoke({'close': {'id': id}}, () => console.log('onSucc'), ()=>{})},
 	pReopen: (id) => {doPoke({'cancel': {'id': id}}, () => console.log('onSucc'), ()=>{})},
 	//
 	pSendInvite: (myInvite) => doPoke({"send-invite": myInvite}, () => console.log('onSucc'), ()=>{}),

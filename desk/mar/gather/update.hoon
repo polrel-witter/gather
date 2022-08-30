@@ -17,7 +17,7 @@
         %update-invite
       %+  frond  'updateInvite'
       %-  pairs 
-      :~  ['id' (numb id.upd)] 
+      :~  ['id' (tape (trip id.upd))] 
           ['invite' (en-invite invite.upd)]
       ==
     ==
@@ -39,7 +39,7 @@
       %+  turn  ~(tap by invites)
       |=  [=id =invite]
       %-  pairs
-      :~  ['id' (numb id)]
+      :~  ['id' (tape (trip id))]
           ['invite' (en-invite invite)]
       == 
     ++  en-settings
@@ -86,7 +86,7 @@
       %+  turn  ~(tap by collections)
       |=  [=id =collection]
       %-  pairs
-      :~  ['id' (numb id)]
+      :~  ['id' (tape (trip id))]
           ['collection' (en-collection collection)]
       ==
     ++  en-collection

@@ -19,19 +19,19 @@
         :: collection+
         :: receive-invite+(ot ~[receive-invite+(se %tas)])  :: TODO can't get to nest - idk: the syntax is correct
         ::
-        del-receive-ship+(ot ~[id+ni ship+(se %p)])
-        add-receive-ship+(ot ~[id+ni ship+(se %p)])
-        edit-max-accepted+(ot ~[id+ni qty+ni])
-        edit-desc+(ot ~[id+ni desc+so])
-        cancel+(ot ~[id+ni])
-        complete+(ot ~[id+ni])
-        close+(ot ~[id+ni])
-        reopen+(ot ~[id+ni])
+        del-receive-ship+(ot ~[id+(se %uv) ship+(se %p)])
+        add-receive-ship+(ot ~[id+(se %uv) ship+(se %p)])
+        edit-max-accepted+(ot ~[id+(se %uv) qty+ni])
+        edit-desc+(ot ~[id+(se %uv) desc+so])
+        cancel+(ot ~[id+(se %uv)])
+        complete+(ot ~[id+(se %uv)])
+        close+(ot ~[id+(se %uv)])
+        reopen+(ot ~[id+(se %uv)])
         ::
         send-invite+de-send-invite
-        accept+(ot ~[id+ni])
-        deny+(ot ~[id+ni])
-        subscribe-to-invite+(ot ~[id+ni])
+        accept+(ot ~[id+(se %uv)])
+        deny+(ot ~[id+(se %uv)])
+        subscribe-to-invite+(ot ~[id+(se %uv)])
         ::
         ban+(ot ~[ship+(se %p)])
         unban+(ot ~[ship+(se %p)])

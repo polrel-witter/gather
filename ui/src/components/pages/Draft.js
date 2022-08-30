@@ -27,7 +27,7 @@ const Draft = () => {
 		<Box>
 			<Button onClick={() => {
 				if (invitees.filter(i => i.selected).length !== 0)
-					pSendInvite({ "max-accepted": maxAccepted, "desc": desc, 
+					pSendInvite({ "max-accepted": maxAccepted, "desc": desc,
 					"send-to": invitees.filter(i => i.selected).map(i => i.patp) })
 			}}>Send</Button>
 		{/* <Text>Title</Text> */}

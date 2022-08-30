@@ -8,6 +8,7 @@ const Actions = (props) => {
 	const pUnban = useStore(state => state.pUnban);
 	const pCancel = useStore(state => state.pCancel);
 	const pClose = useStore(state => state.pClose);
+	const pEditDesc = useStore(state => state.pEditDesc);
 	const pEditInvite = useStore(state => state.pEditInvite);
 	if(props.invite.initShip === '~' + window.urbit.ship)
 		return (
@@ -17,7 +18,9 @@ const Actions = (props) => {
 					<Button onClick={()=>{}}>Edit</Button>
 					<Button onClick={()=>{pClose('close', {id: props.invite.id})}}>Close</Button>
 					{/* <Button onClick={()=>{pEditInvite('cancel', {id: props.invite.id})}}>Cancel</Button> */}
-					<Button onClick={()=>{pCancel(1234)}}>Cancel-test</Button>
+					<Button onClick={()=>{pClose(props.invite.id)}}>Cancel-test</Button>
+					<Button onClick={()=>{pCancel(props.invite.id)}}>Cancel-test</Button>
+					<Button onClick={()=>{pEditDesc(props.invite.id, 'mydesc')}}>Cancel-test</Button>
 					<Button onClick={()=>{pCancel(String(props.invite.id))}}>Cancel</Button>
 				</Box>
 			}
