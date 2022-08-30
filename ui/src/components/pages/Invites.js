@@ -6,6 +6,8 @@ import { fetchMyInvites, fetchReceivedShips } from '../../utils';
 const Actions = (props) => {
 	const pBan = useStore(state => state.pBan);
 	const pUnban = useStore(state => state.pUnban);
+	const pAccept = useStore(state => state.pAccept);
+	const pDeny = useStore(state => state.pDeny);
 	const pCancel = useStore(state => state.pCancel);
 	const pClose = useStore(state => state.pClose);
 	const pReopen = useStore(state => state.pReopen);
@@ -43,21 +45,21 @@ const Actions = (props) => {
 				<Box>
 				{ inviteeStatus === 'pending' &&
 				<Box>
-					<Button> RSVP </Button>
-					<Button> Decline </Button>
+					<Button onClick={() => {pAccept(props.invite.id)}}> RSVP </Button>
+					<Button onClick={() => {pDeny(props.invite.id)}}> Decline </Button>
 					<Button onClick={() => {pBan(props.invite.initShip)}} > Ban </Button>
 				</Box>
 				}
 				{ inviteeStatus === 'accepted' &&
 				<Box>
-					<Button> UnRSVP </Button>
+					<Button onClick={() => {pDeny(props.invite.id)}}> UnRSVP </Button>
 				</Box>
 				}
 				{ inviteeStatus === 'denied' &&
 				<Box>
-					<Button> RSVP </Button>
+					<Button onClick={() => {pAccept(props.invite.id)}}> RSVP </Button>
 					<Button> Delete </Button>
-					<Button> Ban </Button>
+					<Button onClick={() => {pBan(props.invite.initShip)}} > Ban </Button>
 				</Box>
 				}
 				</Box>

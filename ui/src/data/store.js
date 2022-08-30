@@ -44,10 +44,10 @@ export const useStore = create((set) => ({
 	pReopen: (id) => {doPoke({'reopen': {'id': id}}, () => console.log('onSucc'), ()=>{})},
 	//
 	pSendInvite: (myInvite) => doPoke({"send-invite": myInvite}, () => console.log('onSucc'), ()=>{}),
-	pAccept: (id) => doPoke({"accept": {id}}, () => {console.log('onSucc')}, () => {}),
-	pDeny: (id) => doPoke({"deny": {id}}, () => {console.log('onSucc')}, () => {}),
-	pBan: (ship) => doPoke({"ban": {ship:ship}}, () => {console.log('onSucc')}, () => {}),
-	pUnban: (ship) => doPoke({"unban": {ship:ship}}, () => {console.log('onSucc')}, () => {}),
+	pAccept: (id) => doPoke({"accept": {'id': id}}, () => {console.log('onSucc')}, () => {}),
+	pDeny: (id) => doPoke({"deny": {'id': id}}, () => {console.log('onSucc')}, () => {}),
+	pBan: (ship) => doPoke({"ban": {'ship': ship}}, () => {console.log('onSucc')}, () => {}),
+	pUnban: (ship) => doPoke({"unban": {'ship': ship}}, () => {console.log('onSucc')}, () => {}),
 	/*  SUBSCRIPTIONS
 	 *
 	 */
