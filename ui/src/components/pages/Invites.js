@@ -5,6 +5,9 @@ import { fetchMyInvites, fetchReceivedShips } from '../../utils';
 
 const Actions = (props) => {
 	const pBan = useStore(state => state.pBan);
+	const pUnban = useStore(state => state.pUnban);
+	const pCancel = useStore(state => state.pCancel);
+	const pClose = useStore(state => state.pClose);
 	const pEditInvite = useStore(state => state.pEditInvite);
 	if(props.invite.initShip === '~' + window.urbit.ship)
 		return (
@@ -12,9 +15,10 @@ const Actions = (props) => {
 			{ props.invite.hostStatus === "sent" && 
 				<Box>
 					<Button onClick={()=>{}}>Edit</Button>
-					<Button onClick={()=>{pEditInvite('close', {id: props.invite.id})}}>Close</Button>
+					<Button onClick={()=>{pClose('close', {id: props.invite.id})}}>Close</Button>
 					{/* <Button onClick={()=>{pEditInvite('cancel', {id: props.invite.id})}}>Cancel</Button> */}
-					<Button onClick={()=>{pEditInvite('cancel', {id: String(123)})}}>Cancel</Button>
+					<Button onClick={()=>{pCancel(1234)}}>Cancel-test</Button>
+					<Button onClick={()=>{pCancel(String(props.invite.id))}}>Cancel</Button>
 				</Box>
 			}
 			{ props.invite.hostStatus === "closed" && 

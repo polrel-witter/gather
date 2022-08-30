@@ -199,7 +199,7 @@
   ::
        %send-invite
      ?>  =(our.bol src.bol)
-     =/  =id  (scot %uv eny.bol)            
+     =/  =id  (scot %ud eny.bol)            
      =/  =path  /(scot %p our.bol)/[%invite]/id
      =/  send-to=(list @p)
        (remove-banned [(remove-dupes send-to.act) banned.settings])

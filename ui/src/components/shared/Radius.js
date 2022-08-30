@@ -5,7 +5,7 @@ import { useStore } from '../../data/store';
 const Radius = () => {
 	const radius = useStore(state => state.settings.radius);
 	const [_radius, _setRadius] = useState(radius);
-	const pSettings = useStore(state => state.pSettings);
+	const pRadius = useStore(state => state.pRadius);
 
 	return(
 		<Box borderBottom={1}>
@@ -21,7 +21,7 @@ const Radius = () => {
 			value={_radius}
 			onChange={(e) => _setRadius(e.currentTarget.value)}>
 			</StatelessTextInput>
-		<Button onClick={() => pSettings('radius', _radius)}>Set</Button>
+		<Button onClick={() => pRadius(String(_radius))}>Set</Button>
 		</Box>
 	 );
 }
