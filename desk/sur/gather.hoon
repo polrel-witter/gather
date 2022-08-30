@@ -68,7 +68,11 @@
      [%address =address]
      [%position =position]
      [%radius =radius]
-     :: [%collection actions]
+     [%create-collection title=@t members=(list @p)]
+     [%edit-collection-title =id title=@t]
+     [%add-to-collection =id members=(list @p)]
+     [%del-from-collection =id members=(list @p)]
+     [%del-collection =id]
      [%receive-invite =receive-invite]    
   ::
   :: Invite edit options

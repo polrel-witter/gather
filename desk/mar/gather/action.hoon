@@ -10,14 +10,17 @@
   ++  json
     =,  dejs:format
     |=  jon=json
-    |^  ^-  action
-    %.  jon
-    %-  of
-    :~  address+de-address
+    %-  action
+    =<  (action-noun jon)
+    |%
+    ++  action-noun
+      %-  of
+      :~  
+        address+de-address
         position+(ot ~[lat+(se %rs) lon+(se %rs)])
         radius+(ot ~[radius+(se %rs)])
         :: collection+
-        :: receive-invite+(ot ~[receive-invite+(se %tas)])  :: TODO can't get to nest - idk: the syntax is correct
+        receive-invite+(ot ~[receive-invite+(se %tas)])  :: TODO can't get to nest - idk: the syntax is correct
         ::
         del-receive-ship+(ot ~[id+so ship+(se %p)])
         add-receive-ship+(ot ~[id+so ship+(se %p)])
@@ -35,7 +38,7 @@
         ::
         ban+(ot ~[ship+(se %p)])
         unban+(ot ~[ship+(se %p)])
-    ==
+      ==
     ++  de-address
       %-  ot
       :~  street+so
