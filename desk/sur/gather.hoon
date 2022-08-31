@@ -56,7 +56,7 @@
      =radius
      =address
      collections=(map id collection)
-     =banned                                :: ADDITION added to state
+     =banned                        
      =receive-invite
   ==
 ::
@@ -76,17 +76,17 @@
      [%receive-invite =receive-invite]    
   ::
   :: Invite edit options
-     [%del-receive-ship =id =ship]
-     [%add-receive-ship =id =ship]
+     [%del-receive-ship =id del-ships=(list @p)]  :: UPDATE expanded to accept list and changed face
+     [%add-receive-ship =id add-ships=(list @p)]  :: UPDATE expanded to accept list and changed face
      [%edit-max-accepted =id qty=@ud]
      [%edit-desc =id desc=@t]
      [%cancel =id]
      [%complete =id]                              
-     [%close =id]                          :: UPDATE based on Thomas' suggestion
-     [%reopen =id]                         :: UPDATE based on Thomas' suggestion
+     [%close =id]            
+     [%reopen =id]          
   ::
   :: Invite communication 
-     $:  %send-invite                         :: UPDATE removed the =id since it will be generated upon the poke 
+     $:  %send-invite       
          send-to=(list @p)
          max-accepted=@ud
          desc=@t 

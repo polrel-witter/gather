@@ -74,9 +74,8 @@
      :-  ~
      %=  this
         collections.settings  %+  ~(put by collections.settings)
-                                (scot %uv eny.bol)
-                                :-  title.act
-                                    (silt members)
+                                 (scot %uv eny.bol)
+                              [title.act (silt members)]
      ==  
   ::
        %edit-collection-title
@@ -133,70 +132,80 @@
      `this(receive-invite.settings receive-invite.act) 
   ::  
        %del-receive-ship
-     ~&  "removing {<ship.act>} from invite {<id.act>}"    
+     ~&  "removing {<-:del-ships.act>} from invite {<id.act>}"    
      =/  =path  /(scot %p our.bol)/[%invite]/(scot %uv id.act)
      =/  init-ship=@p  init-ship:(need (~(get by invites) id.act)) 
      ?>  =(our.bol src.bol)
      ?>  =(our.bol init-ship)
-     =/  upd-details=invite  (need (~(get by invites) id.act))
+     =/  upd=invite  (need (~(get by invites) id.act))
      =/  invitee-status=invitee-status  
-       +1:(need (~(get by receive-ships.upd-details) ship.act))
+       +1:(need (~(get by receive-ships.upd) -:del-ships.act))
      =: 
-         accepted-count.upd-details  ?:  =(%acccepted invitee-status)
-                                       (dec accepted-count.upd-details)
-                                     accepted-count.upd-details
-         receive-ships.upd-details   %-  ~(del by receive-ships.upd-details) 
-                                       ship.act
+         accepted-count.upd  ?:  =(%acccepted invitee-status)
+                                       (dec accepted-count.upd)
+                                     accepted-count.upd
+         receive-ships.upd   %-  ~(del by receive-ships.upd) 
+                                       -:del-ships.act
      ==       
-     :-  :~  (kick-only:io ship.act ~[path]) 
-             (fact:io gather-update+!>(`update`[%update-invite id.act upd-details]) ~[path /all]) 
+     :-  :~  (kick-only:io -:del-ships.act ~[path]) 
+             (fact:io gather-update+!>(`update`[%update-invite id.act upd]) ~[path /all]) 
          ==
      %=  this
        invites  %+  ~(jab by invites) 
                   id.act
-                |=(=invite upd-details) 
+                |=(=invite upd) 
      ==
   ::  
        %add-receive-ship  
-     ~&  "adding {<ship.act>} to invite list on invite {<id.act>}"    
+     ~&  "adding {<add-ships.act>} to invite list on invite {<id.act>}"    
      =/  =path  /(scot %p our.bol)/[%invite]/(scot %uv id.act)
      =/  init-ship=@p  init-ship:(need (~(get by invites) id.act)) 
      ?>  =(our.bol src.bol)
      ?>  =(our.bol init-ship)
-     =/  upd-details=invite  (need (~(get by invites) id.act))
-     =.  receive-ships.upd-details  
-     (~(put by receive-ships.upd-details) ship.act [%pending])        :: TODO update to add multiple at once  
-     :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd-details]) ~[path /all])
-             %+  ~(poke pass:io path) 
-               [ship.act %gather]                                       :: TODO can only poke one ship at a time; need to configure sending multiple 
-             gather-action+!>(`action`[%subscribe-to-invite id.act]) 
-         ==
-     %=  this
-       invites  %+  ~(jab by invites) 
-                  id.act
-                |=(=invite upd-details) 
-     ==  
+     =+  caz=*(list card:agent:gall)
+     |-
+     ?~  add-ships.act
+       =+  upd=(need (~(get by invites) id.act))
+       =+  fac=(fact:io gather-update+!>(`update`[%update-invite id.act upd]) ~[path /all])
+       [(into caz 0 fac) this]                            :: TODO may need to move fac to end; depending on order cards go out 
+     %=  $
+        invites  %+  ~(jab by invites)
+                   id.act
+                 |=  =invite
+                 %=  invite
+                    receive-ships  %+  ~(put by receive-ships.invite) 
+                                     i.add-ships.act  [%pending]
+                 ==
+        caz  ;:  welp  caz  
+                 :~  :*
+                       %pass  path
+                       %agent  [i.add-ships.act %gather]
+                       %poke  %gather-action
+                       !>(`action`[%subscribe-to-invite id.act])
+             ==  ==  ==
+        add-ships.act  t.add-ships.act
+     == 
   ::   
        %edit-max-accepted
      =/  =path  /(scot %p our.bol)/[%invite]/(scot %uv id.act)
      =/  init-ship=@p  init-ship:(need (~(get by invites) id.act))
      ?>  =(our.bol src.bol)
      ?>  =(our.bol init-ship)
-     =/  upd-details=invite  (need (~(get by invites) id.act))
-     =.  max-accepted.upd-details  
-     ?.  (lte accepted-count.upd-details qty.act)
+     =/  upd=invite  (need (~(get by invites) id.act))
+     =.  max-accepted.upd  
+     ?.  (lte accepted-count.upd qty.act)
        ?.  =(0 qty.act)
-         ~&  "your new qty is below the number of accepted invites, {<accepted-count.upd-details>}"
+         ~&  "your new qty is below the number of accepted invites, {<accepted-count.upd>}"
          !!
        qty.act
      qty.act 
      ~&  "changing max-accepted to {<qty.act>}"
-     :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd-details]) ~[path /all])
+     :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd]) ~[path /all])
          ==
      %=  this
        invites  %+  ~(jab by invites)
                   id.act
-                |=(=invite upd-details) 
+                |=(=invite upd) 
      ==
   ::   
        %edit-desc
@@ -204,16 +213,16 @@
      =/  init-ship=@p  init-ship:(need (~(get by invites) id.act))
      ?>  =(our.bol src.bol)
      ?>  =(our.bol init-ship)
-     =/  upd-details=invite  
+     =/  upd=invite  
        (need (~(get by invites) id.act))
-     =.  desc.upd-details  desc.act
+     =.  desc.upd  desc.act
      ~&  "changing description to {<desc.act>}"
-     :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd-details]) ~[path /all])
+     :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd]) ~[path /all])
          ==
      %=  this
        invites  %+  ~(jab by invites)
                   id.act
-                |=(=invite upd-details) 
+                |=(=invite upd) 
      == 
   ::   
        %cancel
@@ -231,11 +240,21 @@
      =/  invite=invite  (~(got by invites) id.act)
      =/  receive-ships=(list @p)  
        ~(tap in ~(key by receive-ships.invite))
-     :_  this(invites (~(del by invites) id.act))     
-     :~  %+  ~(poke pass:io path)
-            [-:receive-ships %gather] 
-          gather-action+!>(`action`[%cancel id.act])         :: TODO add all recevie ships to this poke
-         [%give %kick ~[path /all] ~]                        :: TODO may also need to poke subscribed agents so they know it was canceled
+     =+  caz=*(list card:agent:gall)
+     =+  kik=[%give %kick ~[path /all] ~]
+     |-
+     ?~  receive-ships
+       :-  (snoc caz kik)
+           this(invites (~(del by invites) id.act)) 
+     %=  $
+        caz  ;:  welp  caz  
+                 :~  :*
+                       %pass  path
+                       %agent  [i.receive-ships %gather]
+                       %poke  %gather-action
+                       !>(`action`[%cancel id.act])
+             ==  ==  ==
+        receive-ships  t.receive-ships
      ==
   ::   
        %complete
@@ -244,14 +263,14 @@
      =/  init-ship=@p  init-ship:(need (~(get by invites) id.act))
      ?>  =(our.bol src.bol)
      ?>  =(our.bol init-ship)
-     =/  upd-details=invite  (need (~(get by invites) id.act))
-     =.  host-status.upd-details  %completed
-     :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd-details]) ~[path /all])
+     =/  upd=invite  (need (~(get by invites) id.act))
+     =.  host-status.upd  %completed
+     :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd]) ~[path /all])
          ==
      %=  this
        invites  %+  ~(jab by invites)  
                   id.act
-                |=(=invite upd-details) 
+                |=(=invite upd) 
      == 
   ::   
        %close
@@ -260,14 +279,14 @@
      =/  init-ship=@p  init-ship:(need (~(get by invites) id.act))
      ?>  =(our.bol src.bol)
      ?>  =(our.bol init-ship)
-     =/  upd-details=invite  (need (~(get by invites) id.act))
-     =.  host-status.upd-details  %closed
-     :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd-details]) ~[path /all])
+     =/  upd=invite  (need (~(get by invites) id.act))
+     =.  host-status.upd  %closed
+     :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd]) ~[path /all])
          ==
      %=  this
        invites  %+  ~(jab by invites) 
                   id.act
-                |=(=invite upd-details) 
+                |=(=invite upd) 
      ==
   ::   
        %reopen
@@ -276,14 +295,14 @@
      =/  init-ship=@p  init-ship:(need (~(get by invites) id.act))
      ?>  =(our.bol src.bol)
      ?>  =(our.bol init-ship)
-     =/  upd-details=invite  (need (~(get by invites) id.act))
-     =.  host-status.upd-details  %sent
-     :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd-details]) ~[path /all])
+     =/  upd=invite  (need (~(get by invites) id.act))
+     =.  host-status.upd  %sent
+     :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd]) ~[path /all])
          ==
      %=  this
        invites  %+  ~(jab by invites) 
                   id.act
-                |=(=invite upd-details) 
+                |=(=invite upd) 
      == 
   ::
        %send-invite
@@ -308,12 +327,21 @@
          0 
          %sent
      ==
-     =.  invites  (~(put by invites) id new-invite)
-     :_  this
-     :~  (fact:io gather-update+!>(`update`[%update-invite id new-invite]) ~[/all])
-         %+  ~(poke pass:io path)  
-           [+2:send-to %gather]                                       :: TODO can only poke one ship at a time; need to configure sending multiple 
-          gather-action+!>(`action`[%subscribe-to-invite id]) 
+     =+  caz=*(list card:agent:gall)
+     =+  fac=(fact:io gather-update+!>(`update`[%update-invite id new-invite]) ~[/all])
+     =.  invites  (~(put by invites) id new-invite) 
+     |-
+     ?~  send-to
+       [(into caz 0 fac) this]        :: TODO may need to move fac to end; depending on order cards go out 
+     %=  $
+        caz  ;:  welp  caz  
+                 :~  :*
+                       %pass  path
+                       %agent  [i.send-to %gather]
+                       %poke  %gather-action
+                       !>(`action`[%subscribe-to-invite id])
+             ==  ==  ==
+        send-to  t.send-to
      ==
   ::
        %accept 
@@ -329,30 +357,30 @@
      =/  host-status=host-status  host-status:(need (~(get by invites) id.act))
      ?>  ?=([%sent] host-status)
      ~&  "{<src.bol>} has accepted their invite to event id: {<id.act>}"
-     =/  upd-details=invite  (need (~(get by invites) id.act))
-     =.  upd-details
-     ?:  =(0 max-accepted.upd-details)
-        %=  upd-details
-          accepted-count  +(accepted-count.upd-details)
-          receive-ships   %+  ~(jab by receive-ships.upd-details)
+     =/  upd=invite  (need (~(get by invites) id.act))
+     =.  upd
+     ?:  =(0 max-accepted.upd)
+        %=  upd
+          accepted-count  +(accepted-count.upd)
+          receive-ships   %+  ~(jab by receive-ships.upd)
                             src.bol
                           |=(=ship-invite ship-invite(invitee-status %accepted))
         ==
-     ?:  (gth +(accepted-count.upd-details) max-accepted.upd-details)
+     ?:  (gth +(accepted-count.upd) max-accepted.upd)
        ~&  "max accepted count for {<id.act>} has been reached"
        !!
-     %=  upd-details
-        accepted-count  +(accepted-count.upd-details)
-        receive-ships   %+  ~(jab by receive-ships.upd-details)
+     %=  upd
+        accepted-count  +(accepted-count.upd)
+        receive-ships   %+  ~(jab by receive-ships.upd)
                           src.bol
                         |=(=ship-invite ship-invite(invitee-status %accepted))
      ==
-     :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd-details]) ~[path /all])
+     :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd]) ~[path /all])
          ==
      %=  this
         invites  %+  ~(jab by invites)
                    id.act
-                 |=(=invite upd-details)
+                 |=(=invite upd)
      ==
   ::
        %deny
@@ -368,22 +396,22 @@
      =/  host-status=host-status  host-status:(need (~(get by invites) id.act))
      ?<  ?=([%completed] host-status)    
      ~&  "{<src.bol>} has declined their invite to event id: {<id.act>}"
-     =/  upd-details=invite  (need (~(get by invites) id.act))
-     =/  invitee-status=invitee-status  +1:(need (~(get by receive-ships.upd-details) src.bol))
+     =/  upd=invite  (need (~(get by invites) id.act))
+     =/  invitee-status=invitee-status  +1:(need (~(get by receive-ships.upd) src.bol))
      =: 
-         accepted-count.upd-details  ?:  =(%accepted invitee-status)
-                                        (dec accepted-count.upd-details)
-                                     accepted-count.upd-details    
-         receive-ships.upd-details  %+  ~(jab by receive-ships.upd-details)
+         accepted-count.upd  ?:  =(%accepted invitee-status)
+                                        (dec accepted-count.upd)
+                                     accepted-count.upd    
+         receive-ships.upd  %+  ~(jab by receive-ships.upd)
                                       src.bol
                                     |=(=ship-invite ship-invite(invitee-status %denied))
      ==
-     :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd-details]) ~[path /all])
+     :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd]) ~[path /all])
          ==
      %=  this
         invites  %+  ~(jab by invites)
                    id.act
-                 |=(=invite upd-details)
+                 |=(=invite upd)
      ==
   ::
        %subscribe-to-invite

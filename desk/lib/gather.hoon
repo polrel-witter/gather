@@ -1,6 +1,7 @@
 /-  *gather
 |%
 ::
+::
 :: Remove Banned ships from a list
 ++  remove-banned
   |=  [import=(list @p) banned=(set @p)]
@@ -30,5 +31,4 @@
   |-
   ?~  send-to  receive-ships
   $(receive-ships (~(put by receive-ships) i.send-to *ship-invite), send-to t.send-to)
-::
 --
