@@ -132,65 +132,91 @@
      `this(receive-invite.settings receive-invite.act) 
   ::  
        %del-receive-ship
-     ~&  "removing {<-:del-ships.act>} from invite {<id.act>}"    
-     =/  =path  /(scot %p our.bol)/[%invite]/(scot %uv id.act)
      =/  init-ship=@p  init-ship:(need (~(get by invites) id.act)) 
-     ?>  =(our.bol src.bol)
+     ?.  =(our.bol src.bol)
+       ?>  =(src.bol init-ship)
+       ~&  "sucks to suck: you've been uninvited from {<init-ship>}'s invite"
+       :_  this(invites (~(del by invites) id.act))
+       :~  (fact:io gather-update+!>(`update`[%init-all invites settings]) ~[/all])  :: TODO not sure if invites will have updated by the time the fact is sent
+       ==
      ?>  =(our.bol init-ship)
-     =/  upd=invite  (need (~(get by invites) id.act))
-     =/  invitee-status=invitee-status  
-       +1:(need (~(get by receive-ships.upd) -:del-ships.act))
-     =: 
-         accepted-count.upd  ?:  =(%acccepted invitee-status)
-                                       (dec accepted-count.upd)
-                                     accepted-count.upd
-         receive-ships.upd   %-  ~(del by receive-ships.upd) 
-                                       -:del-ships.act
-     ==       
-     :-  :~  (kick-only:io -:del-ships.act ~[path]) 
-             (fact:io gather-update+!>(`update`[%update-invite id.act upd]) ~[path /all]) 
-         ==
-     %=  this
-       invites  %+  ~(jab by invites) 
-                  id.act
-                |=(=invite upd) 
+     =/  =path  /(scot %p init-ship)/[%invite]/(scot %uv id.act)
+     ~&  "removing {<del-ships.act>} from invite {<id.act>}"    
+     =+  dek=*(list card:agent:gall)
+     |-
+     ?~  del-ships.act
+       =+  upd=(need (~(get by invites) id.act))
+       =+  fac=(fact:io gather-update+!>(`update`[%update-invite id.act upd]) ~[path /all])
+       [(into dek 0 fac) this]                            :: TODO may need to move fac to end; depending on order cards go out 
+     %=  $
+        invites  %+  ~(jab by invites)
+                   id.act
+                 |=  =invite
+                 =/  sts=invitee-status
+                   +1:(need (~(get by receive-ships.invite) i.del-ships.act))
+                 ::
+                 %=  invite
+                    accepted-count  ?:  =(%accepted sts)
+                                       (dec accepted-count.invite)
+                                    accepted-count.invite
+                                    ::
+                    receive-ships   %-  ~(del by receive-ships.invite) 
+                                      i.del-ships.act
+                 ==
+        dek  ;:  welp  dek  
+                 :~  :*
+                       %pass  path
+                       %agent  [i.del-ships.act %gather]
+                       %poke  %gather-action
+                       !>(`action`[%del-receive-ship id.act *(list @p)])
+                     ==
+                     :*
+                       %give  %kick
+                       ~[path]
+                       `i.del-ships.act
+             ==  ==  ==
+        del-ships.act  t.del-ships.act
      ==
   ::  
        %add-receive-ship  
-     ~&  "adding {<add-ships.act>} to invite list on invite {<id.act>}"    
-     =/  =path  /(scot %p our.bol)/[%invite]/(scot %uv id.act)
-     =/  init-ship=@p  init-ship:(need (~(get by invites) id.act)) 
      ?>  =(our.bol src.bol)
+     =/  init-ship=@p  init-ship:(need (~(get by invites) id.act)) 
      ?>  =(our.bol init-ship)
-     =+  caz=*(list card:agent:gall)
+     ~&  "adding {<add-ships.act>} to invite list on invite {<id.act>}"    
+     =/  =path  /(scot %p init-ship)/[%invite]/(scot %uv id.act)
+     =/  add-ships=(list @p)
+       %-  remove-banned  
+         :-  (remove-dupes add-ships.act) 
+             banned.settings
+     =+  dek=*(list card:agent:gall)
      |-
-     ?~  add-ships.act
+     ?~  add-ships
        =+  upd=(need (~(get by invites) id.act))
        =+  fac=(fact:io gather-update+!>(`update`[%update-invite id.act upd]) ~[path /all])
-       [(into caz 0 fac) this]                            :: TODO may need to move fac to end; depending on order cards go out 
+       [(into dek 0 fac) this]                            :: TODO may need to move fac to end; depending on order cards go out 
      %=  $
         invites  %+  ~(jab by invites)
                    id.act
                  |=  =invite
                  %=  invite
                     receive-ships  %+  ~(put by receive-ships.invite) 
-                                     i.add-ships.act  [%pending]
+                                     i.add-ships  [%pending]
                  ==
-        caz  ;:  welp  caz  
+        dek  ;:  welp  dek  
                  :~  :*
                        %pass  path
-                       %agent  [i.add-ships.act %gather]
+                       %agent  [i.add-ships %gather]
                        %poke  %gather-action
                        !>(`action`[%subscribe-to-invite id.act])
              ==  ==  ==
-        add-ships.act  t.add-ships.act
+        add-ships  t.add-ships
      == 
   ::   
        %edit-max-accepted
-     =/  =path  /(scot %p our.bol)/[%invite]/(scot %uv id.act)
-     =/  init-ship=@p  init-ship:(need (~(get by invites) id.act))
      ?>  =(our.bol src.bol)
+     =/  init-ship=@p  init-ship:(need (~(get by invites) id.act))
      ?>  =(our.bol init-ship)
+     =/  =path  /(scot %p init-ship)/[%invite]/(scot %uv id.act)
      =/  upd=invite  (need (~(get by invites) id.act))
      =.  max-accepted.upd  
      ?.  (lte accepted-count.upd qty.act)
@@ -209,10 +235,10 @@
      ==
   ::   
        %edit-desc
-     =/  =path  /(scot %p our.bol)/[%invite]/(scot %uv id.act)
-     =/  init-ship=@p  init-ship:(need (~(get by invites) id.act))
      ?>  =(our.bol src.bol)
+     =/  init-ship=@p  init-ship:(need (~(get by invites) id.act))
      ?>  =(our.bol init-ship)
+     =/  =path  /(scot %p init-ship)/[%invite]/(scot %uv id.act)
      =/  upd=invite  
        (need (~(get by invites) id.act))
      =.  desc.upd  desc.act
@@ -226,28 +252,33 @@
      == 
   ::   
        %cancel
-     ~&  "cancelled invite with id {<id.act>}"
-     =/  =path  /(scot %p our.bol)/[%invite]/(scot %uv id.act)
      =/  init-ship=@p  init-ship:(need (~(get by invites) id.act))
+     =/  =path  /(scot %p init-ship)/[%invite]/(scot %uv id.act)
      ?.  =(our.bol src.bol)
        ?>  =(src.bol init-ship)
        ~&  "{<init-ship>} has cancelled their invite"
-       `this(invites (~(del by invites) id.act))
-       ::
+       :_  this(invites (~(del by invites) id.act))
+       :~  (fact:io gather-update+!>(`update`[%init-all invites settings]) ~[/all])  :: TODO not sure if invites will have updated by the time the fact is sent
+       ==
      ?.  =(our.bol init-ship)
-        `this(invites (~(del by invites) id.act))
-        ::   
+        :_  this(invites (~(del by invites) id.act))
+        :~  [%pass path %agent [init-ship %gather] %leave ~]
+            (fact:io gather-update+!>(`update`[%init-all invites settings]) ~[/all]) 
+        ==
      =/  invite=invite  (~(got by invites) id.act)
      =/  receive-ships=(list @p)  
        ~(tap in ~(key by receive-ships.invite))
-     =+  caz=*(list card:agent:gall)
+     =+  dek=*(list card:agent:gall)
      =+  kik=[%give %kick ~[path /all] ~]
      |-
      ?~  receive-ships
-       :-  (snoc caz kik)
+       ~&  "cancelling invite with id {<id.act>}"
+       =+  kik=[%give %kick ~[path /all] ~]
+       =+  fac=(fact:io gather-update+!>(`update`[%init-all invites settings]) ~[/all]) 
+       :-  (snoc (snoc dek kik) fac)
            this(invites (~(del by invites) id.act)) 
      %=  $
-        caz  ;:  welp  caz  
+        dek  ;:  welp  dek  
                  :~  :*
                        %pass  path
                        %agent  [i.receive-ships %gather]
@@ -258,11 +289,11 @@
      ==
   ::   
        %complete
-     ~&  "gathering with id {<id.act>} is complete"
-     =/  =path  /(scot %p our.bol)/[%invite]/(scot %uv id.act)
-     =/  init-ship=@p  init-ship:(need (~(get by invites) id.act))
      ?>  =(our.bol src.bol)
+     =/  init-ship=@p  init-ship:(need (~(get by invites) id.act))
      ?>  =(our.bol init-ship)
+     ~&  "gathering with id {<id.act>} is complete"
+     =/  =path  /(scot %p init-ship)/[%invite]/(scot %uv id.act)
      =/  upd=invite  (need (~(get by invites) id.act))
      =.  host-status.upd  %completed
      :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd]) ~[path /all])
@@ -274,11 +305,11 @@
      == 
   ::   
        %close
-     ~&  "gathering with id {<id.act>} has been closed"    
-     =/  =path  /(scot %p our.bol)/[%invite]/(scot %uv id.act)
-     =/  init-ship=@p  init-ship:(need (~(get by invites) id.act))
      ?>  =(our.bol src.bol)
+     =/  init-ship=@p  init-ship:(need (~(get by invites) id.act))
      ?>  =(our.bol init-ship)
+     ~&  "gathering with id {<id.act>} has been closed"    
+     =/  =path  /(scot %p init-ship)/[%invite]/(scot %uv id.act)
      =/  upd=invite  (need (~(get by invites) id.act))
      =.  host-status.upd  %closed
      :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd]) ~[path /all])
@@ -290,11 +321,11 @@
      ==
   ::   
        %reopen
-     ~&  "gathering with id {<id.act>} has been reopened"    
-     =/  =path  /(scot %p our.bol)/[%invite]/(scot %uv id.act)
-     =/  init-ship=@p  init-ship:(need (~(get by invites) id.act))
      ?>  =(our.bol src.bol)
+     =/  init-ship=@p  init-ship:(need (~(get by invites) id.act))
      ?>  =(our.bol init-ship)
+     ~&  "gathering with id {<id.act>} has been reopened"    
+     =/  =path  /(scot %p init-ship)/[%invite]/(scot %uv id.act)
      =/  upd=invite  (need (~(get by invites) id.act))
      =.  host-status.upd  %sent
      :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd]) ~[path /all])
@@ -327,14 +358,14 @@
          0 
          %sent
      ==
-     =+  caz=*(list card:agent:gall)
+     =+  dek=*(list card:agent:gall)
      =+  fac=(fact:io gather-update+!>(`update`[%update-invite id new-invite]) ~[/all])
      =.  invites  (~(put by invites) id new-invite) 
      |-
      ?~  send-to
-       [(into caz 0 fac) this]        :: TODO may need to move fac to end; depending on order cards go out 
+       [(into dek 0 fac) this]        :: TODO may need to move fac to end; depending on order cards go out 
      %=  $
-        caz  ;:  welp  caz  
+        dek  ;:  welp  dek  
                  :~  :*
                        %pass  path
                        %agent  [i.send-to %gather]
@@ -429,8 +460,39 @@
      ~&  "banning {<ship.act>}"
      ?:  (~(has in banned.settings) ship.act)
         `this
-     `this(banned.settings (~(put in banned.settings) ship.act))
-        :: TODO need to pull all wires this ship is subscribed to and kick them from each
+     =/  ids=(list id)  (id-comb [our.bol ship.act invites]) 
+     =|  upd=invite
+     =+  kiks=*(list card:agent:gall)
+     =+  facs=*(list card:agent:gall)
+     |-
+     ?~  ids 
+       :-  (welp kiks facs)                             :: TODO we want kiks first, but not sure which way the list of cards is exectured
+           this(banned.settings (~(put in banned.settings) ship.act))                           
+     %=  $
+        kiks  ;:  welp  kiks  
+                 :~  :* 
+                       %give  %kick
+                       ~[/(scot %p our.bol)/[%invite]/(scot %uv i.ids)]
+                       `ship.act
+             ==  ==  ==
+        invites  %+  ~(jab by invites)
+                   i.ids
+                 |=  =invite
+                 %=  invite
+                    receive-ships  %-  ~(del by receive-ships.invite) 
+                                     ship.act
+                 ==
+        upd  (need (~(get by invites) i.ids))
+             :: 
+        facs  ;:  welp  facs  
+                 :~  :*
+                       %give
+                       %fact
+                       ~[/(scot %p our.bol)/[%invite]/(scot %uv i.ids) /all]
+                       gather-update+!>(`update`[%update-invite i.ids upd])
+             ==  ==  ==
+        ids  t.ids
+     ==
         :: TODO may need to include a new $update so frontend can subscribe to banned ships
   ::
        %unban
