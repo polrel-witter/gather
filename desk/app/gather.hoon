@@ -1,4 +1,4 @@
-/-  *gather
+/-  *gather, hark=hark-store
 /+  *gather, default-agent, dbug, agentio
 |%
 +$  versioned-state
@@ -146,8 +146,8 @@
      |-
      ?~  del-ships.act
        =+  upd=(need (~(get by invites) id.act))
-       =+  fac=(fact:io gather-update+!>(`update`[%update-invite id.act upd]) ~[path /all])
-       [(into dek 0 fac) this]                            :: TODO may need to move fac to end; depending on order cards go out 
+       =+  fak=(fact:io gather-update+!>(`update`[%update-invite id.act upd]) ~[path /all])
+       [(into dek 0 fak) this]                            :: TODO may need to move fac to end; depending on order cards go out 
      %=  $
         invites  %+  ~(jab by invites)
                    id.act
@@ -182,18 +182,18 @@
      ?>  =(our.bol src.bol)
      =/  init-ship=@p  init-ship:(need (~(get by invites) id.act)) 
      ?>  =(our.bol init-ship)
-     ~&  "adding {<add-ships.act>} to invite list on invite {<id.act>}"    
      =/  =path  /(scot %p init-ship)/[%invite]/(scot %uv id.act)
      =/  add-ships=(list @p)
        %-  remove-banned  
          :-  (remove-dupes add-ships.act) 
              banned.settings
+     ~&  "adding {<add-ships.act>} to invite list on invite {<id.act>}"    
      =+  dek=*(list card:agent:gall)
      |-
      ?~  add-ships
        =+  upd=(need (~(get by invites) id.act))
-       =+  fac=(fact:io gather-update+!>(`update`[%update-invite id.act upd]) ~[path /all])
-       [(into dek 0 fac) this]                            :: TODO may need to move fac to end; depending on order cards go out 
+       =+  fak=(fact:io gather-update+!>(`update`[%update-invite id.act upd]) ~[path /all])
+       [(into dek 0 fak) this]                            :: TODO may need to move fac to end; depending on order cards go out 
      %=  $
         invites  %+  ~(jab by invites)
                    id.act
@@ -250,13 +250,98 @@
                   id.act
                 |=(=invite upd) 
      == 
+  ::
+       %edit-invite-location
+     ?>  =(our.bol src.bol)
+     =/  init-ship=@p  init-ship:(need (~(get by invites) id.act))
+     ?>  =(our.bol init-ship)
+     =/  =path  /(scot %p init-ship)/[%invite]/(scot %uv id.act)
+     =/  upd=invite  
+       (need (~(get by invites) id.act))
+     =.  location-type.upd  location-type.act
+     ~&  "changing location type to {<location-type.act>}"
+     :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd]) ~[path /all])
+         ==
+     %=  this
+       invites  %+  ~(jab by invites)
+                  id.act
+                |=(=invite upd) 
+     ==
+  ::
+       %edit-invite-position
+     ?>  =(our.bol src.bol)
+     =/  init-ship=@p  init-ship:(need (~(get by invites) id.act))
+     ?>  =(our.bol init-ship)
+     =/  =path  /(scot %p init-ship)/[%invite]/(scot %uv id.act)
+     =/  upd=invite  
+       (need (~(get by invites) id.act))
+     =.  position.upd  position.act
+     ~&  "changing position to {<position.act>}"
+     :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd]) ~[path /all])
+         ==
+     %=  this
+       invites  %+  ~(jab by invites)
+                  id.act
+                |=(=invite upd) 
+     ==
+  ::
+       %edit-invite-address
+     ?>  =(our.bol src.bol)
+     =/  init-ship=@p  init-ship:(need (~(get by invites) id.act))
+     ?>  =(our.bol init-ship)
+     =/  =path  /(scot %p init-ship)/[%invite]/(scot %uv id.act)
+     =/  upd=invite  
+       (need (~(get by invites) id.act))
+     =.  address.upd  address.act
+     ~&  "changing address to {<address.act>}"
+     :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd]) ~[path /all])
+         ==
+     %=  this
+       invites  %+  ~(jab by invites)
+                  id.act
+                |=(=invite upd) 
+     ==
+  ::
+       %edit-invite-access-link
+     ?>  =(our.bol src.bol)
+     =/  init-ship=@p  init-ship:(need (~(get by invites) id.act))
+     ?>  =(our.bol init-ship)
+     =/  =path  /(scot %p init-ship)/[%invite]/(scot %uv id.act)
+     =/  upd=invite  
+       (need (~(get by invites) id.act))
+     =.  access-link.upd  access-link.act
+     ~&  "changing acccess link to {<access-link.act>}"
+     :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd]) ~[path /all])
+         ==
+     %=  this
+       invites  %+  ~(jab by invites)
+                  id.act
+                |=(=invite upd) 
+     ==
+  ::
+       %edit-invite-radius  
+     ?>  =(our.bol src.bol)
+     =/  init-ship=@p  init-ship:(need (~(get by invites) id.act))
+     ?>  =(our.bol init-ship)
+     =/  =path  /(scot %p init-ship)/[%invite]/(scot %uv id.act)
+     =/  upd=invite  
+       (need (~(get by invites) id.act))
+     =.  radius.upd  radius.act
+     ~&  "changing radius to {<radius.act>}"
+     :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd]) ~[path /all])
+         ==
+     %=  this
+       invites  %+  ~(jab by invites)
+                  id.act
+                |=(=invite upd) 
+     == 
   ::   
        %cancel
      =/  init-ship=@p  init-ship:(need (~(get by invites) id.act))
      =/  =path  /(scot %p init-ship)/[%invite]/(scot %uv id.act)
      ?.  =(our.bol src.bol)
        ?>  =(src.bol init-ship)
-       ~&  "{<init-ship>} has cancelled their invite"
+       ~&  "{<init-ship>} has revoked their invite"
        :_  this(invites (~(del by invites) id.act))
        :~  (fact:io gather-update+!>(`update`[%init-all invites settings]) ~[/all])  :: TODO not sure if invites will have updated by the time the fact is sent
        ==
@@ -272,10 +357,10 @@
      =+  kik=[%give %kick ~[path /all] ~]
      |-
      ?~  receive-ships
-       ~&  "cancelling invite with id {<id.act>}"
+       ~&  "revoking invite with id {<id.act>}"
        =+  kik=[%give %kick ~[path /all] ~]
-       =+  fac=(fact:io gather-update+!>(`update`[%init-all invites settings]) ~[/all]) 
-       :-  (snoc (snoc dek kik) fac)
+       =+  fak=(fact:io gather-update+!>(`update`[%init-all invites settings]) ~[/all]) 
+       :-  (snoc (snoc dek kik) fak)
            this(invites (~(del by invites) id.act)) 
      %=  $
         dek  ;:  welp  dek  
@@ -350,20 +435,25 @@
      =/  receive-ships=(map @p =ship-invite)  
        (make-receive-ships-map send-to)
      ~&  "sending invite to {<send-to>}"
-     =/  new-invite=invite 
+     =/  new=invite 
      :*  our.bol 
          desc.act 
-         receive-ships 
+         receive-ships
+         location-type.act
+         position.act
+         address.act
+         access-link.act
+         radius.act 
          max-accepted.act 
          0 
          %sent
      ==
      =+  dek=*(list card:agent:gall)
-     =+  fac=(fact:io gather-update+!>(`update`[%update-invite id new-invite]) ~[/all])
-     =.  invites  (~(put by invites) id new-invite) 
+     =+  fak=(fact:io gather-update+!>(`update`[%update-invite id new]) ~[/all])
+     =.  invites  (~(put by invites) id new) 
      |-
      ?~  send-to
-       [(into dek 0 fac) this]        :: TODO may need to move fac to end; depending on order cards go out 
+       [(into dek 0 fak) this]        :: TODO may need to move fac to end; depending on order cards go out 
      %=  $
         dek  ;:  welp  dek  
                  :~  :*
@@ -452,7 +542,21 @@
      ?<  (~(has by invites) id.act)
      ~&  "{<src.bol>} has sent an invite, subscribing..."
      :_  this
-     :~  (~(watch pass:io path) [src.bol %gather] path) 
+     ^-  (list card:agent:gall)
+     :~  (~(watch pass:io path) [src.bol %gather] path)
+         =/  =bin:hark      :*  /[dap.bol] 
+                                q.byk.bol 
+                                /(scot %p src.bol)/[%invite]/(scot %uv id.act)
+                            ==
+         =/  =body:hark     :*  ~[ship+src.bol text+' sent you an invite.']
+                                ~
+                                now.bol
+                                /
+                                /gather
+                            == 
+         =/  =action:hark   [%add-note bin body]
+         =/  =cage          [%hark-action !>(action)]
+         [%pass /hark %agent [our.bol %hark-store] %poke cage] 
      ==
   ::
        %ban
@@ -462,13 +566,27 @@
         `this
      =/  ids=(list id)  (id-comb [our.bol ship.act invites]) 
      =|  upd=invite
+     =+  poks=*(list card:agent:gall)
      =+  kiks=*(list card:agent:gall)
-     =+  facs=*(list card:agent:gall)
+     =+  faks=*(list card:agent:gall)
      |-
      ?~  ids 
-       :-  (welp kiks facs)                             :: TODO we want kiks first, but not sure which way the list of cards is exectured
+       :-  :(welp kiks faks poks)   
            this(banned.settings (~(put in banned.settings) ship.act))                           
+     ::
+     =+  inv=(need (~(get by invites) i.ids))
+     =/  upd=invite  %=  inv
+                        receive-ships  %-  ~(del by receive-ships.inv) 
+                                         ship.act
+                     ==
      %=  $
+        poks  ;:  welp  poks
+                 :~  :*
+                       %pass  /(scot %p our.bol)/[%invite]/(scot %uv i.ids)
+                       %agent  [ship.act %gather]
+                       %poke  %gather-action
+                       !>(`action`[%cancel i.ids])
+             ==  ==  ==
         kiks  ;:  welp  kiks  
                  :~  :* 
                        %give  %kick
@@ -477,14 +595,8 @@
              ==  ==  ==
         invites  %+  ~(jab by invites)
                    i.ids
-                 |=  =invite
-                 %=  invite
-                    receive-ships  %-  ~(del by receive-ships.invite) 
-                                     ship.act
-                 ==
-        upd  (need (~(get by invites) i.ids))
-             :: 
-        facs  ;:  welp  facs  
+                 |=(=invite upd)
+        faks  ;:  welp  faks  
                  :~  :*
                        %give
                        %fact
@@ -493,7 +605,6 @@
              ==  ==  ==
         ids  t.ids
      ==
-        :: TODO may need to include a new $update so frontend can subscribe to banned ships
   ::
        %unban
      ?>  =(our.bol src.bol)
@@ -501,7 +612,6 @@
      ?:  (~(has in banned.settings) ship.act)
         `this(banned.settings (~(del in banned.settings) ship.act))
      `this
-        :: TODO may need to include a new $update so frontend can subscribe to banned ships
     ==   
   -- 
 ::

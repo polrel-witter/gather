@@ -28,6 +28,11 @@
       :~  ['initShip' s+(scot %p init-ship.invite)]
           ['desc' s+desc.invite]
           ['receiveShips' (en-receive-ships receive-ships.invite)]
+          ['locationType' s+(scot %tas location-type.invite)]      :: ADDITION
+          ['invitePosition' (en-position position.invite)]         :: ADDITION
+          ['inviteAddress' (en-address address.invite)]            :: ADDITION
+          ['accessLink' s+(scot %ta access-link.invite)]           :: ADDITION
+          ['inviteRadius' s+(scot %rs radius.invite)]              :: ADDITION
           ['maxAccepted' (numb max-accepted.invite)]
           ['acceptedCount' (numb accepted-count.invite)]
           ['hostStatus' s+(scot %tas host-status.invite)]
