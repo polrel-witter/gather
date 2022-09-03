@@ -1,6 +1,7 @@
 /-  *gather
 |%
 ::
+::
 :: Remove Banned ships from a list
 ++  remove-banned
   |=  [import=(list @p) banned=(set @p)]
@@ -31,4 +32,20 @@
   ?~  send-to  receive-ships
   $(receive-ships (~(put by receive-ships) i.send-to *ship-invite), send-to t.send-to)
 ::
+::
+:: Makes list of all invite ids for a ship when our.bol = 
+:: init-ship and the ship in question is in the corresponding
+:: receive-ships map.
+++  id-comb
+  |=  [our=@p menace=@p invites=invites]
+  =/  ids=(list id)  ~(tap in ~(key by invites))
+  =|  export=(list id)
+  |-  ^-  (list id)
+  ?~  ids  export
+  =+  dets=(need (~(get by invites) i.ids))
+  ?.  ?&  =(our init-ship:dets)
+          (~(has by receive-ships.dets) menace) 
+      ==
+    $(ids t.ids)
+  $(export (weld export `(list id)`~[i.ids]), ids t.ids)
 --

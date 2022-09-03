@@ -6,6 +6,8 @@
 +$  radius          @rs 
 +$  position        [lat=@rs lon=@rs]
 +$  address         [street=@t city=@t state=@t country=@t zip=@t]
++$  location-type   ?(%virtual %meatspace)       :: Moved up here from $invite
++$  access-link     @ta                          :: Moved up here from $invite
 +$  members         (set @p)
 +$  group           @ta
 +$  receive-invite  ?(%only-in-radius %anyone)   
@@ -38,13 +40,13 @@
      desc=@t
      receive-ships=(map @p ship-invite)
      :: date=@da
-     :: location-type=?(%meatspace %virtual)
-     :: =position
-     :: =address
-     :: access-link=@ta
-     :: =radius
+     =location-type                     :: UNCOMMENTED
+     =position                          :: UNCOMMENTED
+     =address                           :: UNCOMMENTED
+     =access-link                       :: UNCOMMENTED
+     =radius                            :: UNCOMMENTED
      max-accepted=@ud
-     accepted-count=@ud                     :: ADDITION to keep track of # of accepted invites
+     accepted-count=@ud      
      =host-status
   ==
 ::
@@ -56,7 +58,7 @@
      =radius
      =address
      collections=(map id collection)
-     =banned                                :: ADDITION added to state
+     =banned                        
      =receive-invite
   ==
 ::
@@ -75,19 +77,29 @@
      [%del-collection =id]
      [%receive-invite =receive-invite]    
   ::
-  :: Invite edit options
-     [%del-receive-ship =id =ship]
-     [%add-receive-ship =id =ship]
+  :: Options to edit an invite
+     [%del-receive-ship =id del-ships=(list @p)]  :: UPDATE expanded to accept list and changed face
+     [%add-receive-ship =id add-ships=(list @p)]  :: UPDATE expanded to accept list and changed face
      [%edit-max-accepted =id qty=@ud]
      [%edit-desc =id desc=@t]
+     [%edit-invite-location =id =location-type]     :: ADDITION to change location type
+     [%edit-invite-position =id =position]          :: ADDITION to change venue position
+     [%edit-invite-address =id =address]            :: ADDITION to change venue address
+     [%edit-invite-access-link =id =access-link]    :: ADDITION to change an access link
+     [%edit-invite-radius =id =radius]              :: ADDITION to change the radius  
      [%cancel =id]
      [%complete =id]                              
-     [%close =id]                          :: UPDATE based on Thomas' suggestion
-     [%reopen =id]                         :: UPDATE based on Thomas' suggestion
+     [%close =id]            
+     [%reopen =id]          
   ::
   :: Invite communication 
-     $:  %send-invite                         :: UPDATE removed the =id since it will be generated upon the poke 
+     $:  %send-invite       
          send-to=(list @p)
+         =location-type          :: ADDITION
+         =position               :: ADDITION
+         =address                :: ADDITION
+         =access-link            :: ADDITION
+         =radius                 :: ADDITION
          max-accepted=@ud
          desc=@t 
      ==
