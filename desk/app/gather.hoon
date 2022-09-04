@@ -542,21 +542,21 @@
      ?<  (~(has by invites) id.act)
      ~&  "{<src.bol>} has sent an invite, subscribing..."
      :_  this
-     ^-  (list card:agent:gall)
+::     ^-  (list card:agent:gall)
      :~  (~(watch pass:io path) [src.bol %gather] path)
-         =/  =bin:hark      :*  /[dap.bol] 
-                                q.byk.bol 
-                                /(scot %p src.bol)/[%invite]/(scot %uv id.act)
-                            ==
-         =/  =body:hark     :*  ~[ship+src.bol text+' sent you an invite.']
-                                ~
-                                now.bol
-                                /
-                                /gather
-                            == 
-         =/  =action:hark   [%add-note bin body]
-         =/  =cage          [%hark-action !>(action)]
-         [%pass /hark %agent [our.bol %hark-store] %poke cage] 
+::         =/  =bin:hark      :*  /[dap.bol] 
+::                                q.byk.bol 
+::                                /(scot %p src.bol)/[%invite]/(scot %uv id.act)
+::                            ==
+::         =/  =body:hark     :*  ~[ship+src.bol text+' sent you an invite.']
+::                                ~
+::                                now.bol
+::                                /
+::                                /gather
+::                            == 
+::         =/  =action:hark   [%add-note bin body]
+::         =/  =cage          [%hark-action !>(action)]
+::         [%pass /hark %agent [our.bol %hark-store] %poke cage] 
      ==
   ::
        %ban
