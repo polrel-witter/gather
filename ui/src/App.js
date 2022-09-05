@@ -12,6 +12,9 @@ import { useStore } from './data/store';
 const AppSwitch = () => {
 	const route = useStore(state => state.route);
 	const sAll = useStore(state => state.sAll);
+
+	const allState = useStore(state => state);
+	console.log(allState);
 	
   useEffect(() => {
 		sAll();
@@ -39,11 +42,11 @@ const AppSwitch = () => {
 class App extends Component {
 	  constructor(props) {
     super(props);
-		// window.urbit = new Urbit("http://localhost:8080","","lidlut-tabwed-pillex-ridrup");
-		// window.urbit.ship = 'zod';
+		window.urbit = new Urbit("http://localhost:8080","","lidlut-tabwed-pillex-ridrup");
+		window.urbit.ship = 'zod';
 			
-		window.urbit = new Urbit("");
-		window.urbit.ship = window.ship;
+		// window.urbit = new Urbit("");
+		// window.urbit.ship = window.ship;
 
 		window.urbit.onOpen = () => this.setState({conn: "ok"});
     window.urbit.onRetry = () => this.setState({conn: "try"});

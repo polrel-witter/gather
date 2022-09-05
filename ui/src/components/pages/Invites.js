@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { useStore } from '../../data/store';
 import { Text, Box, Button } from "@tlon/indigo-react";
-import { fetchMyInvites, fetchReceivedShips } from '../../utils';
+import { fetchMyInvites, fetchReceivedShips, fetchMyReceivedShip } from '../../utils';
 
 const Actions = (props) => {
 	const pBan = useStore(state => state.pBan);
@@ -39,7 +39,10 @@ const Actions = (props) => {
 			</Box>
 	)
 	else {
-		const inviteeStatus = 'pending';
+		const inviteeStatus = fetchMyReceivedShip(props.invite).shipInvite;
+		// console.log(fetchMyReceivedShip(props.invite));
+		// const inviteeStatus = 'pending';
+		console.log(inviteeStatus);
 		if (props.invite.hostStatus !== 'completed') {
 			return (
 				<Box>
@@ -58,7 +61,7 @@ const Actions = (props) => {
 				{ inviteeStatus === 'denied' &&
 				<Box>
 					<Button onClick={() => {pAccept(props.invite.id)}}> RSVP </Button>
-					<Button> Delete </Button>
+					<Button onClick={() => {pCancel(props.invite.id)}}> Delete </Button>
 					<Button onClick={() => {pBan(props.invite.initShip)}} > Ban </Button>
 				</Box>
 				}
@@ -68,7 +71,7 @@ const Actions = (props) => {
 		else {
 			return (
 				<Box>
-					<Button> Delete </Button>
+					<Button onClick={()=>{pCancel(props.invite.id)}}>Delete</Button>
 				</Box>
 			)
 		}
