@@ -67,27 +67,31 @@ export const dedup = (attr, arr) => {
 	return [...new Map(arr.map(a => [a[attr], a])).values()];
 	}
 
-export const createInvitee = (str, invitees) => {
+export const createGroup = (str, groups) => {
 	if(str[0] === '~' && patpValidate(str)) {
-		return invitees.concat({type: 'ship', patp: str, selected: false});
+		return groups.concat({type: 'single-group', ships: [str], selected: false, toDelete: false});
+	}
+	else if(str === 'group') {
+		// TODO try to fetch a group from groups-store
+		return groups.concat({type: 'collection', ships: [str], selected: false, toDelete: false});
 	}
 	else
-		return invitees;
+		return groups;
 }
 
-export const toggleSelect = (patp, invitees) => {
-	return invitees.map(invitee => {
-		if (invitee.patp === patp) {
-			return {...invitee, selected: !invitee.selected}
+export const toggleSelect = (patp, groups) => {
+	return groups.map(group => {
+		if (group.type === 'single-group' && group.ships[0] === patp) {
+			return {...group, selected: !group.selected}
 		}
 		else
-			return invitee
+			return group
 	})
 }
 
-export const deleteInvitee = (patp, invitees) => {
-	return invitees.filter(invitee => {
-		if (invitee.patp === patp)
+export const deleteGroup = (patp, groups) => {
+	return groups.filter(group => {
+		if (group.type === 'single-group' && group.ships[0] === patp)
 			return false;
 		return true;
 	})

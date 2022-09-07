@@ -12,8 +12,8 @@ const Topbar = () => {
 			<Button onClick={() => setRoute("draft")}> Draft </Button>}
 			{ route === 'invites' ? <Button color="red">Invites</Button> : 
 			  <Button onClick={() => setRoute("invites")}>Invites</Button>}
-			{/* { route === 'settings' ? <Button color="red">Settings</Button> : */} 
-			{/* 	<Button onClick={() => setRoute("settings")}>Settings</Button>} */}
+			{ route === 'settings' ? <Button color="red">Settings</Button> : 
+				<Button onClick={() => setRoute("settings")}>Settings</Button>}
 		</Box>
 	)
 }

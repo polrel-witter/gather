@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { useStore } from '../../data/store';
 import { Text, Box, Button } from "@tlon/indigo-react";
 import { fetchMyInvites, fetchReceivedShips, fetchMyReceivedShip } from '../../utils';
+import FocusedInvite from './FocusedInvite';
 
 const Actions = (props) => {
 	const pBan = useStore(state => state.pBan);
@@ -19,7 +20,6 @@ const Actions = (props) => {
 			<Box>
 			{ props.invite.hostStatus === "sent" && 
 				<Box>
-					<Button onClick={()=>{}}>Edit</Button>
 					<Button onClick={()=>{pClose(props.invite.id)}}>Close</Button>
 					<Button onClick={()=>{pCancel(props.invite.id)}}>Cancel</Button>
 				</Box>
@@ -49,20 +49,12 @@ const Actions = (props) => {
 				{ inviteeStatus === 'pending' &&
 				<Box>
 					<Button onClick={() => {pAccept(props.invite.id)}}> RSVP </Button>
-					<Button onClick={() => {pDeny(props.invite.id)}}> Decline </Button>
 					<Button onClick={() => {pBan(props.invite.initShip)}} > Ban </Button>
 				</Box>
 				}
 				{ inviteeStatus === 'accepted' &&
 				<Box>
 					<Button onClick={() => {pDeny(props.invite.id)}}> UnRSVP </Button>
-				</Box>
-				}
-				{ inviteeStatus === 'denied' &&
-				<Box>
-					<Button onClick={() => {pAccept(props.invite.id)}}> RSVP </Button>
-					<Button onClick={() => {pCancel(props.invite.id)}}> Delete </Button>
-					<Button onClick={() => {pBan(props.invite.initShip)}} > Ban </Button>
 				</Box>
 				}
 				</Box>
@@ -97,7 +89,13 @@ const Status = (props) => {
 }
 
 const Invite = (props) => {
-	return (
+	const route = useStore(state => state.route);
+	const focusedInvite = useStore(state => state.focusedInvite);
+	const focusInvite = useStore(state => state.focusInvite);
+	console.log(focusedInvite);
+	console.log(Object.keys(focusedInvite).length === 0);
+	if(Object.keys(focusedInvite).length === 0)
+		return (
 				<Box>
 					{ props.invites.map( invite => 
 					<Box border={1}>
@@ -110,30 +108,25 @@ const Invite = (props) => {
 						<Text>{invite.desc}</Text>
 						</Box>
 						<Box>==================</Box>
-						{/* <Box> */}
-						{/* 	<Text> */}
-						{/* 		Happening in meatspace/virtual world on */} 
-						{/* 		<Date invite={invite}/> */}
-						{/* 		{ invite.locationType === "meatspace" && */} 
-						{/* 			<Text> Location: {invite.location} </Text> */}
-						{/* 		} */}
-						{/* 	</Text> */}
-						{/* </Box> */}
-						{/* <Box> */}
-						{/* 	<Text> */}
-						{/* 		Access Link: {invite.accessLink} */}
-						{/* 	</Text> */}
-						{/* </Box> */}
-						{/* { invite.radius !== 0 && */} 
-						{/* <Box> */}
-						{/* 	<Text> */}
-						{/* 		Delivery Radius: {invite.radius} */}
-						{/* 	</Text> */}
-						{/* </Box> */}
-						{/* } */}
-						{ invite.initShip !== window.urbit.ship &&
 						<Box>
-							<Button> DM Host </Button>
+							<Text>
+								Happening in meatspace/virtual world on 
+								<Date invite={invite}/>
+								{ invite.locationType === "meatspace" && 
+									<Text> Location: {invite.location} </Text>
+								}
+							</Text>
+						</Box>
+						<Box>
+							<Text>
+								Access Link: {invite.accessLink}
+							</Text>
+						</Box>
+						{ invite.radius !== 0 && 
+						<Box>
+							<Text>
+								Delivery Radius: {invite.radius}
+							</Text>
 						</Box>
 						}
 						{ invite.maxAccepted !== 0 && 
@@ -142,7 +135,7 @@ const Invite = (props) => {
 						</Box>
 						}
 						<Box>
-							<Button>View Invite List</Button>
+							<Button onClick={() => focusInvite(invite)}>Focus</Button>
 						</Box>
 					<Box>
 						<Actions invite={invite}/>
@@ -150,7 +143,11 @@ const Invite = (props) => {
 					</Box>
 					) }
 				</Box>
-	)
+			)
+	else
+		return (
+			<FocusedInvite/>
+		)
 };
 
 const Invites = () => {

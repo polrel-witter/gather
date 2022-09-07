@@ -1,6 +1,38 @@
 import React, { Component, useState } from 'react';
 import { Text, Box, ManagedTextAreaField, StatelessTextArea, ManagedTextInputField, Button, StatelessTextInput } from "@tlon/indigo-react";
 import { useStore } from '../../data/store';
+import Location from '../shared/Location';
+import { patpValidate } from '../../utils';
+
+const MyRadius = () => {
+	const radius = useStore(state => state.settings.radius);
+	const [_radius, _setRadius] = useState(radius);
+	const pRadius = useStore(state => state.pRadius);
+
+	return(
+		<Box border={1}>
+		<Text display="block">My Radius</Text>
+		<Text display="block">
+		Distance within which you’re willing to receive Statuses. 
+	  Shared with Gang members when Status is turned on.
+		</Text>
+		<Text >Miles:</Text>
+		{/* TODO make sure the input is a number */}
+		<StatelessTextInput
+			display="block"
+			value={_radius}
+			onChange={(e) => 
+				{
+					const re = /^[0-9\b]+$/;
+					if(e.currentTarget.value === '' || re.test(e.currentTarget.value))
+						_setRadius(Number(e.currentTarget.value));
+				}}
+		>
+			</StatelessTextInput>
+		<Button onClick={() => pRadius(String(_radius))}>Set</Button>
+		</Box>
+	 );
+}
 
 const Radius = () => {
 	const radius = useStore(state => state.settings.radius);
@@ -26,57 +58,46 @@ const Radius = () => {
 	 );
 }
 
-const Location = () => {
-	const statusNote = useStore(state => state.settings.statusNote);
-	const pSettings = useStore(state => state.pSettings);
-	const [_statusNote, _setStatusNote] = useState(statusNote);
-	// const handleChange = (e) => {
-	// 	if(e.nativeEvent.data === null)
-	const address = { street: "street2", city: "Austin", state: "Texas", country: "USA2", zip: "111112" };
-	const position = { lon: 43, lat: 11};
-			
-	// }
-	return (
-		<Box borderBottom={1}>
-		<Text display="block"> My Location </Text>
-		<Text display="block"> 
-			Used to retrieve location coordinates,
-			and is shared with Gang members when Status is turned on. 
-		</Text>
-  <StatelessTextArea rows={1} value={address.street + ' ,' + address.city + ' ,' + address.state + ' ,' + address.country + ' ,' + address.zip}
-		onChange={(e) => _setStatusNote(e.currentTarget.value)}>
-	>
-  </StatelessTextArea>
-		<Button onClick={() => {pSettings('address', address); pSettings('position', position)}}>Set</Button>
-		</Box>
-	 );
-}
-
-const CustomCollections = (props) => {
-	return(
+const Banned = () => {
+		const banned = useStore(state => state.settings.banned);
+		// const banned = [];
+		const pUnban = useStore(state => state.pUnban);
+		const pBan = useStore(state => state.pBan);
+		const [banSearch, setBanSearch] = useState("");
+		return (
 		<Box border={1}>
-		{/* <Text>Gang Members</Text> */}
-		{/* <Text>Select default ships to which you’re willing to send your Status. Clicking Pause will temporarily stop sending your Status to a ship, but you will still receive theirs.  </Text> */}
-  	{/* <StatelessTextInput/> */}
-		{/* <Button onClick={() => pShareStatus(_gangMember)}>Add</Button> */}
-		{/* 	{ gangMembers.map(gangMember => { */}
-		{/* 		return ( */}
-		{/* 		<Box> */}
-		{/* 			<Text>{gangMember._ship}</Text> */}
-		{/* 			{/1* <Button onClick={() => pauseGangMember(_gangMember)}>Pause</Button> *1/} */}
-		{/* 			{/1* <Button onClick={() => removeGangMember(_gangMember)}>Remove</Button> *1/} */}
-		{/* 		</Box> */}
-		{/* 		) */}
-		{/* 	})} */}
+			<Text> Banned Ships </Text>
+				<StatelessTextInput
+				display="block"
+				value={banSearch}
+				onChange={(e) => 
+					{
+						setBanSearch(e.currentTarget.value);
+					}}
+				/>
+			<Button onClick={()=>{
+				if(patpValidate(banSearch))
+					pBan(banSearch)
+			}}>Ban</Button>
+			{
+					banned.map(ship => 
+					<Box>
+					{ship}
+					<Button onClick={()=>{pUnban(ship)}}>Unban</Button>
+					</Box>
+			)}
 		</Box>
-	 );
+	)
 }
 
 const Settings = () => {
+	const pAddress = useStore(state => state.pAddress);
+	const pPosition = useStore(state => state.pPosition);
 	return(
 		<Box>
-				<Location/>
-				<Radius/>
+				<Location setAddress={pAddress} setPosition={pPosition}/>
+				<MyRadius/>
+				<Banned/>
 		</Box>
 	 );
 }
