@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import { useStore } from '../../data/store';
 import { Text, Box, Button } from "@tlon/indigo-react";
-import { fetchMyInvites, fetchReceivedShips } from '../../utils';
+import { fetchMyInvites, fetchReceivedShips, fetchMyReceivedShip } from '../../utils';
 
 const Actions = (props) => {
 	const pBan = useStore(state => state.pBan);
 	const pUnban = useStore(state => state.pUnban);
+	const pAccept = useStore(state => state.pAccept);
+	const pDeny = useStore(state => state.pDeny);
 	const pCancel = useStore(state => state.pCancel);
 	const pClose = useStore(state => state.pClose);
 	const pReopen = useStore(state => state.pReopen);
@@ -37,27 +39,30 @@ const Actions = (props) => {
 			</Box>
 	)
 	else {
-		const inviteeStatus = 'pending';
+		const inviteeStatus = fetchMyReceivedShip(props.invite).shipInvite;
+		// console.log(fetchMyReceivedShip(props.invite));
+		// const inviteeStatus = 'pending';
+		console.log(inviteeStatus);
 		if (props.invite.hostStatus !== 'completed') {
 			return (
 				<Box>
 				{ inviteeStatus === 'pending' &&
 				<Box>
-					<Button> RSVP </Button>
-					<Button> Decline </Button>
+					<Button onClick={() => {pAccept(props.invite.id)}}> RSVP </Button>
+					<Button onClick={() => {pDeny(props.invite.id)}}> Decline </Button>
 					<Button onClick={() => {pBan(props.invite.initShip)}} > Ban </Button>
 				</Box>
 				}
 				{ inviteeStatus === 'accepted' &&
 				<Box>
-					<Button> UnRSVP </Button>
+					<Button onClick={() => {pDeny(props.invite.id)}}> UnRSVP </Button>
 				</Box>
 				}
 				{ inviteeStatus === 'denied' &&
 				<Box>
-					<Button> RSVP </Button>
-					<Button> Delete </Button>
-					<Button> Ban </Button>
+					<Button onClick={() => {pAccept(props.invite.id)}}> RSVP </Button>
+					<Button onClick={() => {pCancel(props.invite.id)}}> Delete </Button>
+					<Button onClick={() => {pBan(props.invite.initShip)}} > Ban </Button>
 				</Box>
 				}
 				</Box>
@@ -66,7 +71,7 @@ const Actions = (props) => {
 		else {
 			return (
 				<Box>
-					<Button> Delete </Button>
+					<Button onClick={()=>{pCancel(props.invite.id)}}>Delete</Button>
 				</Box>
 			)
 		}

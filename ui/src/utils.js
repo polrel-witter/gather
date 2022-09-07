@@ -8,6 +8,11 @@ export const fetchReceivedShips = (invites) => {
 	return invites.filter(x => x.initShip !== window.urbit.ship);
 };
 
+export const fetchMyReceivedShip = (invite) => {
+	console.log(window.urbit.ship);
+	return invite.receiveShips.filter(x => x.ship === ('~' + window.urbit.ship))[0];
+};
+
 export const fetchPendingInvites = (invites) => {
 	return invites.filter(x => {
 		const myInviteInReceivedShips = x.receivedShips.filter(y => y._ship === myShip)[0];
