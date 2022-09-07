@@ -1,3 +1,55 @@
+::
+::  %gather, by ~pontus-fadpun and ~polrel-witter, is a tool for 
+::  martians to host and attend gatherings. It is distributed from: 
+::  
+::  It can perform the following acts:
+::
+:::: Adjust local user settings:  
+::   [%address =address]                                  :: Used to retrieve $position (lat and lon) from Nominatim OSM.
+::   [%position =position]                                :: Used to calculate distance from %meatspace venue addresses 
+::   [%radius =radius]                                    :: Limit %meatspace invites you receive to only those with venue addresses within this radius
+::   [%create-collection title=@t members=(list @p)]      :: Create a collection of ships (combined with groups) you regularly invite
+::   [%edit-collection-title =id title=@t]                :: Change a collection's title
+::   [%add-to-collection =id members=(list @p)]           :: Add a member to a collection
+::   [%del-from-collection =id members=(list @p)]         :: Delete a member from a collection
+::   [%del-collection =id]                                :: Delete a collection
+::   [%receive-invite =receive-invite]                    :: Receive invites from either %anyone or %only-in-radius
+::
+:::: Options to edit a %sent invite
+::   [%del-receive-ship =id del-ships=(list @p)]          :: Delete ships from an invite that's already been sent to them
+::   [%add-receive-ship =id add-ships=(list @p)]          :: Add ships to an invite that's already been sent out
+::   [%edit-max-accepted =id qty=@ud]                     :: Change the $max-accepted amount of an invite that's already been sent out
+::   [%edit-desc =id desc=@t]                             :: Change the description of an invite that's already been sent out
+::   [%edit-invite-location =id =location-type]           :: Change the $location-type (%meatspace or %virtual)   
+::   [%edit-invite-position =id =position]                :: Change the lat and lon of a venue address (pulled from Nominatim OSM using the venue address)
+::   [%edit-invite-address =id =address]                  :: Change the venue address
+::   [%edit-invite-access-link =id =access-link]          :: Change the $access-link of a %virtual gathering
+::   [%edit-invite-radius =id =radius]                    :: Change the delivery radius of a %meatspace gathering, meaning future sending of this (%meatspace) invite will only appear within invitees' dashboard that have addresses within the radius of this invite's venue address
+::   [%cancel =id]                                        :: If called by host, cancelling the invite will delete it from the host and all invitee's dashboards; if called by non-host, an invite will be deleted locally and unsubscribed from 
+::   [%complete =id]                                      :: Intended to be called post-gathering to indicate to the host and invitees that the gathering is finished (can only be called by the host)                           
+::   [%close =id]                                         :: As host, refuse any more %accepted invites (i.e. RSVPs)
+::   [%reopen =id]                                        :: If %closed, reopening will allow more invitees to %accept
+::
+:::: Invite communication 
+::   $:  %send-invite                                     :: Invite creation; will poke each  $receive-ship's (i.e. invitees) %subscribe-to-invite action
+::       send-to=(list @p)
+::       =location-type          
+::       =position               
+::       =address                
+::       =access-link            
+::       =radius                 
+::       max-accepted=@ud
+::       desc=@t 
+::   ==
+::   [%accept =id]                                        :: RSVP to an invite 
+::   [%deny =id]                                          :: UnRSVP from an invite 
+::   [%subscribe-to-invite =id]                           :: Auto-poked when invitee receives an invite; host essentially requests the invitee to subscribe to the invite details
+::
+:::: General
+::   [%ban =ship]                                         :: Refuse sending and receiving invites to/from a specific ship 
+::   [%unban =ship]                                       :: Make sending and receiving invites to/from a specific ship available again
+::
+::
 /-  *gather, hark=hark-store
 /+  *gather, default-agent, dbug, agentio
 |%
@@ -52,21 +104,25 @@
     ^-  (quip card _this)
     ?-  -.act
        %address    
-     ~&  "address updated"
+     ~|  [%unexpected-address-request ~] 
      ?>  =(our.bol src.bol)
+     ~&  "settings address updated"
      `this(address.settings address.act)
   ::
        %position
-     ~&  "position updated"
+     ~|  [%unexpected-position-request ~]
      ?>  =(our.bol src.bol)
+     ~&  "settings position updated"
      `this(position.settings position.act)
   ::
        %radius
-     ~&  "radius updated"
+     ~|  [%unexpected-radius-request ~]
      ?>  =(our.bol src.bol)
+     ~&  "settings radius updated"
      `this(radius.settings radius.act)
   ::
        %create-collection
+     ~|  [%unexpected-collection-request %create-collection ~]
      ?>  =(our.bol src.bol)
      =/  members=(list @p)
      %-  remove-banned  [(remove-dupes members.act) banned.settings]
@@ -79,6 +135,7 @@
      ==  
   ::
        %edit-collection-title
+     ~|  [%unexpected-collection-request %edit-collection-title ~]
      ?>  =(our.bol src.bol)
      ~&  "changing collection title to {<title.act>}"
      :-  ~
@@ -89,6 +146,7 @@
      ==
   ::
        %add-to-collection
+     ~|  [%unexpected-collection-request %add-to-collection ~]
      ?>  =(our.bol src.bol)
      =/  new-members=(list @p)
      %-  remove-banned  [members.act banned.settings]
@@ -105,6 +163,7 @@
      ==
   ::
        %del-from-collection
+     ~|  [%unexpected-collection-request %del-from-collection ~]
      ?>  =(our.bol src.bol)
      =/  del-members=(set @p)  (silt `(list @p)`members.act)
      ~&  "deleting {<del-members>} from collection"
@@ -120,6 +179,7 @@
      ==
   ::
        %del-collection
+     ~|  [%unexpected-collection-request %del-collection ~]
      ?>  =(our.bol src.bol)
      :-  ~
      %=  this
@@ -127,11 +187,13 @@
      ==
   ::
        %receive-invite
+     ~|  [%failed-receive-invite-change ~]
      ~&  "changed receive-invite to {<receive-invite.act>}"
      ?>  =(our.bol src.bol)
      `this(receive-invite.settings receive-invite.act) 
   ::  
        %del-receive-ship
+     ~|  [%failed-del-receive-ship ~]
      =/  init-ship=@p  init-ship:(need (~(get by invites) id.act)) 
      ?.  =(our.bol src.bol)
        ?>  =(src.bol init-ship)
@@ -178,7 +240,8 @@
         del-ships.act  t.del-ships.act
      ==
   ::  
-       %add-receive-ship  
+       %add-receive-ship
+     ~|  [%failed-add-receive-ship ~]
      ?>  =(our.bol src.bol)
      =/  init-ship=@p  init-ship:(need (~(get by invites) id.act)) 
      ?>  =(our.bol init-ship)
@@ -213,6 +276,7 @@
      == 
   ::   
        %edit-max-accepted
+     ~|  [%failed-edit-max-accepted ~]
      ?>  =(our.bol src.bol)
      =/  init-ship=@p  init-ship:(need (~(get by invites) id.act))
      ?>  =(our.bol init-ship)
@@ -235,6 +299,7 @@
      ==
   ::   
        %edit-desc
+     ~|  [%failed-edit-desc ~]
      ?>  =(our.bol src.bol)
      =/  init-ship=@p  init-ship:(need (~(get by invites) id.act))
      ?>  =(our.bol init-ship)
@@ -252,6 +317,7 @@
      == 
   ::
        %edit-invite-location
+     ~|  [%failed-edit-invite-location ~]
      ?>  =(our.bol src.bol)
      =/  init-ship=@p  init-ship:(need (~(get by invites) id.act))
      ?>  =(our.bol init-ship)
@@ -269,6 +335,7 @@
      ==
   ::
        %edit-invite-position
+     ~|  [%failed-edit-invite-position ~]
      ?>  =(our.bol src.bol)
      =/  init-ship=@p  init-ship:(need (~(get by invites) id.act))
      ?>  =(our.bol init-ship)
@@ -286,6 +353,7 @@
      ==
   ::
        %edit-invite-address
+     ~|  [%failed-edit-invite-address ~]
      ?>  =(our.bol src.bol)
      =/  init-ship=@p  init-ship:(need (~(get by invites) id.act))
      ?>  =(our.bol init-ship)
@@ -303,6 +371,7 @@
      ==
   ::
        %edit-invite-access-link
+     ~|  [%failed-edit-access-link ~]
      ?>  =(our.bol src.bol)
      =/  init-ship=@p  init-ship:(need (~(get by invites) id.act))
      ?>  =(our.bol init-ship)
@@ -319,7 +388,8 @@
                 |=(=invite upd) 
      ==
   ::
-       %edit-invite-radius  
+       %edit-invite-radius
+     ~|  [%failed-edit-invite-radius ~]
      ?>  =(our.bol src.bol)
      =/  init-ship=@p  init-ship:(need (~(get by invites) id.act))
      ?>  =(our.bol init-ship)
@@ -337,11 +407,12 @@
      == 
   ::   
        %cancel
+     ~|  [%failed-cancel ~]
      =/  init-ship=@p  init-ship:(need (~(get by invites) id.act))
      =/  =path  /(scot %p init-ship)/[%invite]/(scot %uv id.act)
      ?.  =(our.bol src.bol)
        ?>  =(src.bol init-ship)
-       ~&  "{<init-ship>} has revoked their invite"
+       ~&  "{<init-ship>} has revoked an invite"
        :_  this(invites (~(del by invites) id.act))
        :~  (fact:io gather-update+!>(`update`[%init-all invites settings]) ~[/all])  :: TODO not sure if invites will have updated by the time the fact is sent
        ==
@@ -374,6 +445,7 @@
      ==
   ::   
        %complete
+     ~|  [%failed-complete ~]
      ?>  =(our.bol src.bol)
      =/  init-ship=@p  init-ship:(need (~(get by invites) id.act))
      ?>  =(our.bol init-ship)
@@ -390,6 +462,7 @@
      == 
   ::   
        %close
+     ~|  [%failed-close ~]
      ?>  =(our.bol src.bol)
      =/  init-ship=@p  init-ship:(need (~(get by invites) id.act))
      ?>  =(our.bol init-ship)
@@ -406,6 +479,7 @@
      ==
   ::   
        %reopen
+     ~|  [%failed-reopen ~]
      ?>  =(our.bol src.bol)
      =/  init-ship=@p  init-ship:(need (~(get by invites) id.act))
      ?>  =(our.bol init-ship)
@@ -422,11 +496,9 @@
      == 
   ::
        %send-invite
+     ~|  [%failed-send-invite ~]
      ?>  =(our.bol src.bol)
      =/  =id  (scot %uv eny.bol)
-     ~&  id
-     ~&  (trip id)
-     ~&  `@ta`id
      =/  =path  /(scot %p our.bol)/[%invite]/id
      =/  send-to=(list @p)
        %-  remove-banned  
@@ -465,7 +537,8 @@
         send-to  t.send-to
      ==
   ::
-       %accept 
+       %accept
+     ~|  [%failed-accept ~]
      =/  init-ship=@p  init-ship:(need (~(get by invites) id.act)) 
      =/  =path  /(scot %p init-ship)/[%invite]/(scot %uv id.act)
      ?:  =(our.bol src.bol)
@@ -505,6 +578,7 @@
      ==
   ::
        %deny
+     ~|  [%failed-deny ~]
      =/  init-ship=@p  init-ship:(need (~(get by invites) id.act)) 
      =/  =path  /(scot %p init-ship)/[%invite]/(scot %uv id.act)
      ?:  =(our.bol src.bol)
@@ -521,11 +595,12 @@
      =/  invitee-status=invitee-status  +1:(need (~(get by receive-ships.upd) src.bol))
      =: 
          accepted-count.upd  ?:  =(%accepted invitee-status)
-                                        (dec accepted-count.upd)
-                                     accepted-count.upd    
-         receive-ships.upd  %+  ~(jab by receive-ships.upd)
-                                      src.bol
-                                    |=(=ship-invite ship-invite(invitee-status %denied))
+                               (dec accepted-count.upd)
+                             accepted-count.upd
+                             ::    
+         receive-ships.upd   %+  ~(jab by receive-ships.upd)
+                                src.bol
+                             |=(=ship-invite ship-invite(invitee-status %pending))
      ==
      :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd]) ~[path /all])
          ==
@@ -536,30 +611,33 @@
      ==
   ::
        %subscribe-to-invite
+     ~|  [%failed-subscribe-to-invite ~]
      =/  =path  /(scot %p src.bol)/[%invite]/(scot %uv id.act)
      ?<  =(our.bol src.bol) 
      ?<  (~(has in banned.settings) src.bol)
      ?<  (~(has by invites) id.act)
      ~&  "{<src.bol>} has sent an invite, subscribing..."
      :_  this
-::     ^-  (list card:agent:gall)
-     :~  (~(watch pass:io path) [src.bol %gather] path)
-::         =/  =bin:hark      :*  /[dap.bol] 
-::                                q.byk.bol 
-::                                /(scot %p src.bol)/[%invite]/(scot %uv id.act)
-::                            ==
-::         =/  =body:hark     :*  ~[ship+src.bol text+' sent you an invite.']
-::                                ~
-::                                now.bol
-::                                /
-::                                /gather
-::                            == 
-::         =/  =action:hark   [%add-note bin body]
-::         =/  =cage          [%hark-action !>(action)]
-::         [%pass /hark %agent [our.bol %hark-store] %poke cage] 
+     ^-  (list card:agent:gall)
+     :*  [%pass path %agent [src.bol %gather] %watch path]
+         ?.  .^(? %gu /(scot %p our.bol)/hark-store/(scot %da now.bol))  ~
+         =/  =bin:hark      :*  /[dap.bol] 
+                                q.byk.bol 
+                                path 
+                            ==
+         =/  =body:hark     :*  ~[ship+src.bol text+' sent you an invite.']
+                                ~
+                                now.bol
+                                /
+                                /gather
+                            == 
+         =/  =action:hark   [%add-note bin body]
+         =/  =cage          [%hark-action !>(action)]
+         [%pass /hark %agent [our.bol %hark-store] %poke cage]~ 
      ==
   ::
        %ban
+     ~|  [%failed-ban ~]
      ?>  =(our.bol src.bol)
      ~&  "banning {<ship.act>}"
      ?:  (~(has in banned.settings) ship.act)
@@ -607,6 +685,7 @@
      ==
   ::
        %unban
+     ~|  [%failed-unban ~]
      ?>  =(our.bol src.bol)
      ~&  "unbanning {<ship.act>}"
      ?:  (~(has in banned.settings) ship.act)
@@ -620,41 +699,47 @@
   ^-  (quip card _this)
   ?>  ?=([@ @ @ ~] wire)
   =/  origin-ship=@p  `@p`(slav %p i.wire)
-  ~&  sign
-  ?+  `@tas`(slav %tas i.t.wire)  (on-agent:def wire sign)
-     %invite                                                   
-   ?+  -.sign  (on-agent:def wire sign)
-      %watch-ack
-    ?~  p.sign
+  ?+    `@tas`(slav %tas i.t.wire)  ~&([dap.bol %strange-wire wire] [~ this])
+      %hark
+    ?.  ?=(%poke-ack -.sign)  (on-agent:def wire sign)
+    ?~  p.sign  [~ this]
+    ((slog '%gather: failed to notify invitee' u.p.sign) [~ this])
+  ::    
+      %invite                                                  
+    ?+    -.sign  (on-agent:def wire sign)
+        %watch-ack
+      ?~  p.sign
+        `this
+      ~&  "%gather: invite subscription to {<src.bol>} failed"
       `this
-    ~&  "%gather: invite subscription to {<src.bol>} failed"
-    `this
- ::
-      %kick
-    :_  this
-    :~  (~(watch pass:io wire) [src.bol %gather] wire)
-    ==
- ::
-      %fact
-    ?>  ?=(%gather-update p.cage.sign)
-    =/  upd  !<(update q.cage.sign)
-    ?>  ?=(%update-invite -.upd)
-    ?.  (~(has by invites) id.upd)
-       ~&  "adding new invite from {<src.bol>}"
-       :_  this(invites (~(put by invites) id.upd invite.upd))
-       :~  (fact:io gather-update+!>(`update`[%update-invite id.upd invite.upd]) ~[/all])
-       ==
-    ~&  "{<src.bol>} has updated their invite (id {<id.upd>})"
-    =/  init-ship=@p  init-ship:(need (~(get by invites) id.upd))
-    ?>  =(init-ship src.bol)
-    :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.upd invite.upd]) ~[/all]) 
+    ::
+        %kick
+      :_  this
+      :~  (~(watch pass:io wire) [src.bol %gather] wire)
+      ==
+    ::
+        %fact
+      ?>  ?=(%gather-update p.cage.sign)
+      =/  upd  !<(update q.cage.sign)
+      ?+    -.upd  (on-agent:def wire sign)
+          %update-invite
+        ?.  (~(has by invites) id.upd)
+          ~&  "adding new invite from {<src.bol>}"
+          :_  this(invites (~(put by invites) id.upd invite.upd))
+          :~  (fact:io gather-update+!>(`update`[%update-invite id.upd invite.upd]) ~[/all])
+          ==
+        ~&  "{<src.bol>} has updated their invite (id {<id.upd>})"
+        =/  init-ship=@p  init-ship:(need (~(get by invites) id.upd))
+        ?>  =(init-ship src.bol)
+        :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.upd invite.upd]) ~[/all]) 
+            ==
+        %=  this
+          invites  %+  ~(jab by invites)
+                      id.upd
+                   |=(=invite invite.upd)
         ==
-    %=  this
-      invites  %+  ~(jab by invites)
-                  id.upd
-               |=(=invite invite.upd)
+      ==
     ==
-   ==
   ==
 ::
 ++  on-watch

@@ -1,6 +1,6 @@
 :~
   title+'Gather'
-  info+'Hang with frens'
+  info+'Host and attend martian gatherings'
   color+0x7c.afc2
   version+[0 1 0]
   website+'https://urbit.org'

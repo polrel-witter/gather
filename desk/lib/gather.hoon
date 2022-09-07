@@ -10,7 +10,7 @@
   ~(tap in (~(dif in import) banned))
 ::
 ::
-:: Remove duplicates from a list
+:: Remove duplicate ships from a list
 ++  remove-dupes
   |=  import=(list @p)
   =|  export=(list @p)
@@ -23,7 +23,7 @@
   $(export (weld export `(list @p)`~[i.sorted]), sorted t.sorted) 
 ::
 ::
-:: Constructs the receive-ships map for invites :: TODO probably can be faster using combo of ++turn and somehow pinning the [%pending] as value
+:: Constructs the $receive-ships map for invites :: TODO probably can be faster using combo of ++turn and somehow pinning the [%pending] as value
 ++  make-receive-ships-map
   |=  send-to=(list @p)
   ^-  (map @p =ship-invite)
@@ -35,7 +35,7 @@
 ::
 :: Makes list of all invite ids for a ship when our.bol = 
 :: init-ship and the ship in question is in the corresponding
-:: receive-ships map.
+:: $receive-ships map.
 ++  id-comb
   |=  [our=@p menace=@p invites=invites]
   =/  ids=(list id)  ~(tap in ~(key by invites))

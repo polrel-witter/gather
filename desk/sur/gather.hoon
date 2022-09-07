@@ -16,7 +16,6 @@
 ::
 +$  invitee-status
   $?  
-      %denied
       %accepted
       %pending
   ==
