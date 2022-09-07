@@ -20,6 +20,12 @@
       :~  ['id' (tape (trip id.upd))] 
           ['invite' (en-invite invite.upd)]
       ==
+    ::
+        %update-settings
+      %+  frond  'updateSettings'
+      %-  pairs
+      :~  ['settings' (en-settings settings.upd)]
+      ==
     ==
     ++  en-invite
       |=  =invite
@@ -30,7 +36,7 @@
           ['receiveShips' (en-receive-ships receive-ships.invite)]
           ['locationType' s+(scot %tas location-type.invite)]      :: ADDITION
           ['invitePosition' (en-position position.invite)]         :: ADDITION
-          ['inviteAddress' (en-address address.invite)]            :: ADDITION
+          ['inviteAddress' s+(scot %t address.invite)]            :: ADDITION
           ['accessLink' s+(scot %ta access-link.invite)]           :: ADDITION
           ['inviteRadius' s+(scot %rs radius.invite)]              :: ADDITION
           ['maxAccepted' (numb max-accepted.invite)]
@@ -53,8 +59,9 @@
       %-  pairs
       :~  ['position' (en-position position.settings)] 
           ['radius' s+(scot %rs radius.settings)]
-          ['address' (en-address address.settings)]
+          ['address' s+(scot %t address.settings)]
           ['collections' (en-collections collections.settings)]
+          ['banned' (en-banned banned.settings)] 
           ['receiveInvite' s+(scot %tas receive-invite.settings)]
       ==
     ++  en-receive-ships
@@ -74,16 +81,6 @@
       :~  ['lat' s+(scot %rs lat.position)]
           ['lon' s+(scot %rs lon.position)]
       ==
-    ++  en-address
-      |=  =address
-      ^-  ^json
-      %-  pairs
-      :~  ['street' s+street.address]
-          ['city' s+city.address]
-          ['state' s+state.address]
-          ['country' s+country.address]
-          ['zip' s+zip.address]
-      ==    
     ++  en-collections
       |=  collections=(map id collection)
       ^-  ^json
@@ -101,6 +98,14 @@
       :~  ['title' s+title.collection]
           :-  'members'           
           a+(sort (turn ~(tap in members.collection) |=(p=@p s+(scot %p p))) aor)
+      ==
+    ++  en-banned
+      |=  =banned
+      ^-  ^json
+      %-  pairs
+      :~
+         :-  'banned' 
+         a+(sort (turn ~(tap in banned) |=(p=@p s+(scot %p p))) aor)
       ==
     --
   --

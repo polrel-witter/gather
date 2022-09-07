@@ -16,7 +16,7 @@
     ++  action-noun
       %-  of
       :~  
-        address+de-address
+        address+(ot ~[address+so])
         position+de-position
         radius+(ot ~[radius+(se %rs)])
         create-collection+(ot ~[title+so members+(ar (se %p))])
@@ -30,7 +30,7 @@
         add-receive-ship+(ot ~[id+so add-ships+(ar (se %p))])      :: UPDATE changed to array
         edit-max-accepted+(ot ~[id+so qty+ni])
         edit-desc+(ot ~[id+so desc+so])
-        edit-invite-address+(ot ~[id+so address+de-address])       :: ADDITION
+        edit-invite-address+(ot ~[id+so address+so])       :: ADDITION
         edit-invite-position+(ot ~[id+so position+de-position])    :: ADDITION
         edit-invite-location+(ot ~[id+so location-type+(se %tas)]) :: ADDITION
         edit-invite-access-link+(ot ~[id+so access-link+(se %ta)]) :: ADDITION
@@ -53,20 +53,12 @@
       :~  lat+(se %rs)
           lon+(se %rs)
       ==
-    ++  de-address
-      %-  ot
-      :~  street+so
-          city+so
-          state+so
-          country+so
-          zip+so
-      ==
     ++  de-send-invite
       %-  ot
       :~  send-to+(ar (se %p))
           location-type+(se %tas)    :: ADDITION
           position+de-position       :: ADDITION
-          address+de-address         :: ADDITION
+          address+so                 :: ADDITION
           access-link+(se %ta)       :: ADDITION
           radius+(se %rs)            :: ADDITION
           max-accepted+ni

@@ -5,7 +5,7 @@
 +$  id              @
 +$  radius          @rs 
 +$  position        [lat=@rs lon=@rs]
-+$  address         [street=@t city=@t state=@t country=@t zip=@t]
++$  address         @t
 +$  location-type   ?(%virtual %meatspace)       :: Moved up here from $invite
 +$  access-link     @ta                          :: Moved up here from $invite
 +$  members         (set @p)
@@ -114,5 +114,6 @@
   $%
      [%init-all =invites =settings] 
      [%update-invite =id =invite]
+     [%update-settings =settings]
   ==
 --

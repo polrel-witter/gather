@@ -106,43 +106,55 @@
        %address    
      ~|  [%unexpected-address-request ~] 
      ?>  =(our.bol src.bol)
+     =.  address.settings  
+         address.act 
      ~&  "settings address updated"
-     `this(address.settings address.act)
+     :_  this
+     :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])  
+     ==
   ::
        %position
      ~|  [%unexpected-position-request ~]
      ?>  =(our.bol src.bol)
+     =.  position.settings  
+         position.act 
      ~&  "settings position updated"
-     `this(position.settings position.act)
+     :_  this
+     :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])  
+     ==
   ::
        %radius
      ~|  [%unexpected-radius-request ~]
      ?>  =(our.bol src.bol)
+     =.  radius.settings  
+         radius.act 
      ~&  "settings radius updated"
-     `this(radius.settings radius.act)
+     :_  this
+     :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])  
+     ==
   ::
        %create-collection
      ~|  [%unexpected-collection-request %create-collection ~]
      ?>  =(our.bol src.bol)
      =/  members=(list @p)
      %-  remove-banned  [(remove-dupes members.act) banned.settings]
-     ~&  "creating collection called {<title.act>}"
-     :-  ~
-     %=  this
-        collections.settings  %+  ~(put by collections.settings)
+     =.  collections.settings  %+  ~(put by collections.settings)
                                  (scot %uv eny.bol)
-                              [title.act (silt members)]
+                               [title.act (silt members)]
+     ~&  "creating collection called {<title.act>}"
+     :_  this
+     :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])  
      ==  
   ::
        %edit-collection-title
      ~|  [%unexpected-collection-request %edit-collection-title ~]
      ?>  =(our.bol src.bol)
-     ~&  "changing collection title to {<title.act>}"
-     :-  ~
-     %=  this
-        collections.settings  %+  ~(jab by collections.settings)
+     =.  collections.settings  %+  ~(jab by collections.settings)
                                 id.act
                               |=(=collection collection(title title.act))
+     ~&  "changing collection title to {<title.act>}"
+     :_  this
+     :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])  
      ==
   ::
        %add-to-collection
@@ -150,47 +162,52 @@
      ?>  =(our.bol src.bol)
      =/  new-members=(list @p)
      %-  remove-banned  [members.act banned.settings]
-     ~&  "adding {<new-members>} to collection"
-     :-  ~
-     %=  this
-        collections.settings  %+  ~(jab by collections.settings)
+     =.  collections.settings  %+  ~(jab by collections.settings)
                                 id.act
                               |=  =collection 
                               %=  collection 
                                 members  %-  ~(gas in members.collection) 
                                            new-members
                               ==
+     ~&  "adding {<new-members>} to collection"
+     :_  this
+     :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])  
      ==
   ::
        %del-from-collection
      ~|  [%unexpected-collection-request %del-from-collection ~]
      ?>  =(our.bol src.bol)
      =/  del-members=(set @p)  (silt `(list @p)`members.act)
-     ~&  "deleting {<del-members>} from collection"
-     :-  ~
-     %=  this
-        collections.settings  %+  ~(jab by collections.settings)
+     =.  collections.settings  %+  ~(jab by collections.settings)
                                 id.act
                               |=  =collection 
                               %=  collection
                                 members  %-  ~(dif in members.collection) 
                                            del-members
                               ==
+     ~&  "deleting {<del-members>} from collection"
+     :_  this
+     :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])  
      ==
   ::
        %del-collection
      ~|  [%unexpected-collection-request %del-collection ~]
      ?>  =(our.bol src.bol)
-     :-  ~
-     %=  this
-        collections.settings  (~(del by collections.settings) id.act)
+     =.  collections.settings  (~(del by collections.settings) id.act)
+     ~&  "deleting collection"
+     :_  this
+     :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])  
      ==
   ::
        %receive-invite
      ~|  [%failed-receive-invite-change ~]
-     ~&  "changed receive-invite to {<receive-invite.act>}"
-     ?>  =(our.bol src.bol)
-     `this(receive-invite.settings receive-invite.act) 
+      ?>  =(our.bol src.bol)
+     =.  receive-invite.settings
+         receive-invite.act
+     ~&  "changing receive-invite to {<receive-invite.act>}"
+     :_  this
+     :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])  
+     ==
   ::  
        %del-receive-ship
      ~|  [%failed-del-receive-ship ~]
@@ -648,9 +665,15 @@
      =+  kiks=*(list card:agent:gall)
      =+  faks=*(list card:agent:gall)
      |-
-     ?~  ids 
-       :-  :(welp kiks faks poks)   
-           this(banned.settings (~(put in banned.settings) ship.act))                           
+     ?~  ids
+       =.  banned.settings
+          (~(put in banned.settings) ship.act)
+       =/  faks=(list card:agent:gall)
+       ;:  %-  welp  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])  
+                    faks
+       ==
+       :_  this
+           :(welp kiks faks poks)   
      ::
      =+  inv=(need (~(get by invites) i.ids))
      =/  upd=invite  %=  inv
@@ -689,7 +712,11 @@
      ?>  =(our.bol src.bol)
      ~&  "unbanning {<ship.act>}"
      ?:  (~(has in banned.settings) ship.act)
-        `this(banned.settings (~(del in banned.settings) ship.act))
+        =.  banned.settings
+           (~(del in banned.settings) ship.act)
+        :_  this
+        :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])  
+        ==
      `this
     ==   
   -- 
