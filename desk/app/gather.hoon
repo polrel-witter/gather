@@ -201,7 +201,7 @@
   ::
        %receive-invite
      ~|  [%failed-receive-invite-change ~]
-      ?>  =(our.bol src.bol)
+     ?>  =(our.bol src.bol)
      =.  receive-invite.settings
          receive-invite.act
      ~&  "changing receive-invite to {<receive-invite.act>}"
@@ -434,10 +434,12 @@
        :~  (fact:io gather-update+!>(`update`[%init-all invites settings]) ~[/all])  :: TODO not sure if invites will have updated by the time the fact is sent
        ==
      ?.  =(our.bol init-ship)
+        ?<  =(our.bol init-ship)
         :_  this(invites (~(del by invites) id.act))
         :~  [%pass path %agent [init-ship %gather] %leave ~]
             (fact:io gather-update+!>(`update`[%init-all invites settings]) ~[/all]) 
         ==
+     ?>  =(our.bol init-ship)
      =/  invite=invite  (~(got by invites) id.act)
      =/  receive-ships=(list @p)  
        ~(tap in ~(key by receive-ships.invite))
@@ -668,12 +670,9 @@
      ?~  ids
        =.  banned.settings
           (~(put in banned.settings) ship.act)
-       =/  faks=(list card:agent:gall)
-       ;:  %-  welp  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])  
-                    faks
-       ==
+       =+  fak=~[(fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])]  
        :_  this
-           :(welp kiks faks poks)   
+           :(welp fak kiks faks poks)  
      ::
      =+  inv=(need (~(get by invites) i.ids))
      =/  upd=invite  %=  inv
@@ -710,8 +709,8 @@
        %unban
      ~|  [%failed-unban ~]
      ?>  =(our.bol src.bol)
-     ~&  "unbanning {<ship.act>}"
      ?:  (~(has in banned.settings) ship.act)
+        ~&  "unbanning {<ship.act>}"
         =.  banned.settings
            (~(del in banned.settings) ship.act)
         :_  this
