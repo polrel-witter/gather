@@ -27,7 +27,7 @@ const FocusedInvite = () => {
 					<Text>{receiveShip.shipInvite}</Text>
 					<Button onClick={focusInvite({})}>Delete Ship</Button>
 				</Box>
-			}}
+			})}
 			{/* <Button onClick={focusInvite({})}>Return</Button> */}
 		</Box>
 	 );
