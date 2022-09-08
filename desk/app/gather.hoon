@@ -668,7 +668,6 @@
                                       invites 
                                       their-ids
                                     ==
-     ~&  accepted-ids
      =/  our-ids=(list id)    (id-comb [our.bol ship.act invites]) 
      =|  upd=invite
      =+  levs=*(list card:agent:gall)
@@ -679,7 +678,12 @@
      ?~  our-ids
        =:  banned.settings  (~(put in banned.settings) ship.act)
          ::
-           invites  (bulk-del-invites [invites their-ids])
+           invites  |- 
+                    ?~  accepted-ids  invites
+                    %=  $
+                      invites       (~(del by invites) i.accepted-ids)
+                      accepted-ids  t.accepted-ids  
+                    ==        
          ::
            levs   |-
                   ?~  accepted-ids  levs
@@ -708,7 +712,6 @@
                      accepted-ids  t.accepted-ids
        ==          ==
        =+  fak=~[(fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])]  
-       ~&  poks
        :_  this
            :(welp fak kiks levs poks faks)  
      ::

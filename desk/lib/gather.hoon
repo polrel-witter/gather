@@ -63,16 +63,5 @@
       ==
     $(ids t.ids)
   $(export (weld export `(list id)`~[i.ids]), ids t.ids)
-::
-::
-:: Delete invites in bulk 
-++  bulk-del-invites
-  |=  [upd=invites ids=(list id)]
-  |-  ^-  invites 
-  ?~  ids  upd
-  %=  $
-    upd  (~(del by upd) i.ids)
-    ids  t.ids  
-  ==
 --
 
