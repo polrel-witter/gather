@@ -33,19 +33,46 @@
   $(receive-ships (~(put by receive-ships) i.send-to *ship-invite), send-to t.send-to)
 ::
 ::
+:: Get a list of ids we've accepted
+++  get-accepted-ids
+  |=  [our=@p invites=invites ids=(list id)]
+  =|  accepted-ids=(list id)
+  |-  ^-  (list id)
+  ?~  ids  accepted-ids
+  =+  inv=(need (~(get by invites) i.ids)) 
+  ?.  =(%accepted +1:(need (~(get by receive-ships.inv) our)))
+     $(ids t.ids)  
+  %=  $ 
+    accepted-ids  (weld accepted-ids ~[i.ids])
+    ids           t.ids
+  ==
+::
+::
 :: Makes list of all invite ids for a ship when our.bol = 
 :: init-ship and the ship in question is in the corresponding
 :: $receive-ships map.
 ++  id-comb
-  |=  [our=@p menace=@p invites=invites]
+  |=  [init=@p menace=@p invites=invites]
   =/  ids=(list id)  ~(tap in ~(key by invites))
   =|  export=(list id)
   |-  ^-  (list id)
   ?~  ids  export
   =+  dets=(need (~(get by invites) i.ids))
-  ?.  ?&  =(our init-ship:dets)
+  ?.  ?&  =(init init-ship:dets)
           (~(has by receive-ships.dets) menace) 
       ==
     $(ids t.ids)
   $(export (weld export `(list id)`~[i.ids]), ids t.ids)
+::
+::
+:: Delete invites in bulk 
+++  bulk-del-invites
+  |=  [upd=invites ids=(list id)]
+  |-  ^-  invites 
+  ?~  ids  upd
+  %=  $
+    upd  (~(del by upd) i.ids)
+    ids  t.ids  
+  ==
 --
+

@@ -267,7 +267,7 @@
        %-  remove-banned  
          :-  (remove-dupes add-ships.act) 
              banned.settings
-     ~&  "adding {<add-ships.act>} to invite list on invite {<id.act>}"    
+     ~&  "adding {<add-ships>} to invite list on invite {<id.act>}"    
      =+  dek=*(list card:agent:gall)
      |-
      ?~  add-ships
@@ -661,49 +661,92 @@
      ~&  "banning {<ship.act>}"
      ?:  (~(has in banned.settings) ship.act)
         `this
-     =/  ids=(list id)  (id-comb [our.bol ship.act invites]) 
+     =/  their-ids=(list id)      (id-comb [ship.act our.bol invites])
+     =/  accepted-ids=(list id)   %-  get-accepted-ids  
+                                    :*  
+                                      our.bol 
+                                      invites 
+                                      their-ids
+                                    ==
+     ~&  accepted-ids
+     =/  our-ids=(list id)    (id-comb [our.bol ship.act invites]) 
      =|  upd=invite
+     =+  levs=*(list card:agent:gall)
      =+  poks=*(list card:agent:gall)
      =+  kiks=*(list card:agent:gall)
      =+  faks=*(list card:agent:gall)
      |-
-     ?~  ids
-       =.  banned.settings
-          (~(put in banned.settings) ship.act)
+     ?~  our-ids
+       =:  banned.settings  (~(put in banned.settings) ship.act)
+         ::
+           invites  (bulk-del-invites [invites their-ids])
+         ::
+           levs   |-
+                  ?~  accepted-ids  levs
+                  %=  $
+                    levs  ;:  welp  levs
+                             :~  :*
+                                   %pass
+                                   /(scot %p ship.act)/[%invite]/(scot %uv i.accepted-ids)
+                                   %agent  [ship.act %gather]
+                                   %leave  ~
+                         ==  ==  ==
+                    accepted-ids  t.accepted-ids
+                  ==
+         ::
+           poks   |-
+                  ?~  accepted-ids  poks
+                  %=  $
+                     poks  ;:  welp  poks
+                              :~  :*
+                                    %pass  
+                                    /(scot %p ship.act)/[%invite]/(scot %uv i.accepted-ids)
+                                    %agent  [ship.act %gather]
+                                    %poke  %gather-action
+                                    !>(`action`[%deny i.accepted-ids])
+                          ==  ==  ==
+                     accepted-ids  t.accepted-ids
+       ==          ==
        =+  fak=~[(fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])]  
+       ~&  poks
        :_  this
-           :(welp fak kiks faks poks)  
+           :(welp fak kiks levs poks faks)  
      ::
-     =+  inv=(need (~(get by invites) i.ids))
+     =+  inv=(need (~(get by invites) i.our-ids))
+     =+  invitee-status=+1:(need (~(get by receive-ships.inv) ship.act))
      =/  upd=invite  %=  inv
+                        accepted-count  ?:  =(%accepted invitee-status)
+                                           (dec accepted-count.inv)
+                                        accepted-count.inv
+
                         receive-ships  %-  ~(del by receive-ships.inv) 
                                          ship.act
                      ==
      %=  $
         poks  ;:  welp  poks
                  :~  :*
-                       %pass  /(scot %p our.bol)/[%invite]/(scot %uv i.ids)
+                       %pass  /(scot %p our.bol)/[%invite]/(scot %uv i.our-ids)
                        %agent  [ship.act %gather]
                        %poke  %gather-action
-                       !>(`action`[%cancel i.ids])
+                       !>(`action`[%cancel i.our-ids])
              ==  ==  ==
         kiks  ;:  welp  kiks  
                  :~  :* 
                        %give  %kick
-                       ~[/(scot %p our.bol)/[%invite]/(scot %uv i.ids)]
+                       ~[/(scot %p our.bol)/[%invite]/(scot %uv i.our-ids)]
                        `ship.act
              ==  ==  ==
         invites  %+  ~(jab by invites)
-                   i.ids
+                   i.our-ids
                  |=(=invite upd)
         faks  ;:  welp  faks  
                  :~  :*
                        %give
                        %fact
-                       ~[/(scot %p our.bol)/[%invite]/(scot %uv i.ids) /all]
-                       gather-update+!>(`update`[%update-invite i.ids upd])
+                       ~[/(scot %p our.bol)/[%invite]/(scot %uv i.our-ids) /all]
+                       gather-update+!>(`update`[%update-invite i.our-ids upd])
              ==  ==  ==
-        ids  t.ids
+        our-ids  t.our-ids
      ==
   ::
        %unban
