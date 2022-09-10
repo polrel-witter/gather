@@ -114,6 +114,6 @@
   $%
      [%init-all =invites =settings] 
      [%update-invite =id =invite]
-     [%update-settings =settings]
+     [%update-settings =settings]     :: ADDITION
   ==
 --
