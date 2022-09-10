@@ -6,8 +6,8 @@ import { patpValidate } from '../../utils';
 const FocusedInvite = (props) => {
 	const invite = props.invite;
 	const focusInvite = props.focusInvite;
-	const pAddReceiveShip = props.pAddReceiveShip;
-	const pDelReceiveShip = props.pDelReceiveShip;
+	const pAddReceiveShip = useStore(state => state.pAddReceiveShip);
+	const pDelReceiveShip = useState(state => state.pAddReceiveShip);
 	const [search, setSearch] = useState("");
 			
 	return (
@@ -16,7 +16,7 @@ const FocusedInvite = (props) => {
 				<StatelessTextInput onChange={(e) => setSearch(e.currentTarget.value)}/>
 				<Button onClick={() => {
 					if(patpValidate(search))
-						pAddReceiveShip(invite.id, search)
+						pAddReceiveShip(invite.id, search);
 				}}>Add</Button>
 			</Box>
 			<Box>
@@ -33,11 +33,15 @@ const FocusedInvite = (props) => {
 				{invite.radius}
 			</Box>
 			{ invite.receiveShips.map(receiveShip => {
+				console.log('invitereceive---');
+				console.log(invite);
+				return (
 				<Box border={1}>
-					<Text>{receiveShip.ship}</Text>
-					<Text>{receiveShip.shipInvite}</Text>
+					<Box><Text>{receiveShip.ship}</Text></Box>
+					<Box><Text>{receiveShip.shipInvite}</Text></Box>
 					<Button onClick={() => pDelReceiveShip(invite.id, receiveShip.ship)}>Uninvite Ship</Button>
 				</Box>
+				)
 			})}
 			{/* <Button onClick={focusInvite({})}>Return</Button> */}
 		</Box>

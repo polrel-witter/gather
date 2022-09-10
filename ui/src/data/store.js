@@ -35,7 +35,7 @@ export const useStore = create((set) => ({
 	pDelFromCollection: (radius) => {doPoke({'radius': radius}, () => console.log('onSucc'), ()=>{})},
 	pDelCollection: (radius) => {doPoke({'radius': radius}, () => console.log('onSucc'), ()=>{})},
 	pReceiveInvite: (radius) => {doPoke({'radius': radius}, () => console.log('onSucc'), ()=>{})}, //?
-	pDelReceiveShip: (id) => {doPoke({'del-receive-ship': {'id': id}}, () => console.log('onSucc'), ()=>{})},
+	pDelReceiveShip: (id, ship) => {doPoke({'del-receive-ship': {'id': id, 'del-ships': [ship]}}, () => console.log('onSucc'), ()=>{})},
 	pAddReceiveShip: (id, ship) => {doPoke({'add-receive-ship': {'id': id, 'del-ships': [ship]}}, () => console.log('onSucc'), ()=>{})},
 	pEditMaxAccepted: (id) => {doPoke({'edit-max-accepted': {'id': id}}, () => console.log('onSucc'), ()=>{})},
 	pEditDesc: (id, desc) => {doPoke({'edit-desc': {'id': id, 'desc': desc}}, () => console.log('onSucc'), ()=>{})},
