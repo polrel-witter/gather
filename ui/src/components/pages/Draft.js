@@ -8,6 +8,7 @@ import { Text, Box, Button, StatelessTextArea, StatelessTextInput, StatelessRadi
 import { fetchPendingInvites, fetchAcceptedInvites, dedup, createGroup, toggleSelect, deleteGroup} from '../../utils';
 import * as Nominatim from 'nominatim-browser';
 // import {Geolookup} from 'react-geolookup';
+import { useAlert } from 'react-alert'
 
 const Draft = () => {
 	const route = useStore(state => state.route);
@@ -24,14 +25,16 @@ const Draft = () => {
 	const [groupSearch, setGroupSearch] = useState("");
 	const [groups, setGroups] = useState([]);
 	const [customGroupName, setCustomGroupName] = useState('');
+	const alert = useAlert()
 	return (
 		<Box>
 			<Button onClick={() => {
 				if (groups.filter(i => i.selected).length !== 0)
 					console.log('groups----');
 					console.log(groups);
+					alert.show(<div style={{ color: 'green' }}>Invite Sent</div>);
 					pSendInvite(
-				{ 
+				{
 					//TODO reduce
 					"send-to": groups.filter(i => i.selected).map(i => i.ships[0]),
 					"location-type": locationType,
@@ -39,7 +42,7 @@ const Draft = () => {
 					"address": address,
 					"access-link": '~.' + accessLink,
 					"radius": '.' + radius,
-					"max-accepted": maxAccepted, 
+					"max-accepted": maxAccepted,
 					"desc": desc,
 				})
 			}}>Send</Button>
@@ -57,7 +60,7 @@ const Draft = () => {
 					selected={locationType === 'meatspace'}
           onChange={() => { setLocationType('meatspace') }}
 				> Virtual </StatelessRadioButtonField>
-			</Box> 
+			</Box>
 			<Box border={1}>
 				<Button>Select Date</Button>
 				<Button>Select Time</Button>
@@ -70,14 +73,14 @@ const Draft = () => {
 					onChange={(e) => {setAccessLink(String(e.currentTarget.value));}}
 				/>
 			</Box>
-			
+
 			<Location setAddress={setAddress} setPosition={setPosition}/>
 			<Box border={1}>
-				<Text>Restrict delivery radius to 
+				<Text>Restrict delivery radius to
 				<StatelessTextInput
 				display="block"
 				value={radius}
-				onChange={(e) => 
+				onChange={(e) =>
 					{
 						const re = /^[0-9\b]+$/;
 						if(e.currentTarget.value === '' || re.test(e.currentTarget.value))
@@ -88,8 +91,8 @@ const Draft = () => {
 				</Text>
 				</Box>
 			<Box border={1}>
-				<Text> Limit number of RSVPs you'll accept 
-				<StatelessTextInput value={maxAccepted} onChange={(e) => 
+				<Text> Limit number of RSVPs you'll accept
+				<StatelessTextInput value={maxAccepted} onChange={(e) =>
 					{
 						const re = /^[0-9\b]+$/;
 						if(e.currentTarget.value === '' || re.test(e.currentTarget.value))

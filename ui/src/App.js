@@ -8,6 +8,7 @@ import Settings from "./components/pages/Settings"
 import patpValidate from "./patpValidate";
 import { Box } from "@tlon/indigo-react";
 import { useStore } from './data/store';
+import { useAlert } from 'react-alert'
 
 const AppSwitch = () => {
 	const route = useStore(state => state.route);
@@ -15,7 +16,7 @@ const AppSwitch = () => {
 
 	const allState = useStore(state => state);
 	console.log(allState);
-	
+
   useEffect(() => {
 		sAll();
   }, []);
@@ -44,7 +45,7 @@ class App extends Component {
     super(props);
 		// window.urbit = new Urbit("http://localhost:8080","","lidlut-tabwed-pillex-ridrup");
 		// window.urbit.ship = 'zod';
-			
+
 		window.urbit = new Urbit("");
 		window.urbit.ship = window.ship;
 

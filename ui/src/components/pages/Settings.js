@@ -3,6 +3,7 @@ import { Text, Box, ManagedTextAreaField, StatelessTextArea, ManagedTextInputFie
 import { useStore } from '../../data/store';
 import Location from '../shared/Location';
 import { patpValidate } from '../../utils';
+import { useAlert } from 'react-alert'
 
 const MyRadius = () => {
 	const radius = useStore(state => state.settings.radius);
@@ -13,7 +14,7 @@ const MyRadius = () => {
 		<Box border={1}>
 		<Text display="block">My Radius</Text>
 		<Text display="block">
-		Distance within which you’re willing to receive Statuses. 
+		Distance within which you’re willing to receive Statuses.
 	  Shared with Gang members when Status is turned on.
 		</Text>
 		<Text >Miles:</Text>
@@ -21,7 +22,7 @@ const MyRadius = () => {
 		<StatelessTextInput
 			display="block"
 			value={_radius}
-			onChange={(e) => 
+			onChange={(e) =>
 				{
 					const re = /^[0-9\b]+$/;
 					if(e.currentTarget.value === '' || re.test(e.currentTarget.value))
@@ -43,7 +44,7 @@ const Radius = () => {
 		<Box borderBottom={1}>
 		<Text display="block">Radius</Text>
 		<Text display="block">
-		Distance within which you’re willing to receive Statuses. 
+		Distance within which you’re willing to receive Statuses.
 	  Shared with Gang members when Status is turned on.
 		</Text>
 		<Text >Miles:</Text>
@@ -64,13 +65,14 @@ const Banned = () => {
 		const pUnban = useStore(state => state.pUnban);
 		const pBan = useStore(state => state.pBan);
 		const [banSearch, setBanSearch] = useState("");
+		const alert = useAlert();
 		return (
 		<Box border={1}>
 			<Text> Banned Ships </Text>
 				<StatelessTextInput
 				display="block"
 				value={banSearch}
-				onChange={(e) => 
+				onChange={(e) =>
 					{
 						setBanSearch(e.currentTarget.value);
 					}}
@@ -78,12 +80,16 @@ const Banned = () => {
 			<Button onClick={()=>{
 				if(patpValidate(banSearch))
 					pBan(banSearch)
+					alert.show('You will no longer send or receive invites to/from this ship');
 			}}>Ban</Button>
 			{
-					banned.map(ship => 
+					banned.map(ship =>
 					<Box>
 					{ship}
-					<Button onClick={()=>{pUnban(ship)}}>Unban</Button>
+					<Button onClick={()=>{
+						pUnban(ship)
+						alert.show('You are now open to sending and receiving invites to/from this ship');
+					}}>Unban</Button>
 					</Box>
 			)}
 		</Box>
