@@ -676,13 +676,13 @@
      =+  faks=*(list card:agent:gall)
      |-
      ?~  our-ids
-       =:  banned.settings  (~(put in banned.settings) ship.act)
+        =:  banned.settings  (~(put in banned.settings) ship.act)
          ::
            invites  |- 
-                    ?~  accepted-ids  invites
+                    ?~  their-ids  invites
                     %=  $
-                      invites       (~(del by invites) i.accepted-ids)
-                      accepted-ids  t.accepted-ids  
+                      invites       (~(del by invites) i.their-ids)
+                      their-ids  t.their-ids  
                     ==        
          ::
            levs   |-
