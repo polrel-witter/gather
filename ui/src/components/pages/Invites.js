@@ -15,7 +15,8 @@ const Actions = (props) => {
 	const pComplete = useStore(state => state.pComplete);
 	const pEditDesc = useStore(state => state.pEditDesc);
 	const pEditInvite = useStore(state => state.pEditInvite);
-	if(props.invite.initShip === '~' + window.urbit.ship)
+	if(props.invite.initShip === '~' + window.urbit.ship) {
+		const invite = props.invite.invite;
 		return (
 			<Box>
 			{ props.invite.hostStatus === "sent" && 
@@ -37,7 +38,7 @@ const Actions = (props) => {
 				</Box>
 			}
 			</Box>
-	)
+	)}
 	else {
 		const inviteeStatus = fetchMyReceivedShip(props.invite).shipInvite;
 		// console.log(fetchMyReceivedShip(props.invite));
@@ -111,10 +112,13 @@ const Invite = (props) => {
 	if(Object.keys(focusedInvite).length === 0)
 		return (
 				<Box>
-					{ props.invites.map( invite => 
+					{ props.invites.map( mInvite => {
+						const id = invite.id;
+						const invite = mInvite.invite;
+						return (
 					<Box border={1}>
 						<Text>{invite.title} </Text>
-						<Status invite={invite}/>
+						<Status invite={mInvite}/>
 						<Box>
 						<Text>From {invite.initShip} </Text>
 						</Box>
@@ -152,10 +156,10 @@ const Invite = (props) => {
 							<Button onClick={() => {console.log(invite); focusInvite(invite)}}>Focus</Button>
 						</Box>
 					<Box>
-						<Actions invite={invite}/>
+						<Actions invite={mInvite}/>
 					</Box>
 					</Box>
-					) }
+						)})}
 				</Box>
 			)
 	else

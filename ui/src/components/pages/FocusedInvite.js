@@ -7,7 +7,7 @@ const FocusedInvite = (props) => {
 	const invite = props.invite;
 	const focusInvite = props.focusInvite;
 	const pAddReceiveShip = useStore(state => state.pAddReceiveShip);
-	const pDelReceiveShip = useState(state => state.pAddReceiveShip);
+	const pDelReceiveShip = useStore(state => state.pDelReceiveShip);
 	const [search, setSearch] = useState("");
 			
 	return (

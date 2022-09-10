@@ -36,7 +36,7 @@ export const useStore = create((set) => ({
 	pDelCollection: (radius) => {doPoke({'radius': radius}, () => console.log('onSucc'), ()=>{})},
 	pReceiveInvite: (radius) => {doPoke({'radius': radius}, () => console.log('onSucc'), ()=>{})}, //?
 	pDelReceiveShip: (id, ship) => {doPoke({'del-receive-ship': {'id': id, 'del-ships': [ship]}}, () => console.log('onSucc'), ()=>{})},
-	pAddReceiveShip: (id, ship) => {doPoke({'add-receive-ship': {'id': id, 'del-ships': [ship]}}, () => console.log('onSucc'), ()=>{})},
+	pAddReceiveShip: (id, ship) => {doPoke({'add-receive-ship': {'id': id, 'add-ships': [ship]}}, () => console.log('onSucc'), ()=>{})},
 	pEditMaxAccepted: (id) => {doPoke({'edit-max-accepted': {'id': id}}, () => console.log('onSucc'), ()=>{})},
 	pEditDesc: (id, desc) => {doPoke({'edit-desc': {'id': id, 'desc': desc}}, () => console.log('onSucc'), ()=>{})},
 	pEditInviteLocation: (id, desc) => {doPoke({'edit-desc': {'id': id, 'desc': desc}}, () => console.log('onSucc'), ()=>{})},
@@ -66,6 +66,8 @@ export const useStore = create((set) => ({
 			set(state => ({
 				invites: all.initAll.invites.map(
 				item => ({ 
+				'id' : item.id,
+				'invite': {
 					id: item.id, 
 					initShip: item.invite.initShip, 
 					title: '', 
@@ -74,7 +76,7 @@ export const useStore = create((set) => ({
 					maxAccepted: item.invite.maxAccepted, 
 					receiveShips: item.invite.receiveShips.map(x => ({ship: x.ship, shipInvite: x.shipInvite})),
 					hostStatus: item.invite.hostStatus
-				})),
+				}})),
 				settings: {
 					position: settings.position,
 					radius: settings.radius,
@@ -89,13 +91,21 @@ export const useStore = create((set) => ({
 			const item = all.updateInvite;
 			console.log('updateInvite---')
 			console.log(item)
-			set(state => ({ invites: dedup('id', state.invites.concat(
-				{ id: item.id, hostStatus: item.invite.hostStatus,
+				console.log({ id: item.id, hostStatus: item.invite.hostStatus,
 					initShip: item.invite.initShip, title: '',
 					desc: item.invite.desc, radius: 0, maxAccepted:
 					item.invite.maxAccepted,
-					receiveShips: item.invite.receiveShips.map(x => ({ship: x.ship, shipInvite: x.shipInvite}))})),
-				}));
+					receiveShips: item.invite.receiveShips.map(x => ({ship: x.ship, shipInvite: x.shipInvite}))}
+				)
+			set(state => ({ invites: dedup('id', state.invites.concat({
+				'id' : item.id,
+				'invite': 
+				{ hostStatus: item.invite.hostStatus,
+					initShip: item.invite.initShip, title: '',
+					desc: item.invite.desc, radius: 0, maxAccepted:
+					item.invite.maxAccepted,
+					receiveShips: item.invite.receiveShips.map(x => ({ship: x.ship, shipInvite: x.shipInvite}))}}
+			))}));
 		}
 		else if(Object.keys(all)[0] === 'updateSettings') {
 			const settings = all.updateSettings.settings;
