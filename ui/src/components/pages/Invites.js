@@ -129,7 +129,6 @@ const Invite = (props) => {
 						<Box>
 							<Text>
 								Happening in meatspace/virtual world on 
-								<Date invite={invite}/>
 								{ invite.locationType === "meatspace" && 
 									<Text> Location: {invite.location} </Text>
 								}
