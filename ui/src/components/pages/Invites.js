@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useState } from 'react';
 import { useStore } from '../../data/store';
 import { Text, Box, Button } from "@tlon/indigo-react";
 import { fetchMyInvites, fetchReceivedShips, fetchMyReceivedShip } from '../../utils';
@@ -83,17 +83,31 @@ const Date = (props) => {
 }
 
 const Status = (props) => {
-	return (
-		<Text>Status</Text>
-	);
+		switch (props.invite.hostStatus) {
+			case 'sent':
+			return (
+				<Text>Sent</Text>
+			)
+			break;
+			case 'closed':
+			return (
+				<Text>Closed</Text>
+			)
+			break;
+			case 'completed':
+			return (
+				<Text>Completed</Text>
+			)
+			break;
+		}
 }
 
 const Invite = (props) => {
 	const route = useStore(state => state.route);
-	const focusedInvite = useStore(state => state.focusedInvite);
-	const focusInvite = useStore(state => state.focusInvite);
-	console.log(focusedInvite);
-	console.log(Object.keys(focusedInvite).length === 0);
+	// const focusedInvite = useStore(state => state.focusedInvite);
+	// const focusInvite = useStore(state => state.focusInvite);
+	const [focusedInvite, focusInvite] = useState({});
+
 	if(Object.keys(focusedInvite).length === 0)
 		return (
 				<Box>
@@ -135,7 +149,7 @@ const Invite = (props) => {
 						</Box>
 						}
 						<Box>
-							<Button onClick={() => focusInvite(invite)}>Focus</Button>
+							<Button onClick={() => {console.log(invite); focusInvite(invite)}}>Focus</Button>
 						</Box>
 					<Box>
 						<Actions invite={invite}/>
@@ -146,7 +160,7 @@ const Invite = (props) => {
 			)
 	else
 		return (
-			<FocusedInvite/>
+			<FocusedInvite invite={focusedInvite} focusInvite={focusInvite}/>
 		)
 };
 
