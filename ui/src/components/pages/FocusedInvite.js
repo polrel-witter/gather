@@ -7,6 +7,7 @@ const FocusedInvite = (props) => {
 	const invite = props.invite;
 	const focusInvite = props.focusInvite;
 	const pAddReceiveShip = props.pAddReceiveShip;
+	const pDelReceiveShip = props.pDelReceiveShip;
 	const [search, setSearch] = useState("");
 			
 	return (
@@ -14,7 +15,7 @@ const FocusedInvite = (props) => {
 			<Box border={1}>
 				<StatelessTextInput onChange={(e) => setSearch(e.currentTarget.value)}/>
 				<Button onClick={() => {
-					if( patpValidate(search))
+					if(patpValidate(search))
 						pAddReceiveShip(invite.id, search)
 				}}>Add</Button>
 			</Box>
@@ -35,7 +36,7 @@ const FocusedInvite = (props) => {
 				<Box border={1}>
 					<Text>{receiveShip.ship}</Text>
 					<Text>{receiveShip.shipInvite}</Text>
-					<Button onClick={() => focusInvite({})}>UnInvite</Button>
+					<Button onClick={() => pDelReceiveShip(invite.id, receiveShip.ship)}>Uninvite Ship</Button>
 				</Box>
 			})}
 			{/* <Button onClick={focusInvite({})}>Return</Button> */}
