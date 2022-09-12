@@ -8,16 +8,15 @@ import * as Nominatim from 'nominatim-browser';
 
 const Location = (props) => {
 	// const position = {lat: '.6.022141e23', lon: '.6.022141e23'};
-	const [address, setAddress] = useState("");
-	const [position, setPosition] = useState({});
+	const [address, setAddress] = useState(props.address);
+	const [position, setPosition] = useState(props.position);
 			
 	// }
 	return (
 		<Box border={1}>
 		<Text display="block"> My Location </Text>
 		<Text display="block"> 
-			Used to retrieve location coordinates,
-			and is shared with Gang members when Status is turned on. 
+			{props.address}
 		</Text>
 			    <Geolookup
           inputClassName="geolookup__input--nominatim"
@@ -49,7 +48,7 @@ const Location = (props) => {
 		<Button onClick={() => {
 			if(Object.keys(position).length !== 0) {
 				props.setPosition(position);
-				// props.setAddress(address);
+				props.setAddress(address);
 			}
 			}}>Set</Button>
 		</Box>

@@ -8,6 +8,7 @@ import Settings from "./components/pages/Settings"
 import patpValidate from "./patpValidate";
 import { Box } from "@tlon/indigo-react";
 import { useStore } from './data/store';
+import { scryGroup } from './utils';
 
 const AppSwitch = () => {
 	const route = useStore(state => state.route);
@@ -42,15 +43,18 @@ const AppSwitch = () => {
 class App extends Component {
 	  constructor(props) {
     super(props);
-		// window.urbit = new Urbit("http://localhost:8080","","lidlut-tabwed-pillex-ridrup");
-		// window.urbit.ship = 'zod';
+		window.urbit = new Urbit("http://localhost:8080","","lidlut-tabwed-pillex-ridrup");
+		window.urbit.ship = 'zod';
+		// window.urbit = new Urbit("http://localhost:8080","","magsub-micsev-bacmug-moldex");
+		// window.urbit.ship = 'dev';
 			
-		window.urbit = new Urbit("");
-		window.urbit.ship = window.ship;
+		// window.urbit = new Urbit("");
+		// window.urbit.ship = window.ship;
 
 		window.urbit.onOpen = () => this.setState({conn: "ok"});
     window.urbit.onRetry = () => this.setState({conn: "try"});
     window.urbit.onError = () => this.setState({conn: "err"});
+		scryGroup('');
 		}
 	render() {
 	return(

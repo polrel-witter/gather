@@ -1,8 +1,10 @@
 import React, { Component, useState } from 'react';
 import { useStore } from '../../data/store';
 import { Text, Box, Button } from "@tlon/indigo-react";
-import { fetchMyInvites, fetchReceivedShips, fetchMyReceivedShip } from '../../utils';
+import { filterDistantInvites, fetchMyInvites, fetchReceivedShips, fetchMyReceivedShip } from '../../utils';
 import FocusedInvite from './FocusedInvite';
+import { getDistance } from 'geolib';
+import haversine from 'haversine-distance';
 
 const Actions = (props) => {
 	const pBan = useStore(state => state.pBan);
@@ -15,24 +17,24 @@ const Actions = (props) => {
 	const pComplete = useStore(state => state.pComplete);
 	const pEditDesc = useStore(state => state.pEditDesc);
 	const pEditInvite = useStore(state => state.pEditInvite);
-	if(props.invite.initShip === '~' + window.urbit.ship) {
-		const invite = props.invite.invite;
+	const invite = props.invite.invite;
+	if(invite.initShip === '~' + window.urbit.ship) {
 		return (
 			<Box>
-			{ props.invite.hostStatus === "sent" && 
+			{ invite.hostStatus === "sent" && 
 				<Box>
 					<Button onClick={()=>{pClose(props.invite.id)}}>Close</Button>
 					<Button onClick={()=>{pCancel(props.invite.id)}}>Cancel</Button>
 				</Box>
 			}
-			{ props.invite.hostStatus === "closed" && 
+			{ invite.hostStatus === "closed" && 
 				<Box>
 				<Button onClick={()=>{pReopen(props.invite.id)}}>Reopen</Button>
 				<Button onClick={()=>{pComplete(props.invite.id)}}>Complete</Button>
 				<Button onClick={()=>{pCancel(props.invite.id)}}>Delete</Button>
 				</Box>
 			}
-			{ props.invite.hostStatus === "completed" && 
+			{ invite.hostStatus === "completed" && 
 				<Box>
 				<Button onClick={()=>{pCancel(props.invite.id)}}>Delete</Button>
 				</Box>
@@ -40,22 +42,41 @@ const Actions = (props) => {
 			</Box>
 	)}
 	else {
-		const inviteeStatus = fetchMyReceivedShip(props.invite).shipInvite;
+		const inviteeStatus = fetchMyReceivedShip(invite).shipInvite;
 		// console.log(fetchMyReceivedShip(props.invite));
 		// const inviteeStatus = 'pending';
 		console.log(inviteeStatus);
-		if (props.invite.hostStatus !== 'completed') {
+		if (invite.hostStatus === 'sent') {
 			return (
 				<Box>
+				{inviteeStatus}
 				{ inviteeStatus === 'pending' &&
 				<Box>
-					<Button onClick={() => {pAccept(props.invite.id)}}> RSVP </Button>
-					<Button onClick={() => {pBan(props.invite.initShip)}} > Ban </Button>
+					<Button onClick={() => {pAccept(props.invite.id)}}> RSVP? </Button>
+					<Button onClick={() => {pBan(invite.initShip)}} > Ban </Button>
 				</Box>
 				}
 				{ inviteeStatus === 'accepted' &&
 				<Box>
-					<Button onClick={() => {pDeny(props.invite.id)}}> UnRSVP </Button>
+					<Button onClick={() => {pDeny(props.invite.id)}}> UnRSVP? </Button>
+				</Box>
+				}
+				</Box>
+			)
+		}
+		else if (invite.hostStatus === 'closed') {
+			return (
+				<Box>
+					{inviteeStatus}
+				{ inviteeStatus === 'pending' &&
+				<Box>
+					<Button onClick={() => {pAccept(props.invite.id)}}> RSVP? </Button>
+					<Button onClick={() => {pBan(invite.initShip)}} > Ban </Button>
+				</Box>
+				}
+				{ inviteeStatus === 'accepted' &&
+				<Box>
+					<Button onClick={() => {pDeny(invite.id)}}> UnRSVP? </Button>
 				</Box>
 				}
 				</Box>
@@ -64,7 +85,9 @@ const Actions = (props) => {
 		else {
 			return (
 				<Box>
-					<Button onClick={()=>{pCancel(props.invite.id)}}>Delete</Button>
+					{inviteeStatus}
+					<Button onClick={()=>{pCancel(props.invite.id)}}>Delete? (TODO)</Button>
+					<Button onClick={() => {pBan(invite.initShip)}} > Ban </Button>
 				</Box>
 			)
 		}
@@ -105,6 +128,7 @@ const Status = (props) => {
 
 const Invite = (props) => {
 	const route = useStore(state => state.route);
+	const settings = useStore(state => state.settings);
 	// const focusedInvite = useStore(state => state.focusedInvite);
 	// const focusInvite = useStore(state => state.focusInvite);
 	const [focusedInvite, focusInvite] = useState({});
@@ -113,12 +137,12 @@ const Invite = (props) => {
 		return (
 				<Box>
 					{ props.invites.map( mInvite => {
-						const id = invite.id;
+						const id = mInvite.id;
 						const invite = mInvite.invite;
 						return (
 					<Box border={1}>
 						<Text>{invite.title} </Text>
-						<Status invite={mInvite}/>
+						<Status invite={invite}/>
 						<Box>
 						<Text>From {invite.initShip} </Text>
 						</Box>
@@ -134,6 +158,16 @@ const Invite = (props) => {
 								}
 							</Text>
 						</Box>
+						{  invite.initShip !== '~' + window.urbit.ship &&
+						<Box border={1}>
+						<Text>Your distance from the invite location:</Text>
+						<br/>
+						{ haversine(
+							{ latitude: invite.position.lat, longitude: invite.position.lon },
+							{ latitude: settings.position.lat, longitude: settings.position.lon },
+						) + '  meters'}
+						</Box>
+						}
 						<Box>
 							<Text>
 								Access Link: {invite.accessLink}
@@ -152,7 +186,7 @@ const Invite = (props) => {
 						</Box>
 						}
 						<Box>
-							<Button onClick={() => {console.log(invite); focusInvite(invite)}}>Focus</Button>
+							<Button onClick={() => {console.log(invite); focusInvite(mInvite)}}>Focus</Button>
 						</Box>
 					<Box>
 						<Actions invite={mInvite}/>
@@ -169,23 +203,24 @@ const Invite = (props) => {
 
 const Invites = () => {
 	const inviteRoute = useStore(state => state.inviteRoute);
+	const settings = useStore(state => state.settings);
 	const all = useStore(state => state.invites);
 	const hosting = useStore(state => fetchMyInvites(state.invites));
 	const received = useStore(state => fetchReceivedShips(state.invites));
 	switch(inviteRoute) {
 		case "all":
 			return (
-				<Invite invites={all}/>
+				<Invite invites={filterDistantInvites(all, settings)}/>
 			);
 		break;
 		case "hosting":
 			return (
-				<Invite invites={hosting}/>
+				<Invite invites={filterDistantInvites(hosting, settings)}/>
 			);
 		break;
 		case "received":
 			return (
-				<Invite invites={received}/>
+				<Invite invites={filterDistantInvites(received, settings)}/>
 			);
 		break;
 	}

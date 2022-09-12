@@ -14,6 +14,8 @@ const Draft = () => {
 	const pSendInvite = useStore(state => state.pSendInvite);
 	const pDeny = useStore(state => state.pDeny);
 	const pCreateCollection = useStore(state => state.pCreateCollection);
+	const pModifyCollection = useStore(state => state.pCreateCollection);
+	const pDeleteCollection = useStore(state => state.pCreateCollection);
 	const [desc, setDesc] = useState("");
 	const [locationType, setLocationType] = useState('meatspace');
 	const [radius, setRadius] = useState(0);
@@ -22,18 +24,18 @@ const Draft = () => {
 	const [address, setAddress] = useState('');
 	const [maxAccepted, setMaxAccepted] = useState(0);
 	const [groupSearch, setGroupSearch] = useState("");
-	const [groups, setGroups] = useState([]);
+	const collections = useStore(state => state.settings.collections);
 	const [customGroupName, setCustomGroupName] = useState('');
 	return (
 		<Box>
 			<Button onClick={() => {
-				if (groups.filter(i => i.selected).length !== 0)
-					console.log('groups----');
-					console.log(groups);
+				if (collections.filter(i => i.selected).length !== 0)
+					console.log('collections----');
+					console.log(collections);
 					pSendInvite(
 				{ 
 					//TODO reduce
-					"send-to": groups.filter(i => i.selected).map(i => i.ships[0]),
+					"send-to": collections.filter(i => i.selected).map(i => i.members[0]),
 					"location-type": locationType,
 					"position": position,
 					"address": address,
@@ -58,10 +60,10 @@ const Draft = () => {
           onChange={() => { setLocationType('meatspace') }}
 				> Virtual </StatelessRadioButtonField>
 			</Box> 
-			<Box border={1}>
-				<Button>Select Date</Button>
-				<Button>Select Time</Button>
-			</Box>
+			{/* <Box border={1}> */}
+			{/* 	<Button>Select Date</Button> */}
+			{/* 	<Button>Select Time</Button> */}
+			{/* </Box> */}
 			<Box border={1}>
 				<Text> Set access link to event </Text>
 				<StatelessTextInput
@@ -71,7 +73,12 @@ const Draft = () => {
 				/>
 			</Box>
 			
-			<Location setAddress={setAddress} setPosition={setPosition}/>
+			<Location 
+				address={address} 
+				position={position} 
+				setAddress={setAddress} 
+				setPosition={setPosition}
+			/>
 			<Box border={1}>
 				<Text>Restrict delivery radius to 
 				<StatelessTextInput
@@ -99,34 +106,28 @@ const Draft = () => {
 				</Box>
 			========================================
 			<Box border={1}>
-			<Text>Search ships to invite </Text>
+			<Text>Search ships/groups/collections to invite </Text>
 			<StatelessTextInput onChange={(e) => setGroupSearch(e.currentTarget.value)}/>
-			<Button onClick={() => setGroups(dedup('ships', createGroup(groupSearch, groups)))}>Add</Button>
-				<Button onClick={() => {pCreateCollection(customGroupName, groups.filter(x => x.selected).reduce((prevGroup, acc)=> acc.concat(prevGroup.members),[]))}}>Create Custom Group</Button>
-			<Text>Custom Group Name</Text>
-			<StatelessTextInput onChange={(e) => setCustomGroupName(e.currentTarget.value)}/>
-			{/* <Text>Select groups to invite</Text> */}
-			{/* <StatelessTextInput/> */}
-			<Text>Invitees</Text>
-				{console.log(groups)}
-			{ groups.map(group =>
-			<Box>
-				{/*other types: collection, group */}
-				{ group.type === 'single-group' &&
-				<Box>
-				<Text>{group.ships[0]}</Text>
-					{ group.selected &&
-					<Icon ml="2" icon="Smiley" onClick = {() => setGroups(toggleSelect(group.ships[0], groups))}/>
-					}
-					{ !group.selected &&
-					<Icon ml="2" icon="ArrowExternal" onClick = {() => setGroups(toggleSelect(group.ships[0], groups))}/>
-					}
-					<Icon ml="2" icon="X" onClick = {() => setGroups(deleteGroup(group.ships[0], groups))}/>
-				</Box>
-				}
-			</Box>
-				)
-			}
+			<Button onClick={() => {
+				if(createGroup(groupSearch, collections) !== null)
+					pCreateCollection(createGroup(groupSearch, collections));
+				}}>New Collection</Button>
+			<Text>Ships/Groups/Collections to invite</Text>
+			{/* { collections.length !== 0 && collections.map(collection => */}
+			{/* <Box> */}
+			{/* 	<Box> */}
+			{/* 	<Text>{collection.members[0]}</Text> */}
+			{/* 		{ collection.selected && */}
+			{/* 		<Icon ml="2" icon="Smiley" onClick = {() => pModifyCollection(toggleSelect(collection.id, collections))}/> */}
+			{/* 		} */}
+			{/* 		{ !collection.selected && */}
+			{/* 		<Icon ml="2" icon="ArrowExternal" onClick = {() => pModifyCollection(toggleSelect(collection.id, collections))}/> */}
+			{/* 		} */}
+			{/* 		<Icon ml="2" icon="X" onClick = {() => pDeleteCollection(collection.id)}/> */}
+			{/* 	</Box> */}
+			{/* </Box> */}
+			{/* 	) */}
+			{/* } */}
 			</Box>
 		</Box>
 	)

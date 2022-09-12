@@ -1,5 +1,5 @@
 import create from 'zustand';
-import { doPoke, subscribe, dedup} from '../utils';
+import { doPoke, subscribe, dedup, properPosition } from '../utils';
 import _ from 'lodash';
 
 export const useStore = create((set) => ({
@@ -26,24 +26,25 @@ export const useStore = create((set) => ({
 	/*  ACTIONS
 	 *
 	 */
-	pAddress: (address) => {doPoke({'address': address}, () => console.log('onSucc'), ()=>{})},
+	pAddress: (address) => {doPoke({'address': { address: address}}, () => console.log('onSucc'), ()=>{})},
 	pPosition: (position) => {doPoke({'position': position}, () => console.log('onSucc'), ()=>{})},
 	pRadius: (radius) => {doPoke({'radius': {'radius': '.' + radius}}, () => console.log('onSucc'), ()=>{})},
-	pCreateCollection: (title, members) => {console.log(members); doPoke({'create-collection': {'title': title, 'members': members}}, () => console.log('onSucc'), ()=>{})},
+	pCreateCollection: (collection) => {doPoke({'create-collection': collection}, () => console.log('onSucc'), ()=>{})},
 	pEditCollectionTitle: (radius) => {doPoke({'radius': radius}, () => console.log('onSucc'), ()=>{})},
 	pAddToCollection: (radius) => {doPoke({'radius': radius}, () => console.log('onSucc'), ()=>{})},
 	pDelFromCollection: (radius) => {doPoke({'radius': radius}, () => console.log('onSucc'), ()=>{})},
 	pDelCollection: (radius) => {doPoke({'radius': radius}, () => console.log('onSucc'), ()=>{})},
-	pReceiveInvite: (radius) => {doPoke({'radius': radius}, () => console.log('onSucc'), ()=>{})}, //?
+	pReceiveInvite: (receiveInvite) => {doPoke({'receive-invite': {'receive-invite': receiveInvite}}, () => console.log('onSucc'), ()=>{})}, //?
 	pDelReceiveShip: (id, ship) => {doPoke({'del-receive-ship': {'id': id, 'del-ships': [ship]}}, () => console.log('onSucc'), ()=>{})},
 	pAddReceiveShip: (id, ship) => {doPoke({'add-receive-ship': {'id': id, 'add-ships': [ship]}}, () => console.log('onSucc'), ()=>{})},
-	pEditMaxAccepted: (id) => {doPoke({'edit-max-accepted': {'id': id}}, () => console.log('onSucc'), ()=>{})},
+	pEditMaxAccepted: (id, maxAccepted) => {doPoke({'edit-max-accepted': {'id': id, 'qty': maxAccepted}}, () => console.log('onSucc'), ()=>{})},
 	pEditDesc: (id, desc) => {doPoke({'edit-desc': {'id': id, 'desc': desc}}, () => console.log('onSucc'), ()=>{})},
-	pEditInviteLocation: (id, desc) => {doPoke({'edit-desc': {'id': id, 'desc': desc}}, () => console.log('onSucc'), ()=>{})},
-	pEditInvitePosition: (id, desc) => {doPoke({'edit-desc': {'id': id, 'desc': desc}}, () => console.log('onSucc'), ()=>{})},
-	pEditInviteAddress: (id, desc) => {doPoke({'edit-desc': {'id': id, 'desc': desc}}, () => console.log('onSucc'), ()=>{})},
-	pEditInviteAccessLink: (id, desc) => {doPoke({'edit-desc': {'id': id, 'desc': desc}}, () => console.log('onSucc'), ()=>{})},
-	pEditInviteRadius: (id, desc) => {doPoke({'edit-desc': {'id': id, 'desc': desc}}, () => console.log('onSucc'), ()=>{})},
+	pEditInviteLocation: (id, locationType) => {doPoke({'edit-invite-location': {'id': id, 'location-type': locationType}}, () => console.log('onSucc'), ()=>{})},
+	pEditInvitePosition: (id, position) => {doPoke({'edit-invite-position': {'id': id, 'position': position}}, () => console.log('onSucc'), ()=>{})},
+	pEditInviteAddress: (id, address) => {doPoke({'edit-invite-address': {'id': id, 'address': address}}, () => console.log('onSucc'), ()=>{})},
+	pEditInviteAccessLink: (id, accessLink) => {doPoke({'edit-invite-access-link': {'id': id, 'access-link': '~.' + accessLink}}, () => console.log('onSucc'), ()=>{})},
+	// pEditInviteAccessLink: (id, accessLink) => {doPoke({'edit-invite-access-link': {'id': id, 'access-link': accessLink}}, () => console.log('onSucc'), ()=>{})},
+	pEditInviteRadius: (id, radius) => {doPoke({'edit-invite-radius': {'id': id, 'radius': '.' + radius}}, () => console.log('onSucc'), ()=>{})},
 	pCancel: (id) => {doPoke({'cancel': {'id': id}}, () => console.log('onSucc'), ()=>{})},
 	pComplete: (id) => {doPoke({'complete': {'id': id}}, () => console.log('onSucc'), ()=>{})},
 	pClose: (id) => {doPoke({'close': {'id': id}}, () => console.log('onSucc'), ()=>{})},
@@ -57,29 +58,32 @@ export const useStore = create((set) => ({
 	 *
 	 */
 	sAll: (handler) => subscribe('/all', (all) => {
-		console.log(all);
 			console.log('all--------')
 			console.log(all)
 		if(Object.keys(all)[0] === 'initAll' && all.initAll.invites.length !== 0) {
 			const settings = all.initAll.settings;
-			// console.log(all.initAll.invites[0].invite.receiveShips.map(x => ({ship: x.ship, shipInvite: x.shipInvite})));
+			console.log('settings--------x');
+			console.log(settings);
 			set(state => ({
 				invites: all.initAll.invites.map(
 				item => ({ 
 				'id' : item.id,
 				'invite': {
-					id: item.id, 
-					initShip: item.invite.initShip, 
-					title: '', 
-					desc: item.invite.desc, 
-					radius: 0, 
-					maxAccepted: item.invite.maxAccepted, 
+					initShip: item.invite.initShip,
+					title: '',
+					desc: item.invite.desc,
+					radius: item.invite.inviteRadius.slice(1), 
+					maxAccepted: item.invite.maxAccepted,
+					position: properPosition(item.invite.invitePosition),
+					address: item.invite.inviteAddress,
+					locationType: item.invite.locationType, 
+					accessLink: item.invite.accessLink,
 					receiveShips: item.invite.receiveShips.map(x => ({ship: x.ship, shipInvite: x.shipInvite})),
 					hostStatus: item.invite.hostStatus
 				}})),
 				settings: {
-					position: settings.position,
-					radius: settings.radius,
+					position: properPosition(settings.position),
+					radius: settings.radius.slice(1),
 					address: settings.address,
 					collections: settings.collections,
 					banned: settings.banned.banned,
@@ -91,19 +95,18 @@ export const useStore = create((set) => ({
 			const item = all.updateInvite;
 			console.log('updateInvite---')
 			console.log(item)
-				console.log({ id: item.id, hostStatus: item.invite.hostStatus,
-					initShip: item.invite.initShip, title: '',
-					desc: item.invite.desc, radius: 0, maxAccepted:
-					item.invite.maxAccepted,
-					receiveShips: item.invite.receiveShips.map(x => ({ship: x.ship, shipInvite: x.shipInvite}))}
-				)
 			set(state => ({ invites: dedup('id', state.invites.concat({
 				'id' : item.id,
 				'invite': 
 				{ hostStatus: item.invite.hostStatus,
-					initShip: item.invite.initShip, title: '',
-					desc: item.invite.desc, radius: 0, maxAccepted:
-					item.invite.maxAccepted,
+					initShip: item.invite.initShip,
+					desc: item.invite.desc, 
+					radius: item.invite.inviteRadius.slice(1), 
+					maxAccepted: item.invite.maxAccepted,
+					locationType: item.invite.locationType,
+					accessLink: item.invite.accessLink,
+					position: properPosition(item.invite.invitePosition),
+					address: item.invite.inviteAddress,
 					receiveShips: item.invite.receiveShips.map(x => ({ship: x.ship, shipInvite: x.shipInvite}))}}
 			))}));
 		}
@@ -111,8 +114,8 @@ export const useStore = create((set) => ({
 			const settings = all.updateSettings.settings;
 			set(state => ({
 				settings: {
-					position: settings.position,
-					radius: settings.radius,
+					position: properPosition(settings.position),
+					radius: settings.radius.slice(1),
 					address: settings.address,
 					collections: settings.collections,
 					banned: settings.banned.banned,

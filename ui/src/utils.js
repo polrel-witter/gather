@@ -1,18 +1,47 @@
+import haversine from 'haversine-distance';
+
 const myShip = "pontus-fadpun";
 export const fetchMyInvites = (invites) => {
 	// return invites.filter(x => x.initShip === window.urbit.ship)[0];
-	return invites.filter(x => x.initShip === window.urbit.ship);
+	return invites.filter(x => x.invite.initShip === window.urbit.ship);
+}
+
+export const properPosition = (position) => ({ lat: position.lat.slice(1), lon: position.lon.slice(1) })
+
+export const filterDistantInvites = (invites, settings) => {
+	console.log(settings);
+	return invites.filter( invite => {
+		console.log(invite.invite.position);
+		if(haversine(
+							{ latitude: invite.invite.position.lat, longitude: invite.invite.position.lon },
+							{ latitude: settings.position.lat, longitude: settings.position.lon }
+		) <= settings.radius 
+		&&
+		haversine(
+							{ latitude: invite.invite.position.lat, longitude: invite.invite.position.lon },
+							{ latitude: settings.position.lat, longitude: settings.position.lon }
+		) <= invite.invite.radius
+		)
+			return true;
+		if( invite.invite.radius === 0 && settings.radius === 0)
+			return true;
+		if( invite.invite.initShip === '~' + window.urbit.ship )
+			return true;
+		return false;
+	})
 }
 
 export const fetchReceivedShips = (invites) => {
-	return invites.filter(x => x.initShip !== window.urbit.ship);
+	return invites.filter(x => x.invite.initShip !== window.urbit.ship);
 };
 
 export const fetchMyReceivedShip = (invite) => {
 	console.log(window.urbit.ship);
+	console.log(invite.receiveShips.filter(x => x.ship === ('~' + window.urbit.ship))[0]);
 	return invite.receiveShips.filter(x => x.ship === ('~' + window.urbit.ship))[0];
 };
 
+// XX
 export const fetchPendingInvites = (invites) => {
 	return invites.filter(x => {
 		const myInviteInReceivedShips = x.receivedShips.filter(y => y._ship === myShip)[0];
@@ -67,21 +96,27 @@ export const dedup = (attr, arr) => {
 	return [...new Map(arr.map(a => [a[attr], a])).values()];
 	}
 
-export const createGroup = (str, groups) => {
-	if(str[0] === '~' && patpValidate(str)) {
-		return groups.concat({type: 'single-group', ships: [str], selected: false, toDelete: false});
+export const createGroup = (str, collections) => {
+	if(str[0] === '~' && patpValidate(str) && (collections.filter(collection => collection.ships[0] === str)).length === 0) {
+		return ({title: str, members: [str]});
 	}
-	else if(str === 'group') {
+	// TODO scry group here
+	else if(str[0] === '+') {
+		const result = scryGroup(str);
 		// TODO try to fetch a group from groups-store
-		return groups.concat({type: 'collection', ships: [str], selected: false, toDelete: false});
+		return ({title: str, members: [str]});
+	}
+	else if(str !== '' && collections.filter(x => x.selected).length !== 0) {
+		// TODO try to fetch a group from groups-store
+		return ({title: str, members: [str]});
 	}
 	else
-		return groups;
+		return null;
 }
 
-export const toggleSelect = (patp, groups) => {
+export const toggleSelect = (id, groups) => {
 	return groups.map(group => {
-		if (group.type === 'single-group' && group.ships[0] === patp) {
+		if (group.id === id) {
 			return {...group, selected: !group.selected}
 		}
 		else
@@ -89,9 +124,9 @@ export const toggleSelect = (patp, groups) => {
 	})
 }
 
-export const deleteGroup = (patp, groups) => {
+export const deleteGroup = (id, groups) => {
 	return groups.filter(group => {
-		if (group.type === 'single-group' && group.ships[0] === patp)
+		if (group.id === id)
 			return false;
 		return true;
 	})
@@ -190,3 +225,16 @@ export const patpValidate = str => {
   };
   return false;
 };
+
+export const scryGroup = (str) => {
+	const result = {title:'testGroup', selected: true, url: 'webgraph', members: ['~dev']};
+    // const result = window.urbit.scry({
+    //   app: "group-store",
+			// // path: '',
+			// path: '/x/groups/ship//'
+    // })
+	console.log('scryGroup-----');
+	// console.log(result);
+	return result;
+}
+

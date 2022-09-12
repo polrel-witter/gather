@@ -1,5 +1,5 @@
 import React, { Component, useState } from 'react';
-import { Text, Box, ManagedTextAreaField, StatelessTextArea, ManagedTextInputField, Button, StatelessTextInput } from "@tlon/indigo-react";
+import {StatelessRadioButtonField, Text, Box, ManagedTextAreaField, StatelessTextArea, ManagedTextInputField, Button, StatelessTextInput } from "@tlon/indigo-react";
 import { useStore } from '../../data/store';
 import Location from '../shared/Location';
 import { patpValidate } from '../../utils';
@@ -60,6 +60,7 @@ const Radius = () => {
 
 const Banned = () => {
 		const banned = useStore(state => state.settings.banned);
+		const collections = useStore(state => state.settings.collections);
 		// const banned = [];
 		const pUnban = useStore(state => state.pUnban);
 		const pBan = useStore(state => state.pBan);
@@ -75,29 +76,49 @@ const Banned = () => {
 						setBanSearch(e.currentTarget.value);
 					}}
 				/>
+			<Box border={1}>
 			<Button onClick={()=>{
 				if(patpValidate(banSearch))
 					pBan(banSearch)
 			}}>Ban</Button>
-			{
+			{ banned.length !== 0 &&
 					banned.map(ship => 
 					<Box>
 					{ship}
 					<Button onClick={()=>{pUnban(ship)}}>Unban</Button>
 					</Box>
 			)}
-		</Box>
+			</Box>
+			</Box>
 	)
 }
 
 const Settings = () => {
+	const settings = useStore(state => state.settings);
 	const pAddress = useStore(state => state.pAddress);
 	const pPosition = useStore(state => state.pPosition);
+	const pReceiveInvite = useStore(state => state.pReceiveInvite);
 	return(
 		<Box>
-				<Location setAddress={pAddress} setPosition={pPosition}/>
+				<Location 
+					address={settings.address} 
+					position={settings.position} 
+					setAddress={pAddress} 
+					setPosition={pPosition}
+			/>
 				<MyRadius/>
 				<Banned/>
+		<Box border={1}>
+			<Text>Set onlyinvite/anyone </Text>
+				<StatelessRadioButtonField
+					selected={settings.receiveInvite === 'anyone'}
+          onChange={() => { pReceiveInvite('anyone') }}
+				> Anyone </StatelessRadioButtonField>
+				<StatelessRadioButtonField
+					selected={settings.receiveInvite === 'only-in-radius'}
+          onChange={() => { pReceiveInvite('only-in-radius') }}
+				> Only in radius </StatelessRadioButtonField>
+		</Box>
 		</Box>
 	 );
 }
