@@ -1,4 +1,5 @@
-/-  *gather
+/-  *gather, *resource
+/+  *resource
 |_  upd=update
 ++  grow
   |%
@@ -96,8 +97,21 @@
       ^-  ^json
       %-  pairs
       :~  ['title' s+title.collection]
+          ['groups' (en-groups groups.collection)] 
           :-  'members'           
           a+(sort (turn ~(tap in members.collection) |=(p=@p s+(scot %p p))) aor)
+          ['selected' s+(scot %tas selected.collection)]
+      ==
+    ++  en-groups
+      |=  =groups
+      ^-  ^json
+      :-  %a
+      %+  turn  ~(tap by groups)
+      |=  [=resource =members]
+      %-  pairs
+      :~  ['resource' (enjs:resource resource)]
+          :-  'members'           
+          a+(sort (turn ~(tap in members) |=(p=@p s+(scot %p p))) aor)
       ==
     ++  en-banned
       |=  =banned

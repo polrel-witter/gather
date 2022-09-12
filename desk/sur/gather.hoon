@@ -1,3 +1,4 @@
+/-  *resource
 |%
 ::
 :: Basic types
@@ -6,12 +7,13 @@
 +$  radius          @rs 
 +$  position        [lat=@rs lon=@rs]
 +$  address         @t
-+$  location-type   ?(%virtual %meatspace)       :: Moved up here from $invite
-+$  access-link     @ta                          :: Moved up here from $invite
++$  location-type   ?(%virtual %meatspace) 
++$  access-link     @ta
++$  selected        ?                   
 +$  members         (set @p)
-+$  group           @ta
++$  groups          (map resource members) 
 +$  receive-invite  ?(%only-in-radius %anyone)   
-+$  collection      [title=@t =members]          :: TODO may need to include group link for frontend display
++$  collection      [title=@t =groups =members =selected]    :: =groups comes from /landscape/sur/group.hoon, which is defined as (map resource group); resource is the identifier, defined as: [=entity name=term] where entity must be a ship 
 +$  banned          (set @p)
 ::
 +$  invitee-status
@@ -39,11 +41,11 @@
      desc=@t
      receive-ships=(map @p ship-invite)
      :: date=@da
-     =location-type                     :: UNCOMMENTED
-     =position                          :: UNCOMMENTED
-     =address                           :: UNCOMMENTED
-     =access-link                       :: UNCOMMENTED
-     =radius                            :: UNCOMMENTED
+     =location-type
+     =position     
+     =address      
+     =access-link  
+     =radius       
      max-accepted=@ud
      accepted-count=@ud      
      =host-status
@@ -69,23 +71,21 @@
      [%address =address]
      [%position =position]
      [%radius =radius]
-     [%create-collection title=@t members=(list @p)]
-     [%edit-collection-title =id title=@t]
-     [%add-to-collection =id members=(list @p)]
-     [%del-from-collection =id members=(list @p)]
+     [%create-collection =collection]
+     [%edit-collection =id =collection]
      [%del-collection =id]
      [%receive-invite =receive-invite]    
   ::
   :: Options to edit an invite
-     [%del-receive-ship =id del-ships=(list @p)]  :: UPDATE expanded to accept list and changed face
-     [%add-receive-ship =id add-ships=(list @p)]  :: UPDATE expanded to accept list and changed face
+     [%del-receive-ship =id del-ships=(list @p)]  
+     [%add-receive-ship =id add-ships=(list @p)]  
      [%edit-max-accepted =id qty=@ud]
      [%edit-desc =id desc=@t]
-     [%edit-invite-location =id =location-type]     :: ADDITION to change location type
-     [%edit-invite-position =id =position]          :: ADDITION to change venue position
-     [%edit-invite-address =id =address]            :: ADDITION to change venue address
-     [%edit-invite-access-link =id =access-link]    :: ADDITION to change an access link
-     [%edit-invite-radius =id =radius]              :: ADDITION to change the radius  
+     [%edit-invite-location =id =location-type]   
+     [%edit-invite-position =id =position]       
+     [%edit-invite-address =id =address]          
+     [%edit-invite-access-link =id =access-link]   
+     [%edit-invite-radius =id =radius]              
      [%cancel =id]
      [%complete =id]                              
      [%close =id]            
@@ -94,11 +94,11 @@
   :: Invite communication 
      $:  %send-invite       
          send-to=(list @p)
-         =location-type          :: ADDITION
-         =position               :: ADDITION
-         =address                :: ADDITION
-         =access-link            :: ADDITION
-         =radius                 :: ADDITION
+         =location-type       
+         =position              
+         =address              
+         =access-link           
+         =radius                
          max-accepted=@ud
          desc=@t 
      ==
@@ -114,6 +114,6 @@
   $%
      [%init-all =invites =settings] 
      [%update-invite =id =invite]
-     [%update-settings =settings]     :: ADDITION
+     [%update-settings =settings]   
   ==
 --

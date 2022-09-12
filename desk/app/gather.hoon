@@ -8,10 +8,8 @@
 ::   [%address =address]                                  :: Used to retrieve $position (lat and lon) from Nominatim OSM.
 ::   [%position =position]                                :: Used to calculate distance from %meatspace venue addresses 
 ::   [%radius =radius]                                    :: Limit %meatspace invites you receive to only those with venue addresses within this radius
-::   [%create-collection title=@t members=(list @p)]      :: Create a collection of ships (combined with groups) you regularly invite
-::   [%edit-collection-title =id title=@t]                :: Change a collection's title
-::   [%add-to-collection =id members=(list @p)]           :: Add a member to a collection
-::   [%del-from-collection =id members=(list @p)]         :: Delete a member from a collection
+::   [%create-collection =collection]                     :: Create a collection of ships (combined with groups) you regularly invite
+::   [%edit-collection =id =collection]                   :: Change a collection
 ::   [%del-collection =id]                                :: Delete a collection
 ::   [%receive-invite =receive-invite]                    :: Receive invites from either %anyone or %only-in-radius
 ::
@@ -50,7 +48,7 @@
 ::   [%unban =ship]                                       :: Make sending and receiving invites to/from a specific ship available again
 ::
 ::
-/-  *gather, hark=hark-store
+/-  *gather, *group, *resource, hark=hark-store
 /+  *gather, default-agent, dbug, agentio
 |%
 +$  versioned-state
@@ -136,59 +134,81 @@
        %create-collection
      ~|  [%unexpected-collection-request %create-collection ~]
      ?>  =(our.bol src.bol)
-     =/  members=(list @p)
-     %-  remove-banned  [(remove-dupes members.act) banned.settings]
+    :: =/  temp=(set resource)  
+    ::   .^((set resource) %gy /(scot %p our.bol)/group-store/(scot %da now.bol)/groups)
+    :: =/  resources=(list resource)  ~(tap in temp)
+    :: =/  groups=(map resource members)
+    ::   |-  
+    ::   ?~  resources  
+    ::     groups
+    ::   =+  resource=i.resources
+    ::   =/  group=group 
+    ::     .^((unit group) %gx /(scot %p our.bol)/group-store/(scot %da now.bol)/groups/ship/-:resource/+:resource/noun)
+    ::   =/  members=(set @p)  -:(need group)
+    ::   %=  $
+    ::     groups  (~(put by groups) resource members)
+    ::     resources  t.resources
+    ::   ==                                
+     =/  members=(list @p)  %-  remove-banned  
+                              :-  %-  remove-dupes 
+                                     ~(tap in members.collection.act) 
+                                  banned.settings
      =.  collections.settings  %+  ~(put by collections.settings)
                                  (scot %uv eny.bol)
-                               [title.act (silt members)]
-     ~&  "creating collection called {<title.act>}"
+                               :*
+                                  title.collection.act 
+                                  groups.collection.act
+                                  (silt members)
+                                  selected.collection.act
+                               ==
+     ~&  "creating collection called {<title.collection.act>}"
      :_  this
      :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])  
      ==  
   ::
-       %edit-collection-title
+       %edit-collection
      ~|  [%unexpected-collection-request %edit-collection-title ~]
      ?>  =(our.bol src.bol)
      =.  collections.settings  %+  ~(jab by collections.settings)
                                 id.act
-                              |=(=collection collection(title title.act))
-     ~&  "changing collection title to {<title.act>}"
+                              |=(=collection collection.act)
+     ~&  "updated collection {<title.collection.act>}"
      :_  this
      :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])  
      ==
   ::
-       %add-to-collection
-     ~|  [%unexpected-collection-request %add-to-collection ~]
-     ?>  =(our.bol src.bol)
-     =/  new-members=(list @p)
-     %-  remove-banned  [members.act banned.settings]
-     =.  collections.settings  %+  ~(jab by collections.settings)
-                                id.act
-                              |=  =collection 
-                              %=  collection 
-                                members  %-  ~(gas in members.collection) 
-                                           new-members
-                              ==
-     ~&  "adding {<new-members>} to collection"
-     :_  this
-     :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])  
-     ==
+ ::      %add-to-collection
+::     ~|  [%unexpected-collection-request %add-to-collection ~]
+::     ?>  =(our.bol src.bol)
+::     =/  new-members=(list @p)
+::     %-  remove-banned  [members.act banned.settings]
+ ::    =.  collections.settings  %+  ~(jab by collections.settings)
+ ::                               id.act
+ ::                             |=  =collection 
+ ::                             %=  collection 
+ ::                               members  %-  ~(gas in members.collection) 
+ ::                                          new-members
+ ::                             ==
+ ::    ~&  "adding {<new-members>} to collection"
+ ::    :_  this
+ ::    :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])  
+ ::    ==
   ::
-       %del-from-collection
-     ~|  [%unexpected-collection-request %del-from-collection ~]
-     ?>  =(our.bol src.bol)
-     =/  del-members=(set @p)  (silt `(list @p)`members.act)
-     =.  collections.settings  %+  ~(jab by collections.settings)
-                                id.act
-                              |=  =collection 
-                              %=  collection
-                                members  %-  ~(dif in members.collection) 
-                                           del-members
-                              ==
-     ~&  "deleting {<del-members>} from collection"
-     :_  this
-     :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])  
-     ==
+ ::      %del-from-collection
+ ::    ~|  [%unexpected-collection-request %del-from-collection ~]
+ ::    ?>  =(our.bol src.bol)
+ ::    =/  del-members=(set @p)  (silt `(list @p)`members.act)
+ ::    =.  collections.settings  %+  ~(jab by collections.settings)
+ ::                               id.act
+ ::                             |=  =collection 
+ ::                             %=  collection
+ ::                               members  %-  ~(dif in members.collection) 
+ ::                                          del-members
+ ::                             ==
+ ::    ~&  "deleting {<del-members>} from collection"
+ ::    :_  this
+ ::    :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])  
+ ::    ==
   ::
        %del-collection
      ~|  [%unexpected-collection-request %del-collection ~]

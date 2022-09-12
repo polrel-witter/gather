@@ -1,4 +1,5 @@
-/-  *gather
+/-  *gather, *resource
+/+  *resource
 |_  act=action
 ++  grow
   |%
@@ -19,22 +20,20 @@
         address+(ot ~[address+so])
         position+de-position
         radius+(ot ~[radius+(se %rs)])
-        create-collection+(ot ~[title+so members+(ar (se %p))])
-        edit-collection-title+(ot ~[id+so title+so])
-        add-to-collection+(ot ~[id+so members+(ar (se %p))])
-        del-from-collection+(ot ~[id+so members+(ar (se %p))])
+        create-collection+de-create-collection
+        edit-collection+de-collection                   :: TODO finish
         del-collection+(ot ~[id+so])
         receive-invite+(ot ~[receive-invite+(se %tas)]) 
         ::
-        del-receive-ship+(ot ~[id+so del-ships+(ar (se %p))])      :: UPDATE changed to array 
-        add-receive-ship+(ot ~[id+so add-ships+(ar (se %p))])      :: UPDATE changed to array
+        del-receive-ship+(ot ~[id+so del-ships+(ar (se %p))])     
+        add-receive-ship+(ot ~[id+so add-ships+(ar (se %p))])    
         edit-max-accepted+(ot ~[id+so qty+ni])
         edit-desc+(ot ~[id+so desc+so])
-        edit-invite-address+(ot ~[id+so address+so])       :: ADDITION
-        edit-invite-position+(ot ~[id+so position+de-position])    :: ADDITION
-        edit-invite-location+(ot ~[id+so location-type+(se %tas)]) :: ADDITION
-        edit-invite-access-link+(ot ~[id+so access-link+(se %ta)]) :: ADDITION
-        edit-invite-radius+(ot ~[id+so radius+(se %rs)])           :: ADDITION
+        edit-invite-address+(ot ~[id+so address+so])   
+        edit-invite-position+(ot ~[id+so position+de-position])    
+        edit-invite-location+(ot ~[id+so location-type+(se %tas)]) 
+        edit-invite-access-link+(ot ~[id+so access-link+(se %ta)]) 
+        edit-invite-radius+(ot ~[id+so radius+(se %rs)])           
         cancel+(ot ~[id+so])
         complete+(ot ~[id+so])
         close+(ot ~[id+so])
@@ -53,14 +52,34 @@
       :~  lat+(se %rs)
           lon+(se %rs)
       ==
+    ++  de-create-collection
+      %-  ot
+      :~  title+so
+          groups+de-groups
+          members+(as (se %p))
+          selected+(se %tas)
+      == 
+    ++  de-collection 
+      %-  ot
+      :~  id+so
+          title+so
+          groups+de-groups 
+          members+(as (se %p))
+          selected+(se %tas)
+      ==
+    ++  de-groups
+      %-  op
+        resource+dejs:resource
+        members+(as (se %p))
+      ::
     ++  de-send-invite
       %-  ot
       :~  send-to+(ar (se %p))
-          location-type+(se %tas)    :: ADDITION
-          position+de-position       :: ADDITION
-          address+so                 :: ADDITION
-          access-link+(se %ta)       :: ADDITION
-          radius+(se %rs)            :: ADDITION
+          location-type+(se %tas) 
+          position+de-position    
+          address+so              
+          access-link+(se %ta)    
+          radius+(se %rs)         
           max-accepted+ni
           desc+so
       == 
