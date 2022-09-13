@@ -43,18 +43,18 @@ const AppSwitch = () => {
 class App extends Component {
 	  constructor(props) {
     super(props);
-		window.urbit = new Urbit("http://localhost:8080","","lidlut-tabwed-pillex-ridrup");
-		window.urbit.ship = 'zod';
+		// window.urbit = new Urbit("http://localhost:8080","","lidlut-tabwed-pillex-ridrup");
+		// window.urbit.ship = 'zod';
 		// window.urbit = new Urbit("http://localhost:8080","","magsub-micsev-bacmug-moldex");
 		// window.urbit.ship = 'dev';
 			
-		// window.urbit = new Urbit("");
-		// window.urbit.ship = window.ship;
+		window.urbit = new Urbit("");
+		window.urbit.ship = window.ship;
 
 		window.urbit.onOpen = () => this.setState({conn: "ok"});
     window.urbit.onRetry = () => this.setState({conn: "try"});
     window.urbit.onError = () => this.setState({conn: "err"});
-		scryGroup('');
+		// scryGroup('');
 		}
 	render() {
 	return(
@@ -62,13 +62,18 @@ class App extends Component {
 				display="flex"
 				flexDirection="column"
 			  alignItems="center"
-				width="50%"
-				position="absolute"
-				right="25%"
-				left="25%"
+				// position='center'
+        // width="39.5%"
+				// height="5"
+        // px="2"
+				width="100%"
+				// right="25%"
+				//left="5%"
 			>
-			<Topbar/>
-			<AppSwitch/>
+				<div className='overbox'>
+					<Topbar/>
+					<AppSwitch/>
+				</div>
 			</Box>
 	)
 	}

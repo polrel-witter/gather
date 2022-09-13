@@ -4,10 +4,13 @@ import StatusForeignShips from "./StatusForeignShips"
 import Location from '../shared/Location';
 import Collection from "./Collection"
 import { useStore } from '../../data/store';
-import { Text, Box, Button, StatelessTextArea, StatelessTextInput, StatelessRadioButtonField, RadioButton, Menu, MenuButton, Icon, MenuList, MenuItem} from "@tlon/indigo-react";
+import { DisclosureButton, DisclosureBox, Row, Text, Box, Button, StatelessTextArea, StatelessTextInput, StatelessRadioButtonField, RadioButton, Menu, MenuButton, Icon, MenuList, MenuItem} from "@tlon/indigo-react";
 import { fetchPendingInvites, fetchAcceptedInvites, dedup, createGroup, toggleSelect, deleteGroup} from '../../utils';
 import * as Nominatim from 'nominatim-browser';
 // import {Geolookup} from 'react-geolookup';
+
+const px = '1';
+const py = '2';
 
 const Draft = () => {
 	const route = useStore(state => state.route);
@@ -45,11 +48,18 @@ const Draft = () => {
 					"desc": desc,
 				})
 			}}>Send</Button>
-			<Box border={1}>
+			<Box borderBottom={1}
+				px={px}
+				py={py}
+			>
 				<Text>Description</Text>
 				<StatelessTextArea onChange={(e) => setDesc(e.currentTarget.value)}/>
 			</Box>
-			<Box border={1}>
+			<Box 
+				borderBottom={1}
+				px={px}
+				py={py}
+			>
 				<Text>Happening in: </Text>
 				<StatelessRadioButtonField
 					selected={locationType === 'virtual'}
@@ -60,12 +70,16 @@ const Draft = () => {
           onChange={() => { setLocationType('meatspace') }}
 				> Virtual </StatelessRadioButtonField>
 			</Box> 
-			{/* <Box border={1}> */}
+			{/* <Box borderBottom={1}> */}
 			{/* 	<Button>Select Date</Button> */}
 			{/* 	<Button>Select Time</Button> */}
 			{/* </Box> */}
-			<Box border={1}>
-				<Text> Set access link to event </Text>
+			<Box 
+				borderBottom={1}
+				px={px}
+				py={py}
+			>
+				<Text> Access link to event: </Text>
 				<StatelessTextInput
 					display="block"
 					value={accessLink}
@@ -79,10 +93,14 @@ const Draft = () => {
 				setAddress={setAddress} 
 				setPosition={setPosition}
 			/>
-			<Box border={1}>
-				<Text>Restrict delivery radius to 
+			<Box borderBottom={1}
+				px={px}
+				py={py}
+				display='flex'
+				flexDirection='row'
+			>
+				<Text>Delivery radius (in km): 
 				<StatelessTextInput
-				display="block"
 				value={radius}
 				onChange={(e) => 
 					{
@@ -91,11 +109,10 @@ const Draft = () => {
 							setRadius(Number(e.currentTarget.value));
 					}}
 				/>
-					miles within location address
 				</Text>
 				</Box>
-			<Box border={1}>
-				<Text> Limit number of RSVPs you'll accept 
+			<Box borderBottom={1}>
+				<Text> Number of participants (0 equals no limit set)
 				<StatelessTextInput value={maxAccepted} onChange={(e) => 
 					{
 						const re = /^[0-9\b]+$/;
@@ -104,9 +121,23 @@ const Draft = () => {
 					}}/>
 				</Text>
 				</Box>
-			========================================
-			<Box border={1}>
-			<Text>Search ships/groups/collections to invite </Text>
+            {/* <DisclosureBox isOpen={true}> */}
+            {/*   <Text pl="2">Hello</Text> */}
+            {/* </DisclosureBox> */}
+            {/* <DisclosureButton */}
+            {/*   isOpen={true} */}
+							{/* onClick={() => {}} */}
+            {/* > */}
+            {/*   <Text>Extra Stuff</Text> */}
+            {/* </DisclosureButton> */}
+			<Box borderBottom={1}
+				px={px}
+				py={py}
+			>
+				{/* <Text display='block'>Create New Collection from ship: ~[patp]</Text> */}
+				{/* <Text display='block'>Create New Collection from group: ~[patp]/[groupid]</Text> */}
+				{/* <Text display='block'>Create Custom Collection: kkk</Text> */}
+				<Text display='block'>Collections: </Text>
 			<StatelessTextInput onChange={(e) => setGroupSearch(e.currentTarget.value)}/>
 			<Button onClick={() => {
 				if(createGroup(groupSearch, collections) !== null)

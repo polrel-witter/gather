@@ -4,7 +4,8 @@ import { useStore } from '../../data/store';
 import Geolookup from 'react-geolookup-v2';
 import * as Nominatim from 'nominatim-browser';
 
-
+const px = '1';
+const py = '2';
 
 const Location = (props) => {
 	// const position = {lat: '.6.022141e23', lon: '.6.022141e23'};
@@ -13,9 +14,12 @@ const Location = (props) => {
 			
 	// }
 	return (
-		<Box border={1}>
-		<Text display="block"> My Location </Text>
-		<Text display="block"> 
+		<Box borderBottom={1}
+			px={px}
+			py={py}
+		>
+		<Text > My Location </Text>
+		<Text > 
 			{props.address}
 		</Text>
 			    <Geolookup
