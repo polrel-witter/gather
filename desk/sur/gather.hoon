@@ -11,9 +11,8 @@
 +$  access-link     @ta
 +$  selected        ?                   
 +$  members         (set @p)
-+$  groups          (map resource members) 
 +$  receive-invite  ?(%only-in-radius %anyone)   
-+$  collection      [title=@t =groups =members =selected]    :: =groups comes from /landscape/sur/group.hoon, which is defined as (map resource group); resource is the identifier, defined as: [=entity name=term] where entity must be a ship 
++$  collection      [title=@t =members =selected =resource]  
 +$  banned          (set @p)
 ::
 +$  invitee-status
@@ -71,8 +70,8 @@
      [%address =address]
      [%position =position]
      [%radius =radius]
-     [%create-collection =title resources=(list resource) members=(list @p) =selected]
-     [%edit-collection =id =title resources=(list resource) members=(list @p) =selected]
+     [%create-collection =title members=(list @p) =selected =(unit resource)]
+     [%edit-collection =id =title members=(list @p) =selected =(unit resource)]
      [%del-collection =id]
      [%receive-invite =receive-invite]    
   ::
