@@ -1,5 +1,5 @@
 /-  *gather, *resource
-/+  *resource
+/+  resource
 |_  upd=update
 ++  grow
   |%

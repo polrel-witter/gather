@@ -2,6 +2,13 @@
 |%
 ::
 ::
+:: Remove a single ship from a list
+++  remove-our
+  |=  [ship=@p import=(list @p)]
+  ^-  (list @p)
+  (skip `(list @p)`import |=(a=@p =(a ship)))
+::
+::
 :: Remove Banned ships from a list
 ++  remove-banned
   |=  [import=(list @p) banned=(set @p)]

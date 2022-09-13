@@ -71,8 +71,8 @@
      [%address =address]
      [%position =position]
      [%radius =radius]
-     [%create-collection =collection]
-     [%edit-collection =id =collection]
+     [%create-collection =title resources=(list resource) members=(list @p) =selected]
+     [%edit-collection =id =title resources=(list resource) members=(list @p) =selected]
      [%del-collection =id]
      [%receive-invite =receive-invite]    
   ::

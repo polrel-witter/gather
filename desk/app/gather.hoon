@@ -470,7 +470,7 @@
        ~&  "revoking invite with id {<id.act>}"
        =+  kik=[%give %kick ~[path /all] ~]
        =+  fak=(fact:io gather-update+!>(`update`[%init-all invites settings]) ~[/all]) 
-       :-  (snoc (snoc dek kik) fak)
+       :-  (snoc (into dek 0 fak) kik)
            this(invites (~(del by invites) id.act)) 
      %=  $
         dek  ;:  welp  dek  
@@ -540,9 +540,10 @@
      =/  =id  (scot %uv eny.bol)
      =/  =path  /(scot %p our.bol)/[%invite]/id
      =/  send-to=(list @p)
-       %-  remove-banned  
-         :-  (remove-dupes send-to.act) 
-             banned.settings
+       %-  remove-our  our.bol
+         %-  remove-banned  
+           :-  (remove-dupes send-to.act) 
+               banned.settings
      =/  receive-ships=(map @p =ship-invite)  
        (make-receive-ships-map send-to)
      ~&  "sending invite to {<send-to>}"
@@ -678,6 +679,7 @@
        %ban
      ~|  [%failed-ban ~]
      ?>  =(our.bol src.bol)
+     ?<  =(our.bol ship.act)
      ~&  "banning {<ship.act>}"
      ?:  (~(has in banned.settings) ship.act)
         `this
