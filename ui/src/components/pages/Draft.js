@@ -59,6 +59,9 @@ const Draft = () => {
 				borderBottom={1}
 				px={px}
 				py={py}
+				display='flex'
+				justifyContent='center'
+				alignItems='center'
 			>
 				<Text>Happening in: </Text>
 				<StatelessRadioButtonField
@@ -87,7 +90,7 @@ const Draft = () => {
 				/>
 			</Box>
 			
-			<Location 
+			<Location
 				address={address} 
 				position={position} 
 				setAddress={setAddress} 
@@ -97,9 +100,12 @@ const Draft = () => {
 				px={px}
 				py={py}
 				display='flex'
-				flexDirection='row'
+				// flexDirection='row'
 			>
-				<Text>Delivery radius (in km): 
+				{/* <Text mr={90}>Delivery radius (in km): </Text> */}
+				<Text 
+					display='inline'
+				>Delivery radius: </Text>
 				<StatelessTextInput
 				value={radius}
 				onChange={(e) => 
@@ -109,17 +115,21 @@ const Draft = () => {
 							setRadius(Number(e.currentTarget.value));
 					}}
 				/>
-				</Text>
 				</Box>
-			<Box borderBottom={1}>
-				<Text> Number of participants (0 equals no limit set)
+			<Box 
+				borderBottom={1}
+				px={px}
+				py={py}
+				display='flex'
+			>
+				<Text> Number of participants (0 equals no limit set):
+				</Text>
 				<StatelessTextInput value={maxAccepted} onChange={(e) => 
 					{
 						const re = /^[0-9\b]+$/;
 						if(e.currentTarget.value === '' || re.test(e.currentTarget.value))
 							setMaxAccepted(Number(e.currentTarget.value));
 					}}/>
-				</Text>
 				</Box>
             {/* <DisclosureBox isOpen={true}> */}
             {/*   <Text pl="2">Hello</Text> */}
@@ -137,13 +147,21 @@ const Draft = () => {
 				{/* <Text display='block'>Create New Collection from ship: ~[patp]</Text> */}
 				{/* <Text display='block'>Create New Collection from group: ~[patp]/[groupid]</Text> */}
 				{/* <Text display='block'>Create Custom Collection: kkk</Text> */}
-				<Text display='block'>Collections: </Text>
+				<Text >Create New Collection: </Text>
+				<Box display='flex'>
 			<StatelessTextInput onChange={(e) => setGroupSearch(e.currentTarget.value)}/>
-			<Button onClick={() => {
+			<Button 
+				px={7}
+				py={1}
+				onClick={() => {
 				if(createGroup(groupSearch, collections) !== null)
 					pCreateCollection(createGroup(groupSearch, collections));
-				}}>New Collection</Button>
-			<Text>Ships/Groups/Collections to invite</Text>
+				}}>Create</Button>
+				</Box>
+				<Box
+					py={2}
+				>
+				<Text>Ships/Groups/Collections to invite:</Text>
 			{/* { collections.length !== 0 && collections.map(collection => */}
 			{/* <Box> */}
 			{/* 	<Box> */}
@@ -159,6 +177,7 @@ const Draft = () => {
 			{/* </Box> */}
 			{/* 	) */}
 			{/* } */}
+				</Box>
 			</Box>
 		</Box>
 	)
