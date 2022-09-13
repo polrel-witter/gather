@@ -1,5 +1,5 @@
 /-  *gather, *resource
-/+  *resource
+/+  resource
 |_  act=action
 ++  grow
   |%
@@ -59,19 +59,22 @@
           members+(as (se %p))
           selected+(se %tas)
       == 
+    ++  de-groups
+      %-  op
+      %+  ifix  [sel ser]
+      ;~  glue  ace
+        ;~(pfix sig fed:ag)
+        ;~(pfix cen sym)    
+      ==
+     :: (ar (se %p)) 
     ++  de-collection 
       %-  ot
       :~  id+so
           title+so
-          groups+de-groups 
+          groups+de-groups
           members+(as (se %p))
           selected+(se %tas)
       ==
-    ++  de-groups
-      %-  op
-        resource+dejs:resource
-        members+(as (se %p))
-      ::
     ++  de-send-invite
       %-  ot
       :~  send-to+(ar (se %p))
