@@ -1,0 +1,21 @@
+.geolookup__suggests--hidden {
+  max-height: 0;
+  overflow: hidden;
+  border-width: 0;
+}
+
+.geolookup__item--active {
+  background: #267dc0;
+  color: #fff;
+}
+
+.overbox {
+	width: 768px;
+}
+
+@media only screen and (max-width: 768px) {
+  .overbox {
+    width: 100%;
+		background-color: red;
+  }
+}

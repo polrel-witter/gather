@@ -227,14 +227,14 @@ export const patpValidate = str => {
 };
 
 export const scryGroup = (str) => {
-	const result = {title:'testGroup', selected: true, url: 'webgraph', members: ['~dev']};
-    // const result = window.urbit.scry({
-    //   app: "group-store",
-			// // path: '',
-			// path: '/x/groups/ship//'
-    // })
+	// const result = {title:'testGroup', selected: true, url: 'webgraph', members: ['~dev']};
+    const result = window.urbit.scry({
+      app: "group-store",
+			// path: '/groups/ship/~martyr-sarlev-sarsen/assembly-hackers',
+			path: '/groups/ship/~dev/testgroup',
+    })
 	console.log('scryGroup-----');
-	// console.log(result);
+	console.log(result);
 	return result;
 }
 
