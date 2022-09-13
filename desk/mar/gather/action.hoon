@@ -1,5 +1,4 @@
-/-  *gather, *resource
-/+  resource
+/-  *gather
 |_  act=action
 ++  grow
   |%
@@ -55,26 +54,22 @@
     ++  de-create-collection
       %-  ot
       :~  title+so
-          groups+de-groups
-          members+(as (se %p))
+          members+(ar (se %p))
           selected+(se %tas)
-      == 
-    ++  de-groups
-      %-  op
-      %+  ifix  [sel ser]
-      ;~  glue  ace
-        ;~(pfix sig fed:ag)
-        ;~(pfix cen sym)    
+          resource+de-resource
       ==
-     :: (ar (se %p)) 
     ++  de-collection 
       %-  ot
       :~  id+so
           title+so
-          groups+de-groups
-          members+(as (se %p))
+          members+(ar (se %p))
           selected+(se %tas)
-      ==
+          resource+de-resource 
+    ==
+    ++  de-resource
+      =,  dejs-soft:format 
+      (ot ship+(su ;~(pfix sig fed:ag)) name+so ~)
+    :: 
     ++  de-send-invite
       %-  ot
       :~  send-to+(ar (se %p))

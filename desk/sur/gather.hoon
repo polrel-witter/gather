@@ -1,4 +1,3 @@
-/-  *resource
 |%
 ::
 :: Basic types
@@ -10,10 +9,11 @@
 +$  location-type   ?(%virtual %meatspace) 
 +$  access-link     @ta
 +$  selected        ?                   
++$  banned          (set @p)
 +$  members         (set @p)
++$  resource        (unit [ship=@p name=@tas])
 +$  receive-invite  ?(%only-in-radius %anyone)   
 +$  collection      [title=@t =members =selected =resource]  
-+$  banned          (set @p)
 ::
 +$  invitee-status
   $?  
@@ -70,10 +70,23 @@
      [%address =address]
      [%position =position]
      [%radius =radius]
-     [%create-collection =title members=(list @p) =selected =(unit resource)]
-     [%edit-collection =id =title members=(list @p) =selected =(unit resource)]
-     [%del-collection =id]
      [%receive-invite =receive-invite]    
+  ::
+  :: Collections
+     $:  %create-collection 
+         title=@t 
+         members=(list @p) 
+         =selected 
+         =resource
+     ==
+     $:  %edit-collection 
+         =id 
+         title=@t 
+         members=(list @p) 
+         =selected 
+         =resource
+     ==
+     [%del-collection =id]   
   ::
   :: Options to edit an invite
      [%del-receive-ship =id del-ships=(list @p)]  
@@ -105,7 +118,7 @@
      [%deny =id]
      [%subscribe-to-invite =id]
   ::
-  :: General
+  :: Banning
      [%ban =ship]
      [%unban =ship]
   ==

@@ -134,6 +134,7 @@
        %create-collection
      ~|  [%unexpected-collection-request %create-collection ~]
      ?>  =(our.bol src.bol)
+    ::
     :: =/  temp=(set resource)  
     ::   .^((set resource) %gy /(scot %p our.bol)/group-store/(scot %da now.bol)/groups)
     :: =/  resources=(list resource)  ~(tap in temp)
@@ -149,19 +150,17 @@
     ::     groups  (~(put by groups) resource members)
     ::     resources  t.resources
     ::   ==                                
-     =/  members=(list @p)  %-  remove-banned  
-                              :-  %-  remove-dupes 
-                                     ~(tap in members.collection.act) 
-                                  banned.settings
-     =.  collections.settings  %+  ~(put by collections.settings)
-                                 (scot %uv eny.bol)
-                               :*
-                                  title.collection.act 
-                                  groups.collection.act
-                                  (silt members)
-                                  selected.collection.act
-                               ==
-     ~&  "creating collection called {<title.collection.act>}"
+     =/  membs=(set @p)  (silt (remove-our [our.bol (remove-banned [(remove-dupes members.act) banned.settings])]))
+     ::
+     =.  collections.settings   %+  ~(put by collections.settings)
+                                  (scot %uv eny.bol)
+                                :*
+                                   title.act 
+                                   membs
+                                   selected.act
+                                   resource.act
+                                ==
+     ~&  "creating collection called {<title.act>}"
      :_  this
      :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])  
      ==  
@@ -169,46 +168,21 @@
        %edit-collection
      ~|  [%unexpected-collection-request %edit-collection-title ~]
      ?>  =(our.bol src.bol)
+     =/  membs=(set @p)  (silt (remove-our [our.bol (remove-banned [(remove-dupes members.act) banned.settings])]))
+     ::                       
      =.  collections.settings  %+  ~(jab by collections.settings)
-                                id.act
-                              |=(=collection collection.act)
-     ~&  "updated collection {<title.collection.act>}"
+                                 id.act
+                               |=  =collection
+                               %=  collection 
+                                  title     title.act
+                                  members   membs
+                                  selected  selected.act  
+                                  resource  resource.act
+                               ==
+     ~&  "updated collection {<title.act>}"
      :_  this
      :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])  
      ==
-  ::
- ::      %add-to-collection
-::     ~|  [%unexpected-collection-request %add-to-collection ~]
-::     ?>  =(our.bol src.bol)
-::     =/  new-members=(list @p)
-::     %-  remove-banned  [members.act banned.settings]
- ::    =.  collections.settings  %+  ~(jab by collections.settings)
- ::                               id.act
- ::                             |=  =collection 
- ::                             %=  collection 
- ::                               members  %-  ~(gas in members.collection) 
- ::                                          new-members
- ::                             ==
- ::    ~&  "adding {<new-members>} to collection"
- ::    :_  this
- ::    :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])  
- ::    ==
-  ::
- ::      %del-from-collection
- ::    ~|  [%unexpected-collection-request %del-from-collection ~]
- ::    ?>  =(our.bol src.bol)
- ::    =/  del-members=(set @p)  (silt `(list @p)`members.act)
- ::    =.  collections.settings  %+  ~(jab by collections.settings)
- ::                               id.act
- ::                             |=  =collection 
- ::                             %=  collection
- ::                               members  %-  ~(dif in members.collection) 
- ::                                          del-members
- ::                             ==
- ::    ~&  "deleting {<del-members>} from collection"
- ::    :_  this
- ::    :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])  
- ::    ==
   ::
        %del-collection
      ~|  [%unexpected-collection-request %del-collection ~]
@@ -284,9 +258,11 @@
      ?>  =(our.bol init-ship)
      =/  =path  /(scot %p init-ship)/[%invite]/(scot %uv id.act)
      =/  add-ships=(list @p)
-       %-  remove-banned  
-         :-  (remove-dupes add-ships.act) 
-             banned.settings
+       %+  remove-our  our.bol
+         %-  remove-banned  
+           :-  (remove-dupes add-ships.act) 
+               banned.settings
+           ::
      ~&  "adding {<add-ships>} to invite list on invite {<id.act>}"    
      =+  dek=*(list card:agent:gall)
      |-
@@ -540,10 +516,11 @@
      =/  =id  (scot %uv eny.bol)
      =/  =path  /(scot %p our.bol)/[%invite]/id
      =/  send-to=(list @p)
-       %-  remove-our  our.bol
+       %+  remove-our  our.bol
          %-  remove-banned  
            :-  (remove-dupes send-to.act) 
                banned.settings
+           ::
      =/  receive-ships=(map @p =ship-invite)  
        (make-receive-ships-map send-to)
      ~&  "sending invite to {<send-to>}"
