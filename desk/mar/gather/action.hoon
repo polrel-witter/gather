@@ -55,7 +55,7 @@
       %-  ot
       :~  title+so
           members+(ar (se %p))
-          selected+(se %tas)
+          selected+bo
           resource+de-resource
       ==
     ++  de-collection 

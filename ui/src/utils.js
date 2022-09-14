@@ -97,18 +97,18 @@ export const dedup = (attr, arr) => {
 	}
 
 export const createGroup = (str, collections) => {
-	if(str[0] === '~' && patpValidate(str) && (collections.filter(collection => collection.ships[0] === str)).length === 0) {
-		return ({title: str, members: [str]});
+	console.log(collections);
+	if(str[0] === '~' && patpValidate(str) && (collections.filter(collection => collection.collection.members[0] === str)).length === 0) {
+		return ({title: str, members: [str], selected: true, resource: ''});
 	}
 	// TODO scry group here
-	else if(str[0] === '+') {
-		const result = scryGroup(str);
-		// TODO try to fetch a group from groups-store
-		return ({title: str, members: [str]});
-	}
-	else if(str !== '' && collections.filter(x => x.selected).length !== 0) {
-		// TODO try to fetch a group from groups-store
-		return ({title: str, members: [str]});
+	// else if(str[0] === '+') {
+	// 	const result = scryGroup(str);
+	// 	// TODO try to fetch a group from groups-store
+	// 	return ({title: str, members: [str], selected: true, resource: null});
+	// }
+	else if(str !== '' && collections.filter(x => x.collection.selected).length !== 0) {
+		return ({title: str, members: [str], selected: true, resource: ''});
 	}
 	else
 		return null;
@@ -117,7 +117,7 @@ export const createGroup = (str, collections) => {
 export const toggleSelect = (id, groups) => {
 	return groups.map(group => {
 		if (group.id === id) {
-			return {...group, selected: !group.selected}
+			return {...group, collection.selected: !group.collection.selected}
 		}
 		else
 			return group

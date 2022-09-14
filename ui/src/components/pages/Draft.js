@@ -147,36 +147,38 @@ const Draft = () => {
 				{/* <Text display='block'>Create New Collection from ship: ~[patp]</Text> */}
 				{/* <Text display='block'>Create New Collection from group: ~[patp]/[groupid]</Text> */}
 				{/* <Text display='block'>Create Custom Collection: kkk</Text> */}
-				<Text >Create New Collection: </Text>
+				<Text>Ships/Groups/Collections to invite:</Text>
 				<Box display='flex'>
 			<StatelessTextInput onChange={(e) => setGroupSearch(e.currentTarget.value)}/>
 			<Button 
 				px={7}
 				py={1}
 				onClick={() => {
+					console.log('collec-------');
+					console.log(collections);
 				if(createGroup(groupSearch, collections) !== null)
 					pCreateCollection(createGroup(groupSearch, collections));
-				}}>Create</Button>
+				}}>Add</Button>
 				</Box>
 				<Box
 					py={2}
 				>
-				<Text>Ships/Groups/Collections to invite:</Text>
-			{/* { collections.length !== 0 && collections.map(collection => */}
-			{/* <Box> */}
-			{/* 	<Box> */}
-			{/* 	<Text>{collection.members[0]}</Text> */}
-			{/* 		{ collection.selected && */}
-			{/* 		<Icon ml="2" icon="Smiley" onClick = {() => pModifyCollection(toggleSelect(collection.id, collections))}/> */}
-			{/* 		} */}
-			{/* 		{ !collection.selected && */}
-			{/* 		<Icon ml="2" icon="ArrowExternal" onClick = {() => pModifyCollection(toggleSelect(collection.id, collections))}/> */}
-			{/* 		} */}
-			{/* 		<Icon ml="2" icon="X" onClick = {() => pDeleteCollection(collection.id)}/> */}
-			{/* 	</Box> */}
-			{/* </Box> */}
-			{/* 	) */}
-			{/* } */}
+					<Text>Invite List:</Text>
+			{ collections !== undefined && collections.length !== 0 && collections.map(collection =>
+			<Box>
+				<Box>
+				<Text>{collection.collection.members[0]}</Text>
+					{ collection.collection.selected &&
+					<Icon ml="2" icon="Smiley" onClick = {() => pModifyCollection(toggleSelect(collection.id, collections))}/>
+					}
+					{ !collection.collection.selected &&
+					<Icon ml="2" icon="ArrowExternal" onClick = {() => pModifyCollection(toggleSelect(collection.id, collections))}/>
+					}
+					<Icon ml="2" icon="X" onClick = {() => pDeleteCollection(collection.id)}/>
+				</Box>
+			</Box>
+				)
+			}
 				</Box>
 			</Box>
 		</Box>

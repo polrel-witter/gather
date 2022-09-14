@@ -60,7 +60,7 @@ export const useStore = create((set) => ({
 	sAll: (handler) => subscribe('/all', (all) => {
 			console.log('all--------')
 			console.log(all)
-		if(Object.keys(all)[0] === 'initAll' && all.initAll.invites.length !== 0) {
+		if(Object.keys(all)[0] === 'initAll') {
 			const settings = all.initAll.settings;
 			console.log('settings--------x');
 			console.log(settings);

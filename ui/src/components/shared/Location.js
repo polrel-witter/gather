@@ -17,22 +17,19 @@ const Location = (props) => {
 			px={px}
 			py={py}
 			display='flex'
+			flexDirection='column'
+			// flexWrap= 'nowrap'
 		>
-			<Text > My Location: </Text>
-			<StatelessTextInput
-					display="block"
-					value={address}
-					onChange={(e) => {setAddress(String(e.currentTarget.value));}}
-				/>
-			<Text>
+			<Text > Venue Location: </Text>
+			{/* <Box display='flex'> */}
 			    <Geolookup
           inputClassName="geolookup__input--nominatim"
           disableAutoLookup={true}
-					initialValue=" "
+					// initialValue=" "
 					onSuggestsLookup={(userInput)=>{
-						console.log(address);
+						console.log(userInput);
 						return Nominatim.geocode({
-      				q: address,
+      				q: userInput,
       				addressdetails: true
     				});
 					}}
@@ -50,14 +47,14 @@ const Location = (props) => {
     				  geocoded.isFixture = suggest.isFixture;
     				  geocoded.label = suggest.raw ? suggest.raw.display_name : '';
 							props.setPosition({ lon: '.' + geocoded.location.lon, lat: '.' + geocoded.location.lat});
-							props.setAddress(geocoded.label);
 							setAddress(geocoded.label);
+							props.setAddress(geocoded.label);
     				}
     				return geocoded;
 					}}
 					getSuggestLabel={(suggest)=>{return suggest.display_name;}}
           radius="20" />
-			</Text>
+			{/* </Box> */}
 		</Box>
 	 );
 }
