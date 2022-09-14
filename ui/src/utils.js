@@ -98,7 +98,7 @@ export const dedup = (attr, arr) => {
 
 export const createGroup = (str, collections) => {
 	console.log(collections);
-	if(str[0] === '~' && patpValidate(str) && (collections.filter(collection => collection.collection.members[0] === str)).length === 0) {
+	if(str[0] === '~' && patpValidate(str) && (collections.filter(collection => collection.collection.members[0] === str).length === 0) && str !== '~' + window.urbit.ship) {
 		return ({title: str, members: [str], selected: true, resource: ''});
 	}
 	// TODO scry group here
@@ -107,9 +107,9 @@ export const createGroup = (str, collections) => {
 	// 	// TODO try to fetch a group from groups-store
 	// 	return ({title: str, members: [str], selected: true, resource: null});
 	// }
-	else if(str !== '' && collections.filter(x => x.collection.selected).length !== 0) {
-		return ({title: str, members: [str], selected: true, resource: ''});
-	}
+	// else if(str !== '' && collections.filter(x => x.collection.selected).length !== 0) {
+	// 	return ({title: str, members: [str], selected: true, resource: ''});
+	// }
 	else
 		return null;
 }
@@ -227,9 +227,12 @@ export const patpValidate = str => {
 export const scryGroup = (str) => {
 	// const result = {title:'testGroup', selected: true, url: 'webgraph', members: ['~dev']};
     const result = window.urbit.scry({
-      app: "group-store",
+      app: "graph-store",
 			// path: '/groups/ship/~martyr-sarlev-sarsen/assembly-hackers',
-			path: '/groups/ship/~dev/testgroup',
+			// path: '/groups/ship/~difhut-mogsel-pontus-fadpun/testgroup',
+			path: '/keys',
+			// path: '/groups/ship/~hiddev-dannut/new-hooniverse',
+			// path: '/groups/ship/~hiddev-dannut/new-hooniverse/noun'
     })
 	console.log('scryGroup-----');
 	console.log(result);

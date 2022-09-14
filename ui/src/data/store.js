@@ -31,7 +31,7 @@ export const useStore = create((set) => ({
 	pRadius: (radius) => {doPoke({'radius': {'radius': '.' + radius}}, () => console.log('onSucc'), ()=>{})},
 	pCreateCollection: (collection) => {doPoke({'create-collection': collection}, () => console.log('onSucc'), ()=>{})},
 	pEditCollection: (collection) => {doPoke({'edit-collection': collection}, () => console.log('onSucc'), ()=>{})},
-	pDeleteCollection: (collection) => {doPoke({'delete-collection': collection}, () => console.log('onSucc'), ()=>{})},
+	pDeleteCollection: (id) => {doPoke({'del-collection': {id: id}}, () => console.log('onSucc'), ()=>{})},
 	pEditCollectionTitle: (radius) => {doPoke({'radius': radius}, () => console.log('onSucc'), ()=>{})},
 	pAddToCollection: (radius) => {doPoke({'radius': radius}, () => console.log('onSucc'), ()=>{})},
 	pDelFromCollection: (radius) => {doPoke({'radius': radius}, () => console.log('onSucc'), ()=>{})},

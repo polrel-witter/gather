@@ -43,8 +43,8 @@ const AppSwitch = () => {
 class App extends Component {
 	  constructor(props) {
     super(props);
-		window.urbit = new Urbit("http://localhost:8080","","lidlut-tabwed-pillex-ridrup");
-		window.urbit.ship = 'zod';
+		window.urbit = new Urbit("http://localhost:8080","","linmer-hodtev-nidhex-worted");
+		window.urbit.ship = 'difhut-mogsel-pontus-fadpun';
 		// window.urbit = new Urbit("http://localhost:8080","","magsub-micsev-bacmug-moldex");
 		// window.urbit.ship = 'dev';
 			
@@ -54,7 +54,7 @@ class App extends Component {
 		window.urbit.onOpen = () => this.setState({conn: "ok"});
     window.urbit.onRetry = () => this.setState({conn: "try"});
     window.urbit.onError = () => this.setState({conn: "err"});
-		// scryGroup('');
+		scryGroup('');
 		}
 	render() {
 	return(
