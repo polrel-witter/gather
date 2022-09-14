@@ -161,10 +161,10 @@ const Draft = () => {
 				<Text>{collection.collection.title}</Text>
 					</Box>
 					{ collection.collection.selected &&
-						<Button onClick={() => pEditCollection(toggleSelect(collection.id, collections))}>Select</Button>
+						<Button onClick={() => pEditCollection(toggleSelect(collection.id, collections))}>Unselect</Button>
 					}
 					{ !collection.collection.selected &&
-						<Button onClick={() => pEditCollection(toggleSelect(collection.id, collections))}>Unselect</Button>
+						<Button onClick={() => pEditCollection(toggleSelect(collection.id, collections))}>Select</Button>
 					}
 						<Button onClick={() => pDeleteCollection(collection.id)}>Delete</Button>
 				</Box>
