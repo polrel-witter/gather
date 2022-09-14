@@ -64,7 +64,7 @@ const FocusedInvite = (props) => {
 					address={invite.address} 
 					position={invite.position} 
 					setAddress={(address) => pEditInviteAddress(id, address)} 
-					setPosition={(position) => pEditInviteAddress(id, position)} 
+					setPosition={(position) => pEditInvitePosition(id, position)} 
 				/>
 			</Box>
 			<Box>

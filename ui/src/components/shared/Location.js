@@ -25,7 +25,7 @@ const Location = (props) => {
 			    <Geolookup
           inputClassName="geolookup__input--nominatim"
           disableAutoLookup={true}
-					// initialValue=" "
+					initialValue={props.address}
 					onSuggestsLookup={(userInput)=>{
 						console.log(userInput);
 						return Nominatim.geocode({

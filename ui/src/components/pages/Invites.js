@@ -154,13 +154,13 @@ const Invite = (props) => {
 							<Text>
 								Happening in meatspace/virtual world on 
 								{ invite.locationType === "meatspace" && 
-									<Text> Location: {invite.location} </Text>
+									<Text> Location: {invite.address} </Text>
 								}
 							</Text>
 						</Box>
 						{  invite.initShip !== '~' + window.urbit.ship &&
 						<Box border={1}>
-						<Text>Your distance from the invite location:</Text>
+						<Text>Your distance from the invite l}ocation:</Text>
 						<br/>
 						{ haversine(
 							{ latitude: invite.position.lat, longitude: invite.position.lon },
