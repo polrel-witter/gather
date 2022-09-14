@@ -98,7 +98,7 @@
       :~  ['title' s+title.collection]
           :-  'members'           
           a+(sort (turn ~(tap in members.collection) |=(p=@p s+(scot %p p))) aor)
-          ['selected' s+(scot %tas selected.collection)]
+          ['selected' b+selected.collection]
           ['resource' (en-resource resource.collection)]
       ==
     ++  en-resource

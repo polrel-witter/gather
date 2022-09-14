@@ -115,13 +115,11 @@ export const createGroup = (str, collections) => {
 }
 
 export const toggleSelect = (id, groups) => {
-	return groups.map(group => {
-		if (group.id === id) {
-			return {...group, collection.selected: !group.collection.selected}
-		}
-		else
-			return group
-	})
+	const editedCollection = groups.filter(group => {
+		if (group.id === id) return true;
+		else return false;
+	})[0].collection;
+	return { id: id, title: editedCollection.title, members: editedCollection.members, selected: !editedCollection.selected, resource : ''};
 }
 
 export const deleteGroup = (id, groups) => {

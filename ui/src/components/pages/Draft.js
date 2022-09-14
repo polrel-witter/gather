@@ -17,8 +17,8 @@ const Draft = () => {
 	const pSendInvite = useStore(state => state.pSendInvite);
 	const pDeny = useStore(state => state.pDeny);
 	const pCreateCollection = useStore(state => state.pCreateCollection);
-	const pModifyCollection = useStore(state => state.pCreateCollection);
-	const pDeleteCollection = useStore(state => state.pCreateCollection);
+	const pEditCollection = useStore(state => state.pEditCollection);
+	const pDeleteCollection = useStore(state => state.pDeleteCollection);
 	const [desc, setDesc] = useState("");
 	const [locationType, setLocationType] = useState('meatspace');
 	const [radius, setRadius] = useState(0);
@@ -169,10 +169,10 @@ const Draft = () => {
 				<Box>
 				<Text>{collection.collection.members[0]}</Text>
 					{ collection.collection.selected &&
-					<Icon ml="2" icon="Smiley" onClick = {() => pModifyCollection(toggleSelect(collection.id, collections))}/>
+					<Icon ml="2" icon="Smiley" onClick = {() => pEditCollection(toggleSelect(collection.id, collections))}/>
 					}
 					{ !collection.collection.selected &&
-					<Icon ml="2" icon="ArrowExternal" onClick = {() => pModifyCollection(toggleSelect(collection.id, collections))}/>
+					<Icon ml="2" icon="ArrowExternal" onClick = {() => pEditCollection(toggleSelect(collection.id, collections))}/>
 					}
 					<Icon ml="2" icon="X" onClick = {() => pDeleteCollection(collection.id)}/>
 				</Box>
