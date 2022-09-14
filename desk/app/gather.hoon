@@ -440,14 +440,15 @@
      =/  receive-ships=(list @p)  
        ~(tap in ~(key by receive-ships.invite))
      =+  dek=*(list card:agent:gall)
-     =+  kik=[%give %kick ~[path /all] ~]
      |-
      ?~  receive-ships
        ~&  "revoking invite with id {<id.act>}"
+       =.  invites  
+          (~(del by invites) id.act)
        =+  kik=[%give %kick ~[path /all] ~]
        =+  fak=(fact:io gather-update+!>(`update`[%init-all invites settings]) ~[/all]) 
-       :-  (snoc (into dek 0 fak) kik)
-           this(invites (~(del by invites) id.act)) 
+       :_  this  
+          (snoc (into dek 0 fak) kik)
      %=  $
         dek  ;:  welp  dek  
                  :~  :*
