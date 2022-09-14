@@ -107,9 +107,10 @@ export const createGroup = (str, collections) => {
 	// 	// TODO try to fetch a group from groups-store
 	// 	return ({title: str, members: [str], selected: true, resource: null});
 	// }
-	// else if(str !== '' && collections.filter(x => x.collection.selected).length !== 0) {
-	// 	return ({title: str, members: [str], selected: true, resource: ''});
-	// }
+	else if(str !== '' && collections.filter(x => x.collection.selected).length !== 0) {
+		return ({title: str, members: collections.filter(x => x.collection.selected).reduce((prev, curr) => prev.concat(curr.collection.members), []), 
+			selected: true, resource: ''});
+	}
 	else
 		return null;
 }

@@ -32,13 +32,13 @@ const Draft = () => {
 	return (
 		<Box>
 			<Button onClick={() => {
-				if (collections.filter(i => i.selected).length !== 0)
+				if (collections.filter(i => i.collection.selected).length !== 0) {
 					console.log('collections----');
-					console.log(collections);
+					console.log(collections.filter(i => i.collection.selected).reduce((prev, curr) => prev.concat(curr.collection.members), []));
 					pSendInvite(
 				{ 
 					//TODO reduce
-					"send-to": collections.filter(i => i.selected).map(i => i.members[0]),
+					"send-to": collections.filter(i => i.collection.selected).reduce((prev, curr) => prev.concat(curr.collection.members), []),
 					"location-type": locationType,
 					"position": position,
 					"address": address,
@@ -46,8 +46,7 @@ const Draft = () => {
 					"radius": '.' + radius,
 					"max-accepted": maxAccepted, 
 					"desc": desc,
-				})
-			}}>Send</Button>
+				})}}}>Send</Button>
 			<Box borderBottom={1}
 				px={px}
 				py={py}
@@ -167,7 +166,7 @@ const Draft = () => {
 			{ collections !== undefined && collections.length !== 0 && collections.map(collection =>
 			<Box>
 				<Box>
-				<Text>{collection.collection.members[0]}</Text>
+				<Text>{collection.collection.title}</Text>
 					{ collection.collection.selected &&
 					<Icon ml="2" icon="Smiley" onClick = {() => pEditCollection(toggleSelect(collection.id, collections))}/>
 					}
