@@ -4,18 +4,25 @@ import { useStore } from '../../data/store';
 import Location from '../shared/Location';
 import { patpValidate } from '../../utils';
 
+const px = '1';
+const py = '2';
+
 const MyRadius = () => {
 	const radius = useStore(state => state.settings.radius);
 	const [_radius, _setRadius] = useState(radius);
 	const pRadius = useStore(state => state.pRadius);
 
 	return(
-		<Box border={1}>
+		<Box 
+			borderBottom={1}
+			px={px}
+			py={py}
+		>
 		<Text display="block">My Radius</Text>
-		<Text display="block">
-		Distance within which you’re willing to receive Statuses. 
-	  Shared with Gang members when Status is turned on.
-		</Text>
+		{/* <Text display="block"> */}
+		{/* Distance within which you’re willing to receive Statuses. */} 
+	  {/* Shared with Gang members when Status is turned on. */}
+		{/* </Text> */}
 		<Text >Miles:</Text>
 		{/* TODO make sure the input is a number */}
 		<StatelessTextInput
@@ -40,7 +47,10 @@ const Radius = () => {
 	const pRadius = useStore(state => state.pRadius);
 
 	return(
-		<Box borderBottom={1}>
+		<Box borderBottom={1}
+			px={px}
+			py={py}
+		>
 		<Text display="block">Radius</Text>
 		<Text display="block">
 		Distance within which you’re willing to receive Statuses. 
@@ -66,7 +76,10 @@ const Banned = () => {
 		const pBan = useStore(state => state.pBan);
 		const [banSearch, setBanSearch] = useState("");
 		return (
-		<Box border={1}>
+		<Box borderBottom={1}
+			px={px}
+			py={py}
+		>
 			<Text> Banned Ships </Text>
 				<StatelessTextInput
 				display="block"
@@ -76,7 +89,10 @@ const Banned = () => {
 						setBanSearch(e.currentTarget.value);
 					}}
 				/>
-			<Box border={1}>
+			<Box borderBottom={1}
+			px={px}
+			py={py}
+			>
 			<Button onClick={()=>{
 				if(patpValidate(banSearch))
 					pBan(banSearch)
@@ -108,7 +124,10 @@ const Settings = () => {
 			/>
 				<MyRadius/>
 				<Banned/>
-		<Box border={1}>
+		<Box borderBottom={1}
+			px={px}
+			py={py}
+		>
 			<Text>Set onlyinvite/anyone </Text>
 				<StatelessRadioButtonField
 					selected={settings.receiveInvite === 'anyone'}

@@ -114,14 +114,7 @@ const Draft = () => {
 							setRadius(Number(e.currentTarget.value));
 					}}
 				/>
-				</Box>
-			<Box 
-				borderBottom={1}
-				px={px}
-				py={py}
-				display='flex'
-			>
-				<Text> Number of participants (0 equals no limit set):
+				<Text> Number of participants:
 				</Text>
 				<StatelessTextInput value={maxAccepted} onChange={(e) => 
 					{
@@ -129,16 +122,7 @@ const Draft = () => {
 						if(e.currentTarget.value === '' || re.test(e.currentTarget.value))
 							setMaxAccepted(Number(e.currentTarget.value));
 					}}/>
-				</Box>
-            {/* <DisclosureBox isOpen={true}> */}
-            {/*   <Text pl="2">Hello</Text> */}
-            {/* </DisclosureBox> */}
-            {/* <DisclosureButton */}
-            {/*   isOpen={true} */}
-							{/* onClick={() => {}} */}
-            {/* > */}
-            {/*   <Text>Extra Stuff</Text> */}
-            {/* </DisclosureButton> */}
+			</Box>
 			<Box borderBottom={1}
 				px={px}
 				py={py}
@@ -164,18 +148,26 @@ const Draft = () => {
 				>
 					<Text>Invite List:</Text>
 			{ collections !== undefined && collections.length !== 0 && collections.map(collection =>
-			<Box>
-				<Box>
+				<Box 
+					display='flex'
+					alignItems='center'
+					justifyContent='center'
+					border={1}
+					px={px}
+					py={py}
+					m={1}
+				>
+					<Box display='block'>
 				<Text>{collection.collection.title}</Text>
+					</Box>
 					{ collection.collection.selected &&
-					<Icon ml="2" icon="Smiley" onClick = {() => pEditCollection(toggleSelect(collection.id, collections))}/>
+						<Button onClick={() => pEditCollection(toggleSelect(collection.id, collections))}>Select</Button>
 					}
 					{ !collection.collection.selected &&
-					<Icon ml="2" icon="ArrowExternal" onClick = {() => pEditCollection(toggleSelect(collection.id, collections))}/>
+						<Button onClick={() => pEditCollection(toggleSelect(collection.id, collections))}>Unselect</Button>
 					}
-					<Icon ml="2" icon="X" onClick = {() => pDeleteCollection(collection.id)}/>
+						<Button onClick={() => pDeleteCollection(collection.id)}>Delete</Button>
 				</Box>
-			</Box>
 				)
 			}
 				</Box>
