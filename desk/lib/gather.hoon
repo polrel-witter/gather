@@ -2,6 +2,7 @@
 |%
 ::
 ::
+::
 :: Remove a single ship from a list
 ++  remove-our
   |=  [ship=@p import=(list @p)]
@@ -50,6 +51,18 @@
              ==  ==  ==
      keys  t.keys
   ==
+::
+::
+:: Pull a $collection id from a group $resource
+++  single-group-id
+  |=  [r=resource collections=(map id collection)]
+  =|  export=id
+  =/  ids=(list id)  ~(tap in ~(key by collections))
+  |-  ^-  id
+  ?~  ids  export
+  ?.  =(r resource:(~(got by collections) i.ids))
+    $(ids t.ids)
+  $(export i.ids, ids t.ids) 
 ::
 ::
 :: Pull $collection ids that have a group $resource

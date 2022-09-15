@@ -1,7 +1,9 @@
 ::
+::
 ::  %gather, by ~pontus-fadpun and ~polrel-witter, is a tool for 
 ::  martians to host and attend gatherings. It is distributed from: 
-::  
+::  ~polrel-witter-pontus-fadpun 
+:: 
 ::  It can perform the following acts:
 ::
 :::: Adjust local user settings:  
@@ -134,16 +136,44 @@
        %create-collection
      ~|  [%unexpected-collection-request %create-collection ~]
      ?>  =(our.bol src.bol)
-     =/  membs=(set @p)  (silt (remove-our [our.bol (remove-banned [(remove-dupes members.act) banned.settings])]))
-     ::
-     =.  collections.settings   %+  ~(put by collections.settings)
-                                  (scot %uv eny.bol)
-                                :*
-                                   title.act 
-                                   membs
-                                   selected.act
-                                   resource.act
-                                ==
+     ?.  =(~ resource.act)
+       =/  old=id  (single-group-id [resource.act collections.settings]) 
+       =/  r=resource:res-sur  (need resource.act)
+       =/  g=(unit group:group) 
+         .^  (unit group:group)  %gx 
+            ;:  welp  
+               (path /(scot %p our.bol)/group-store/(scot %da now.bol))
+               /groups
+               (en-path:res-lib r)
+               /noun
+            ==
+         ==
+       =/  gang=members  -:(need g)
+       =/  r=[@p @tas]  (need resource.act)   
+       =.  collections.settings
+         %+  ~(put by collections.settings)
+            (sham eny.bol)
+            :* 
+               `@t`+:r
+                gang
+                %.n
+                `r
+            ==
+       ~&  "creating collection called {<`@t`+:r>}"
+       :_  this
+       :~  (~(poke pass:io /(scot %p our.bol)/[%settings]) [our.bol %gather] gather-action+!>(`action`[%del-collection old]))   
+           (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])  
+       == 
+     =/  gang=members  (silt (remove-our [our.bol (remove-banned [(remove-dupes members.act) banned.settings])]))
+     =.  collections.settings   
+       %+  ~(put by collections.settings)
+          (sham eny.bol)
+          :*
+             title.act 
+             gang
+             selected.act
+             resource.act
+          ==
      ~&  "creating collection called {<title.act>}"
      :_  this
      :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])  
@@ -152,17 +182,17 @@
        %edit-collection
      ~|  [%unexpected-collection-request %edit-collection-title ~]
      ?>  =(our.bol src.bol)
-     =/  membs=(set @p)  (silt (remove-our [our.bol (remove-banned [(remove-dupes members.act) banned.settings])]))
-     ::                       
-     =.  collections.settings  %+  ~(jab by collections.settings)
-                                 id.act
-                               |=  =collection
-                               %=  collection 
-                                  title     title.act
-                                  members   membs
-                                  selected  selected.act  
-                                  resource  resource.act
-                               ==
+     =/  gang=members  (silt (remove-our [our.bol (remove-banned [(remove-dupes members.act) banned.settings])]))
+     =.  collections.settings  
+       %+  ~(jab by collections.settings)
+          id.act
+       |=  =collection
+       %=  collection 
+          title     title.act
+          members   gang
+          selected  selected.act  
+          resource  resource.act
+       ==
      ~&  "updated collection {<title.act>}"
      :_  this
      :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])  
@@ -177,7 +207,7 @@
      :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])  
      ==
   ::
-       %pull-groups
+       %refresh-groups
      ~|  [%bad-groups-pull ~]
      ?>  =(our.bol src.bol)
      =|  r=resource:res-sur
@@ -198,40 +228,35 @@
                /noun
             ==
          ==
-       =/  members=(set @p)  -:(need g)
+       =/  gang=members  -:(need g)
        %=  $
-         export  (~(put by export) r members)
+         export  (~(put by export) r gang)
          resources  t.resources
        ==
-     =/  values=(list collection)   (make-collection-values groups)
-     =.  collections.settings  
-       |-
-       ?~  values  collections.settings
-      :: problem is here; bizaar bc only the t value is being input into the map
-       %=  $
-          collections.settings   %+  ~(put by collections.settings) 
-                                    (scot %uv eny.bol)
-                                    i.values
-          values  t.values
-       ==
-     :_  this
-     :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])
-     ==  
-  ::
-       %wipe-groups
-     ~|  [%bad-group-wipe ~]
-     ?>  =(our.bol src.bol)
-     =.  collections.settings  
-       =/  group-ids=(list id)  (get-group-ids collections.settings) 
+     =.  collections.settings
+       =/  group-ids=(list id)  (get-group-ids collections.settings)  
        |-
        ?~  group-ids  collections.settings
        %=  $
           collections.settings  (~(del by collections.settings) i.group-ids)
           group-ids  t.group-ids
-       ==
-     :_  this
-     :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])
-     == 
+       == 
+     =+  eny=eny.bol
+     =/  values=(list collection)   (make-collection-values groups)
+     :-  :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])
+         ==
+     %=  this
+        collections.settings  |-  
+                              ?~  values  collections.settings
+                              %=  $
+                                 collections.settings   
+                                     %+  ~(put by collections.settings) 
+                                        (sham eny) 
+                                        i.values
+                               :: 
+                                  values  t.values
+                                  eny  +(eny)
+     ==                       ==
   ::
        %receive-invite
      ~|  [%failed-receive-invite-change ~]
@@ -816,6 +841,15 @@
     ?.  ?=(%poke-ack -.sign)  (on-agent:def wire sign)
     ?~  p.sign  [~ this]
     ((slog '%gather: failed to notify invitee' u.p.sign) [~ this])
+  ::
+      %settings
+    ?+    -.sign  (on-agent:def wire sign)
+        %poke-ack
+      ?~  p.sign
+         `this
+      ~&  "%gather: settings poke failed"
+      `this
+    ==
   ::    
       %invite                                                  
     ?+    -.sign  (on-agent:def wire sign)
