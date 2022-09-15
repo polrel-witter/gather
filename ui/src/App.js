@@ -6,7 +6,7 @@ import Invites from "./components/pages/Invites"
 import Draft from "./components/pages/Draft"
 import Settings from "./components/pages/Settings"
 import patpValidate from "./patpValidate";
-import { Box } from "@tlon/indigo-react";
+import { Box, Text } from "@tlon/indigo-react";
 import { useStore } from './data/store';
 import { scryGroup } from './utils';
 
@@ -21,23 +21,28 @@ const AppSwitch = () => {
 		sAll();
   }, []);
 
-	switch(route) {
-		case "invites":
-			return (
-			<Invites/>
-			);
-		break;
-		case "draft":
-			return (
-			<Draft />
-			);
-		break;
-		case "settings":
-			return (
-			<Settings/>
-			);
-		break;
-	}
+	if(Object.keys(allState.settings).length === 0)
+		return (
+			<Text>Loading...</Text>
+		)
+	else
+		switch(route) {
+			case "invites":
+				return (
+				<Invites/>
+				);
+			break;
+			case "draft":
+				return (
+				<Draft />
+				);
+			break;
+			case "settings":
+				return (
+				<Settings/>
+				);
+			break;
+		}
 }
 
 class App extends Component {
@@ -57,7 +62,7 @@ class App extends Component {
 		scryGroup('');
 		}
 	render() {
-	return(
+		return(
 			<Box
 				display="flex"
 				flexDirection="column"
