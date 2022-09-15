@@ -1,4 +1,4 @@
-/-  *gather
+/-  *gather, res-sur=resource
 |%
 ::
 ::
@@ -28,6 +28,40 @@
   ?:  (gth (lent indexes) 1)
     $(sorted (oust [-:indexes 1] `(list @p)`sorted))
   $(export (weld export `(list @p)`~[i.sorted]), sorted t.sorted) 
+::
+::
+:: Coerce resource and members into $collection structure for
+:: the $collections map
+++  make-collection-values
+  |=  groups=(map resource:res-sur members)
+  =|  export=(list collection)
+  =/  keys=(list resource:res-sur)  ~(tap in ~(key by groups))
+  |-  ^-  (list collection)
+  ?~  keys  
+     export
+  =/  gang=members  (~(got by groups) i.keys)
+  %=  $
+     export  ;:  welp  export
+                :~  :*
+                       `@t`->:keys 
+                        gang
+                        %.n
+                        `i.keys
+             ==  ==  ==
+     keys  t.keys
+  ==
+::
+::
+:: Pull $collection ids that have a group $resource
+++  get-group-ids
+  |=  collections=(map id collection) 
+  =|  group-ids=(list id)
+  =/  ids=(list id)  ~(tap in ~(key by collections))
+  |-  ^-  (list id)
+  ?~  ids  group-ids
+  ?:  =(~ resource:(~(got by collections) i.ids))
+     $(ids t.ids)
+  $(group-ids (weld group-ids `(list id)`~[i.ids]), ids t.ids)
 ::
 ::
 :: Constructs the $receive-ships map for invites :: TODO probably can be faster using combo of ++turn and somehow pinning the [%pending] as value

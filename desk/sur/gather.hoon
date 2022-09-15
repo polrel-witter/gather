@@ -7,11 +7,11 @@
 +$  position        [lat=@rs lon=@rs]
 +$  address         @t
 +$  location-type   ?(%virtual %meatspace) 
-+$  access-link     @ta
++$  access-link     @t
 +$  selected        ?                   
 +$  banned          (set @p)
 +$  members         (set @p)
-+$  resource        (unit [ship=@p name=@tas])
++$  resource        (unit [ship=@p name=@tas])                :: Simplified version of $resource from /landscape/sur
 +$  receive-invite  ?(%only-in-radius %anyone)   
 +$  collection      [title=@t =members =selected =resource]  
 ::
@@ -86,7 +86,9 @@
          =selected 
          =resource
      ==
-     [%del-collection =id]   
+     [%del-collection =id]
+     [%pull-groups ~]
+     [%wipe-groups ~]   
   ::
   :: Options to edit an invite
      [%del-receive-ship =id del-ships=(list @p)]  

@@ -31,7 +31,7 @@
         edit-invite-address+(ot ~[id+so address+so])   
         edit-invite-position+(ot ~[id+so position+de-position])    
         edit-invite-location+(ot ~[id+so location-type+(se %tas)]) 
-        edit-invite-access-link+(ot ~[id+so access-link+(se %ta)]) 
+        edit-invite-access-link+(ot ~[id+so access-link+so]) 
         edit-invite-radius+(ot ~[id+so radius+(se %rs)])           
         cancel+(ot ~[id+so])
         complete+(ot ~[id+so])
@@ -76,7 +76,7 @@
           location-type+(se %tas) 
           position+de-position    
           address+so              
-          access-link+(se %ta)    
+          access-link+so    
           radius+(se %rs)         
           max-accepted+ni
           desc+so

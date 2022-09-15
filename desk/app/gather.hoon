@@ -48,8 +48,8 @@
 ::   [%unban =ship]                                       :: Make sending and receiving invites to/from a specific ship available again
 ::
 ::
-/-  *gather, *group, *resource, hark=hark-store
-/+  *gather, default-agent, dbug, agentio
+/-  *gather, group, res-sur=resource, hark=hark-store
+/+  *gather, res-lib=resource, default-agent, dbug, agentio
 |%
 +$  versioned-state
   $%  state-0
@@ -73,7 +73,7 @@
       ==
   %=  this
     settings  :*
-                *position
+                [.1000 .1000] 
                 *radius
                 *address
                 *(map id collection)
@@ -134,22 +134,6 @@
        %create-collection
      ~|  [%unexpected-collection-request %create-collection ~]
      ?>  =(our.bol src.bol)
-    ::
-    :: =/  temp=(set resource)  
-    ::   .^((set resource) %gy /(scot %p our.bol)/group-store/(scot %da now.bol)/groups)
-    :: =/  resources=(list resource)  ~(tap in temp)
-    :: =/  groups=(map resource members)
-    ::   |-  
-    ::   ?~  resources  
-    ::     groups
-    ::   =+  resource=i.resources
-    ::   =/  group=group 
-    ::     .^((unit group) %gx /(scot %p our.bol)/group-store/(scot %da now.bol)/groups/ship/-:resource/+:resource/noun)
-    ::   =/  members=(set @p)  -:(need group)
-    ::   %=  $
-    ::     groups  (~(put by groups) resource members)
-    ::     resources  t.resources
-    ::   ==                                
      =/  membs=(set @p)  (silt (remove-our [our.bol (remove-banned [(remove-dupes members.act) banned.settings])]))
      ::
      =.  collections.settings   %+  ~(put by collections.settings)
@@ -192,6 +176,62 @@
      :_  this
      :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])  
      ==
+  ::
+       %pull-groups
+     ~|  [%bad-groups-pull ~]
+     ?>  =(our.bol src.bol)
+     =|  r=resource:res-sur
+     =/  temp=(set resource:res-sur)  
+       .^((set resource:res-sur) %gy /(scot %p our.bol)/group-store/(scot %da now.bol)/groups)
+     =/  resources=(list resource:res-sur)  ~(tap in temp)
+     =/  groups=(map resource:res-sur members)
+       =|  export=(map resource:res-sur members)  
+       |-
+       ?~  resources  export
+       =+  r=-:resources
+       =/  g=(unit group:group) 
+         .^  (unit group:group)  %gx 
+            ;:  welp  
+               (path /(scot %p our.bol)/group-store/(scot %da now.bol))
+               /groups
+               (en-path:res-lib r)
+               /noun
+            ==
+         ==
+       =/  members=(set @p)  -:(need g)
+       %=  $
+         export  (~(put by export) r members)
+         resources  t.resources
+       ==
+     =/  values=(list collection)   (make-collection-values groups)
+     =.  collections.settings  
+       |-
+       ?~  values  collections.settings
+      :: problem is here; bizaar bc only the t value is being input into the map
+       %=  $
+          collections.settings   %+  ~(put by collections.settings) 
+                                    (scot %uv eny.bol)
+                                    i.values
+          values  t.values
+       ==
+     :_  this
+     :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])
+     ==  
+  ::
+       %wipe-groups
+     ~|  [%bad-group-wipe ~]
+     ?>  =(our.bol src.bol)
+     =.  collections.settings  
+       =/  group-ids=(list id)  (get-group-ids collections.settings) 
+       |-
+       ?~  group-ids  collections.settings
+       %=  $
+          collections.settings  (~(del by collections.settings) i.group-ids)
+          group-ids  t.group-ids
+       ==
+     :_  this
+     :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])
+     == 
   ::
        %receive-invite
      ~|  [%failed-receive-invite-change ~]

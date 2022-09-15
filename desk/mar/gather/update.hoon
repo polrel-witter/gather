@@ -36,8 +36,8 @@
           ['receiveShips' (en-receive-ships receive-ships.invite)]
           ['locationType' s+(scot %tas location-type.invite)]      :: ADDITION
           ['invitePosition' (en-position position.invite)]         :: ADDITION
-          ['inviteAddress' s+(scot %t address.invite)]            :: ADDITION
-          ['accessLink' s+(scot %ta access-link.invite)]           :: ADDITION
+          ['inviteAddress' s+address.invite]            :: ADDITION
+          ['accessLink' s+access-link.invite]           :: ADDITION
           ['inviteRadius' s+(scot %rs radius.invite)]              :: ADDITION
           ['maxAccepted' (numb max-accepted.invite)]
           ['acceptedCount' (numb accepted-count.invite)]
@@ -59,7 +59,7 @@
       %-  pairs
       :~  ['position' (en-position position.settings)] 
           ['radius' s+(scot %rs radius.settings)]
-          ['address' s+(scot %t address.settings)]
+          ['address' s+address.settings]
           ['collections' (en-collections collections.settings)]
           ['banned' (en-banned banned.settings)] 
           ['receiveInvite' s+(scot %tas receive-invite.settings)]
