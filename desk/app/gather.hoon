@@ -152,7 +152,7 @@
        =/  r=[@p @tas]  (need resource.act)   
        =.  collections.settings
          %+  ~(put by collections.settings)
-            (sham eny.bol)
+            (scot %uv eny.bol)
             :* 
                `@t`+:r
                 gang
@@ -167,7 +167,7 @@
      =/  gang=members  (silt (remove-our [our.bol (remove-banned [(remove-dupes members.act) banned.settings])]))
      =.  collections.settings   
        %+  ~(put by collections.settings)
-          (sham eny.bol)
+          (scot %uv eny.bol)
           :*
              title.act 
              gang
@@ -251,7 +251,7 @@
                               %=  $
                                  collections.settings   
                                      %+  ~(put by collections.settings) 
-                                        (sham eny) 
+                                        (scot %uv eny) 
                                         i.values
                                :: 
                                   values  t.values
