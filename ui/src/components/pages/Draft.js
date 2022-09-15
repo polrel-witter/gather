@@ -8,6 +8,7 @@ import { DisclosureButton, DisclosureBox, Row, Text, Box, Button, StatelessTextA
 import { fetchPendingInvites, fetchAcceptedInvites, dedup, createGroup, toggleSelect, deleteGroup} from '../../utils';
 import * as Nominatim from 'nominatim-browser';
 // import {Geolookup} from 'react-geolookup';
+import { useAlert } from 'react-alert'
 
 const px = '1';
 const py = '2';
@@ -29,14 +30,17 @@ const Draft = () => {
 	const [groupSearch, setGroupSearch] = useState("");
 	const collections = useStore(state => state.settings.collections);
 	const [customGroupName, setCustomGroupName] = useState('');
+	const alert = useAlert()
 	return (
 		<Box>
 			<Button onClick={() => {
 				if (collections.filter(i => i.collection.selected).length !== 0) {
 					console.log('collections----');
 					console.log(collections.filter(i => i.collection.selected).reduce((prev, curr) => prev.concat(curr.collection.members), []));
+					alert.show(<div style={{ color: 'green' }}>Invite Sent</div>);
+					// alert.show('hello');
 					pSendInvite(
-				{ 
+				{
 					//TODO reduce
 					"send-to": collections.filter(i => i.collection.selected).reduce((prev, curr) => prev.concat(curr.collection.members), []),
 					"location-type": locationType,
@@ -44,7 +48,7 @@ const Draft = () => {
 					"address": address,
 					"access-link": '~.' + accessLink,
 					"radius": '.' + radius,
-					"max-accepted": maxAccepted, 
+					"max-accepted": maxAccepted,
 					"desc": desc,
 				})}}}>Send</Button>
 			<Box borderBottom={1}
@@ -62,20 +66,21 @@ const Draft = () => {
 				justifyContent='center'
 				alignItems='center'
 			>
-				<Text>Happening in: </Text>
+				<Text 
+					pr={5}
+					mr='auto'
+				>Happening in: </Text>
 				<StatelessRadioButtonField
-					selected={locationType === 'virtual'}
-          onChange={() => { setLocationType('virtual') }}
-				> MeatSpace </StatelessRadioButtonField>
-				<StatelessRadioButtonField
+					px={2}
 					selected={locationType === 'meatspace'}
           onChange={() => { setLocationType('meatspace') }}
-				> Virtual </StatelessRadioButtonField>
-			</Box> 
-			{/* <Box borderBottom={1}> */}
-			{/* 	<Button>Select Date</Button> */}
-			{/* 	<Button>Select Time</Button> */}
-			{/* </Box> */}
+				> Meat Space </StatelessRadioButtonField>
+				<StatelessRadioButtonField
+					px={2}
+					selected={locationType === 'virtual'}
+          onChange={() => { setLocationType('virtual') }}
+				> Virtual Space</StatelessRadioButtonField>
+			</Box>
 			<Box 
 				borderBottom={1}
 				px={px}
@@ -102,19 +107,27 @@ const Draft = () => {
 				// flexDirection='row'
 			>
 				{/* <Text mr={90}>Delivery radius (in km): </Text> */}
+				<Box
+					width='100%'
+				>
 				<Text 
 					display='inline'
+					px={px}
 				>Delivery radius: </Text>
 				<StatelessTextInput
 				value={radius}
-				onChange={(e) => 
+				onChange={(e) =>
 					{
 						const re = /^[0-9\b]+$/;
 						if(e.currentTarget.value === '' || re.test(e.currentTarget.value))
 							setRadius(Number(e.currentTarget.value));
 					}}
 				/>
-				<Text> Number of participants:
+				</Box>
+				<Box
+					width='100%'
+				>
+				<Text px={px}> Number of participants:
 				</Text>
 				<StatelessTextInput value={maxAccepted} onChange={(e) => 
 					{
@@ -122,6 +135,7 @@ const Draft = () => {
 						if(e.currentTarget.value === '' || re.test(e.currentTarget.value))
 							setMaxAccepted(Number(e.currentTarget.value));
 					}}/>
+				</Box>
 			</Box>
 			<Box borderBottom={1}
 				px={px}
@@ -153,18 +167,26 @@ const Draft = () => {
 					alignItems='center'
 					justifyContent='center'
 					border={1}
-					px={px}
-					py={py}
+			//		px={px}
+			//		py={py}
 					m={1}
 				>
-					<Box display='block'>
-				<Text>{collection.collection.title}</Text>
-					</Box>
+				<Text
+					pr={5}
+					mr='auto'
+				>
+					{collection.collection.title
+					}</Text>
 					{ collection.collection.selected &&
-						<Button onClick={() => pEditCollection(toggleSelect(collection.id, collections))}>Unselect</Button>
+						<Button 
+							// px={2}
+
+							onClick={() => pEditCollection(toggleSelect(collection.id, collections))}>Unselect</Button>
 					}
 					{ !collection.collection.selected &&
-						<Button onClick={() => pEditCollection(toggleSelect(collection.id, collections))}>Select</Button>
+						<Button 
+							// px={2}
+						onClick={() => pEditCollection(toggleSelect(collection.id, collections))}>Select</Button>
 					}
 						<Button onClick={() => pDeleteCollection(collection.id)}>Delete</Button>
 				</Box>

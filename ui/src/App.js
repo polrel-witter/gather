@@ -9,6 +9,7 @@ import patpValidate from "./patpValidate";
 import { Box, Text } from "@tlon/indigo-react";
 import { useStore } from './data/store';
 import { scryGroup } from './utils';
+import { useAlert } from 'react-alert'
 
 const AppSwitch = () => {
 	const route = useStore(state => state.route);
@@ -16,7 +17,7 @@ const AppSwitch = () => {
 
 	const allState = useStore(state => state);
 	console.log(allState);
-	
+
   useEffect(() => {
 		sAll();
   }, []);
@@ -48,6 +49,7 @@ const AppSwitch = () => {
 class App extends Component {
 	  constructor(props) {
     super(props);
+
 		window.urbit = new Urbit("http://localhost:8080","","linmer-hodtev-nidhex-worted");
 		window.urbit.ship = 'difhut-mogsel-pontus-fadpun';
 		// window.urbit = new Urbit("http://localhost:8080","","magsub-micsev-bacmug-moldex");
@@ -59,7 +61,7 @@ class App extends Component {
 		window.urbit.onOpen = () => this.setState({conn: "ok"});
     window.urbit.onRetry = () => this.setState({conn: "try"});
     window.urbit.onError = () => this.setState({conn: "err"});
-		scryGroup('');
+		// scryGroup('');
 		}
 	render() {
 		return(

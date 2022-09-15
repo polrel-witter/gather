@@ -1,8 +1,9 @@
 import React, { Component, useState } from 'react';
-import { StatelessTextInput, Text, Box, ManagedTextAreaField, StatelessTextArea, ManagedTextInputField, Button } from "@tlon/indigo-react";
+import { Icon, StatelessTextInput, Text, Box, ManagedTextAreaField, StatelessTextArea, ManagedTextInputField, Button } from "@tlon/indigo-react";
 import { useStore } from '../../data/store';
 import Geolookup from 'react-geolookup-v2';
 import * as Nominatim from 'nominatim-browser';
+import ReactTooltip from 'react-tooltip';
 
 const px = '1';
 const py = '2';
@@ -16,11 +17,14 @@ const Location = (props) => {
 		<Box borderBottom={1}
 			px={px}
 			py={py}
-			display='flex'
-			flexDirection='column'
 			// flexWrap= 'nowrap'
 		>
-			<Text > Venue Location: </Text>
+			<Text> 
+				Location 
+				<Icon position='center' icon="Info" data-tip='location tooltip'/>
+				:
+			</Text>
+			<ReactTooltip />
 			{/* <Box display='flex'> */}
 			    <Geolookup
           inputClassName="geolookup__input--nominatim"
