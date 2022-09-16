@@ -175,8 +175,9 @@
             ==
        ::  ~&  "creating collection called {<`@t`+:r>}"
        ~&  gang
-       :_  this
-       :~  (~(poke pass:io /(scot %p our.bol)/[%settings]) [our.bol %gather] gather-action+!>(`action`[%del-collection old]))   
+      :: =/  upd=collections.settings  (~(del by collections.settings) old)
+       :_  this(collections.settings (~(del by collections.settings) old))
+       :~ :: (~(poke pass:io /(scot %p our.bol)/[%settings]) [our.bol %gather] gather-action+!>(`action`[%del-collection old]))   
            (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])  
        == 
      =/  gang=members  (silt (remove-our [our.bol (remove-banned [(remove-dupes members.act) banned.settings])]))
