@@ -74,7 +74,7 @@
   ::
   :: Collections
      $:  %create-collection 
-         title=@t 
+         title=@t
          members=(list @p) 
          =selected 
          =resource

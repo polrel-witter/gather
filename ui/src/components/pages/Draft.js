@@ -33,7 +33,14 @@ const Draft = () => {
 	const alert = useAlert()
 	return (
 		<Box>
-			<Button onClick={() => {
+			<Button 
+				border={1}
+				mt={3}
+			//	ml='20%'
+				width='33.33333%'
+				// width='100%'
+				// right='0'
+				onClick={() => {
 				if (collections.filter(i => i.collection.selected).length !== 0) {
 					console.log('collections----');
 					console.log(collections.filter(i => i.collection.selected).reduce((prev, curr) => prev.concat(curr.collection.members), []));
@@ -148,8 +155,8 @@ const Draft = () => {
 				<Box display='flex'>
 			<StatelessTextInput onChange={(e) => setGroupSearch(e.currentTarget.value)}/>
 			<Button 
-				px={7}
 				py={1}
+				width={250}
 				onClick={() => {
 					console.log('collec-------');
 					console.log(collections);
@@ -165,30 +172,36 @@ const Draft = () => {
 				<Box 
 					display='flex'
 					alignItems='center'
-					justifyContent='center'
+					// justifyContent='center'
 					border={1}
 			//		px={px}
 			//		py={py}
 					m={1}
 				>
 				<Text
-					pr={5}
+					pl={2}
 					mr='auto'
 				>
 					{collection.collection.title
 					}</Text>
+					<Box
+						display='flex'
+						width={190}
+					>
 					{ collection.collection.selected &&
 						<Button 
-							// px={2}
-
+							width='100%'
 							onClick={() => pEditCollection(toggleSelect(collection.id, collections))}>Unselect</Button>
 					}
 					{ !collection.collection.selected &&
 						<Button 
-							// px={2}
+							width='100%'
 						onClick={() => pEditCollection(toggleSelect(collection.id, collections))}>Select</Button>
 					}
-						<Button onClick={() => pDeleteCollection(collection.id)}>Delete</Button>
+						<Button 
+							width='100%'
+						onClick={() => pDeleteCollection(collection.id)}>Delete</Button>
+					</Box>
 				</Box>
 				)
 			}

@@ -148,7 +148,7 @@ const Status = (props) => {
 			break;
 			case 'closed':
 			return (
-				<Text>Closed</Text>
+				<Text color='blue'>Closed</Text>
 			)
 			break;
 			case 'completed':
@@ -178,20 +178,18 @@ const Invite = (props) => {
 						// py={2}
 						m={2}
 					>
-						<Text>{invite.title} </Text>
 						<Status invite={invite}/>
-						<Box>
+						<Box borderBottom={1}>
 						<Text>From {invite.initShip} </Text>
 						</Box>
-						<Box>
+						<Box borderBottom={1}>
 						<Text>{invite.desc}</Text>
 						</Box>
-						<Box>==================</Box>
 						<Box>
 							<Text>
-								Happening in meatspace/virtual world on 
+								
 								{ invite.locationType === "meatspace" && 
-									<Text> Location: {invite.address} </Text>
+									<Text>Location: {invite.address}</Text>
 								}
 							</Text>
 						</Box>
@@ -224,7 +222,7 @@ const Invite = (props) => {
 						}
 						<Box display='flex'
 						>
-							<Button onClick={() => {console.log(invite); focusInvite(mInvite)}}>Focus</Button>
+							<Button onClick={() => {console.log(invite); focusInvite(mInvite)}}>Edit</Button>
 						<Actions invite={mInvite}/>
 						</Box>
 					</Box>

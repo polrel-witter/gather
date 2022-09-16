@@ -24,7 +24,7 @@ const Location = (props) => {
 				<Icon position='center' icon="Info" data-tip='location tooltip'/>
 				:
 			</Text>
-			<ReactTooltip />
+			<ReactTooltip/>
 			{/* <Box display='flex'> */}
 			    <Geolookup
           inputClassName="geolookup__input--nominatim"

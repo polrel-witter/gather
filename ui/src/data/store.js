@@ -79,7 +79,7 @@ export const useStore = create((set) => ({
 					position: properPosition(item.invite.invitePosition),
 					address: item.invite.inviteAddress,
 					locationType: item.invite.locationType, 
-					accessLink: item.invite.accessLink,
+					accessLink: item.invite.accessLink.slice(2),
 					receiveShips: item.invite.receiveShips.map(x => ({ship: x.ship, shipInvite: x.shipInvite})),
 					hostStatus: item.invite.hostStatus
 				}})),
@@ -106,7 +106,7 @@ export const useStore = create((set) => ({
 					radius: item.invite.inviteRadius.slice(1), 
 					maxAccepted: item.invite.maxAccepted,
 					locationType: item.invite.locationType,
-					accessLink: item.invite.accessLink,
+					accessLink: item.invite.accessLink.slice(2),
 					position: properPosition(item.invite.invitePosition),
 					address: item.invite.inviteAddress,
 					receiveShips: item.invite.receiveShips.map(x => ({ship: x.ship, shipInvite: x.shipInvite}))}}

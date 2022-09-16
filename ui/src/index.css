@@ -11,9 +11,9 @@
 /* } */
 .geolookup {
 	display: flex;
-	flex-wrap: wrap;
+	/* flex-wrap: wrap; */
 	/* flex-direction: row; */
-	justify-content: center;
+	/* justify-content: center; */
 }
 .geolookup__item {
   /* background: #267dc0; */
@@ -29,12 +29,12 @@
 	flex-direction: column;
 }
 .geolookup__button-wrapper {
-		align-self: center;
+		/* align-self: center; */
 }
 
 .geolookup__button {
 	/* color: blue; */
-		width: auto;
+		width: 195px;
     box-sizing: border-box;
 		height: 32px;
 		/* justify-content: center; */
@@ -43,14 +43,14 @@
     /* display: flex; */
     /* align-items: center; */
 		border: 1px solid;
-  	padding-left: 50px;
-  	padding-right: 50px;
+  	/* padding-left: 50px; */
+  	/* padding-right: 50px; */
     border-radius: 4px;
 		border-color: rgba(0,0,0,0.2);
 		/* vertical-align: middle; */
 		/* text-align: center; */
 		overflow: hidden;
-		align-self: center;
+		/* align-self: center; */
 		/* display: flex; */
 		/* align-items: center; */
 }
@@ -63,7 +63,7 @@
 .geolookup__input {
 		/* color: red; */
   	/* padding-left: 16px; */
-		align-self: center;
+		/* align-self: center; */
 		width: 100%;
     box-sizing: border-box;
 		border: 1px solid;

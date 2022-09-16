@@ -1,5 +1,5 @@
 import React, { Component, useState } from 'react';
-import { Text, Box, ManagedTextAreaField, StatelessTextArea, ManagedTextInputField, Button, StatelessTextInput, StatelessRadioButtonField} from "@tlon/indigo-react";
+import { Icon, Text, Box, ManagedTextAreaField, StatelessTextArea, ManagedTextInputField, Button, StatelessTextInput, StatelessRadioButtonField} from "@tlon/indigo-react";
 import { useStore } from '../../data/store';
 import { patpValidate } from '../../utils';
 import Location from '../shared/Location';
@@ -24,40 +24,70 @@ const FocusedInvite = (props) => {
 	const pEditInviteAddress = useStore(state => state.pEditInviteAddress);
 	const pEditInviteAccessLink = useStore(state => state.pEditInviteAccessLink);
 	const pEditInviteRadius = useStore(state => state.pEditInviteRadius);
+
+	const px = '1';
+	const py = '2';
 	if(invite.initShip === '~' + window.urbit.ship && invite.hostStatus === 'sent')	
 		return (
 		<Box>
-			<Box>
-				{invite.desc}
-				<StatelessTextInput value={desc} onChange={(e) => setDesc(e.currentTarget.value)}/>
-				<Button onClick={ () => pEditDesc(id, desc)}>Edit Description</Button>
+			<Box 
+				borderBottom={1}
+				px={px}
+				py={py}
+				display='flex'
+			>
+				<StatelessTextArea 
+					flexGrow='2'
+				value={desc} onChange={(e) => setDesc(e.currentTarget.value)}/>
+				<Button 
+					height='auto'
+					width={250}
+				onClick={ () => pEditDesc(id, desc)}>Edit Description</Button>
 			</Box>
-			<Box>
-				{invite.maxAccepted}
+			<Box
+				px={px}
+				py={py}
+				display='flex'
+				borderBottom={1}
+			>
 				<StatelessTextInput value={maxAccepted} onChange={(e) => 
 					{
 						const re = /^[0-9\b]+$/;
 						if(e.currentTarget.value === '' || re.test(e.currentTarget.value))
 							setMaxAccepted(Number(e.currentTarget.value));
 					}}/>
-				<Button onClick={ () => pEditMaxAccepted(id, maxAccepted)}>Edit Max Accepted</Button>
+				<Button 
+					width={250}
+				onClick={ () => pEditMaxAccepted(id, maxAccepted)}>Edit Max Accepted</Button>
 			</Box>
-			<Box border={1}>
-				<Text>Happening in: </Text>
+			<Box 
+				borderBottom={1}
+				px={px}
+				py={py}
+				display='flex'
+				justifyContent='center'
+				alignItems='center'
+			>
+				<Text 
+					pr={5}
+					mr='auto'
+				>Happening in: </Text>
 				<StatelessRadioButtonField
+					px={2}
 					selected={locationType === 'virtual'}
           onChange={() => { 
 					setLocationType('virtual') 
 					pEditInviteLocation(id, 'virtual');
 					}}
-				> Virtual </StatelessRadioButtonField>
+				> Virtual Space </StatelessRadioButtonField>
 				<StatelessRadioButtonField
+					px={2}
 					selected={locationType === 'meatspace'}
           onChange={() => { 
 						setLocationType('meatspace') 
 						pEditInviteLocation(id, 'meatspace');
 					}}
-				> Meatspace </StatelessRadioButtonField>
+				> Meat Space </StatelessRadioButtonField>
 			</Box> 
 			<Box>
 				<Location 
@@ -67,13 +97,23 @@ const FocusedInvite = (props) => {
 					setPosition={(position) => pEditInvitePosition(id, position)} 
 				/>
 			</Box>
-			<Box>
-				{invite.accessLink}
-				<StatelessTextInput onChange={(e) => setAccessLink(e.currentTarget.value)}/>
-				<Button onClick={ () => pEditInviteAccessLink(id, accessLink)}>Edit Access link</Button>
+			<Box
+				px={px}
+				py={py}
+				display='flex'
+				borderBottom={1}
+			>
+				<StatelessTextInput value={accessLink} onChange={(e) => setAccessLink(e.currentTarget.value)}/>
+				<Button 
+					width={250}
+				onClick={ () => pEditInviteAccessLink(id, accessLink)}>Edit Access link</Button>
 			</Box>
-			<Box>
-				{invite.radius}
+			<Box
+				px={px}
+				py={py}
+				display='flex'
+				borderBottom={1}
+			>
 				<StatelessTextInput
 				display="block"
 				value={radius}
@@ -84,25 +124,55 @@ const FocusedInvite = (props) => {
 							setRadius(Number(e.currentTarget.value));
 					}}
 				/>
-				<Button onClick={ () => pEditInviteRadius(id, radius)}>Edit Radius</Button>
+				<Button 
+					width={250}
+				onClick={ () => pEditInviteRadius(id, radius)}>Edit Radius</Button>
 			</Box>
-			<Box border={1}>
+			<Box 
+				borderBottom={1}
+				px={px}
+				py={py}
+				display='flex'
+			>
 				<StatelessTextInput onChange={(e) => setSearch(e.currentTarget.value)}/>
-				<Button onClick={() => {
+				<Button 
+					width={250}
+					onClick={() => {
 					if(patpValidate(search))
 						pAddReceiveShip(id, search);
 				}}>Add new ship</Button>
 			</Box>
 			{ invite.receiveShips.map(receiveShip => {
 				return (
-				<Box border={1}>
-					<Box><Text>{receiveShip.ship}</Text></Box>
-					<Box><Text>{receiveShip.shipInvite}</Text></Box>
-					<Button onClick={() => {pDelReceiveShip(id, receiveShip.ship)}}>Uninvite Ship</Button>
+				<Box 
+					border={1}
+					//px={px}
+					//py={py}
+					m={1}
+					display='flex'
+					// justifyContent='center'
+					alignItems='center'
+				>
+					<Box pl={1} width='100%'><Text>{receiveShip.ship}</Text></Box>
+					{/* <Box><Text>{receiveShip.shipInvite}</Text></Box> */}
+					{ receiveShip.shipInvite === 'pending' &&
+						<Icon position='center' icon="WestCarat" height='30' data-tip='location tooltip'/>
+					}
+					{ receiveShip.shipInvite === 'accepted' &&
+						<Icon position='center' icon="Checkmark" size={200} data-tip='location tooltip'/>
+					}
+					<Button width={200} onClick={() => {pDelReceiveShip(id, receiveShip.ship)}}>Uninvite Ship</Button>
 				</Box>
 				)
 			})}
-			<Button onClick={() => focusInvite({})}>Return</Button>
+			<Button 
+				px={px}
+				py={py}
+				my={5}
+				// mx={2}
+				width={200}
+				border={1}
+			onClick={() => focusInvite({})}>Return</Button>
 		</Box>
 	 );
 		else if(invite.initShip === '~' + window.urbit.ship)
@@ -116,7 +186,12 @@ const FocusedInvite = (props) => {
 				</Box>
 				)
 			})}
-			<Button onClick={() => focusInvite({})}>Return</Button>
+			<Button 
+				px={px}
+				py={py}
+				width={200}
+				border={1}
+				onClick={() => focusInvite({})}>Return</Button>
 			</Box>
 		)
 	else

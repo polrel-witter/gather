@@ -8,12 +8,12 @@ const Topbar = () => {
 	const setRoute = useStore(state => state.setRoute);
 	return (
 		<Box display='flex' justifyContent='center'>
-			{ route === 'draft' ? <Button color="red">Draft</Button> : 
-			<Button onClick={() => setRoute("draft")}> Draft </Button>}
-			{ route === 'invites' ? <Button color="red">Invites</Button> : 
-			  <Button onClick={() => setRoute("invites")}>Invites</Button>}
-			{ route === 'settings' ? <Button color="red">Settings</Button> : 
-				<Button onClick={() => setRoute("settings")}>Settings</Button>}
+			{ route === 'draft' ? <Button width='100%' color="red">Draft</Button> : 
+			<Button width='100%' onClick={() => setRoute("draft")}> Draft </Button>}
+			{ route === 'invites' ? <Button width='100%' color="red">Invites</Button> : 
+			  <Button width='100%' onClick={() => setRoute("invites")}>Invites</Button>}
+			{ route === 'settings' ? <Button width='100%' color="red">Settings</Button> : 
+				<Button width='100%' onClick={() => setRoute("settings")}>Settings</Button>}
 		</Box>
 	)
 }

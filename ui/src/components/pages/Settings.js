@@ -33,7 +33,9 @@ const MyRadius = () => {
 				}}
 		>
 			</StatelessTextInput>
-		<Button onClick={() => pRadius(String(_radius))}>Set</Button>
+		<Button
+				width={250}
+				onClick={() => pRadius(String(_radius))}>Set</Button>
 			</Box>
 		</Box>
 	 );
@@ -93,7 +95,9 @@ const Banned = () => {
 						setBanSearch(e.currentTarget.value);
 					}}
 				/>
-			<Button onClick={()=>{
+			<Button 
+				width={250}
+				onClick={()=>{
 				if(patpValidate(banSearch))
 					pBan(banSearch)
 					alert.show('You will no longer send or receive invites to/from this ship');
