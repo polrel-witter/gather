@@ -1,9 +1,9 @@
 ::
-::  Gather, by ~pontus-fadpun and ~polrel-witter, is a tool 
-::  to host and attend gatherings. It's distributed from 
-::  ~polrel-witter-pontus-fadpun  ...
+::  %gather, by ~pontus-fadpun and ~polrel-witter, is a tool for 
+::  martians to host and attend gatherings. It is distributed from: 
+::  ~polrel-witter-pontus-fadpun 
 :: 
-::  and, contains the following actions:
+::  It can perform the following acts:
 ::
 :::: User settings  
 ::   [%address =address]                                  :: Used to retrieve $position (lat and lon) from Nominatim OSM.
@@ -161,6 +161,7 @@
                /noun
             ==
          ==
+       ~&  g
        =/  gang=members  -:(need g)
        =/  r=[@p @tas]  (need resource.act)   
        =.  collections.settings
@@ -173,6 +174,7 @@
                 `r
             ==
        ::  ~&  "creating collection called {<`@t`+:r>}"
+       ~&  gang
        :_  this
        :~  (~(poke pass:io /(scot %p our.bol)/[%settings]) [our.bol %gather] gather-action+!>(`action`[%del-collection old]))   
            (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])  
@@ -931,3 +933,28 @@
 ++  on-peek   on-peek:def  
 ++  on-fail   on-fail:def
 --
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
