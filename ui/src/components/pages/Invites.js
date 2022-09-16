@@ -5,7 +5,25 @@ import { filterDistantInvites, fetchMyInvites, fetchReceivedShips, fetchMyReceiv
 import FocusedInvite from './FocusedInvite';
 import { getDistance } from 'geolib';
 import haversine from 'haversine-distance';
-import { useAlert } from 'react-alert'
+import { useAlert } from 'react-alert';
+
+const InviteeStatus = (props) => {
+	console.log(props);
+	const inviteeStatus = fetchMyReceivedShip(props.invite)?.shipInvite;
+	console.log(inviteeStatus);
+	const isHostShip = props.invite.initShip === '~' + window.urbit.ship; 
+	// console.log(isHostShip);
+	return (
+		<Box>
+			{ inviteeStatus === 'pending' && !isHostShip &&
+			<Text color='blue'> Pending </Text>
+			}
+			{ inviteeStatus === 'accepted' && !isHostShip &&
+			<Text color='green'> Accepted </Text>
+			}
+		</Box>
+	)
+}
 
 const Actions = (props) => {
 	const pBan = useStore(state => state.pBan);
@@ -144,7 +162,7 @@ const Status = (props) => {
 			case 'sent':
 			return (
 				<Box 
-					pl={5}
+					pl={4}
 					minWidth={150}
 				>
 				<Text color='blue'>Sent</Text>
@@ -197,49 +215,13 @@ const Invite = (props) => {
 						display='flex'
 					>
 						<Status invite={invite}/>
-						{/* <Box borderBottom={1}> */}
+						<InviteeStatus invite={invite}/>
 						<Box 
 							pr={50}
 							width='100%'
 						>
 						<Text>From {invite.initShip} </Text>
 						</Box>
-						{/* <Box borderBottom={1}> */}
-						{/* <Box> */}
-						{/* <Text>{invite.desc}</Text> */}
-						{/* </Box> */}
-						{/* <Box> */}
-						{/* 		{ invite.locationType === "meatspace" && */} 
-						{/* 			<Text>Location: {invite.address}</Text> */}
-						{/* 		} */}
-						{/* </Box> */}
-						{/* {  invite.initShip !== '~' + window.urbit.ship && */}
-						{/* <Box border={1}> */}
-						{/* <Text>Your distance from the invite location:</Text> */}
-						{/* <br/> */}
-						{/* { haversine( */}
-						{/* 	{ latitude: invite.position.lat, longitude: invite.position.lon }, */}
-						{/* 	{ latitude: settings.position.lat, longitude: settings.position.lon }, */}
-						{/* ) + '  meters'} */}
-						{/* </Box> */}
-						{/* } */}
-						{/* <Box> */}
-						{/* 	<Text> */}
-						{/* 		Access link: {invite.accessLink} */}
-						{/* 	</Text> */}
-						{/* </Box> */}
-						{/* { invite.radius !== 0 && */}
-						{/* <Box> */}
-						{/* 	<Text> */}
-						{/* 		Delivery radius: {invite.radius} */}
-						{/* 	</Text> */}
-						{/* </Box> */}
-						{/* } */}
-						{/* { invite.maxAccepted !== 0 && */}
-						{/* <Box> */}
-						{/* 	<Text> {invite.receiveShips.filter(x => x.shipInvite === 'accepted').length} / {invite.maxAccepted} RSVP'd </Text> */}
-						{/* </Box> */}
-						{/* } */}
 						<Box 
 							display='flex'
 							right='0'

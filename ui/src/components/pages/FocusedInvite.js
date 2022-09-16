@@ -197,11 +197,46 @@ const FocusedInvite = (props) => {
 	else
 		return (
 			<Box>
+				<Box>
+					<Text>{invite.desc}</Text>
+				</Box>
+				<Box>
+					<Text>{invite.locationType}</Text>
+				</Box>
+				<Box>
+					<Text>{invite.accessLink}</Text>
+				</Box>
+				<Box>
+					<Text>{invite.address}</Text>
+				</Box>
+				<Box>
+					<Text>{invite.radius}</Text>
+				</Box>
+				<Box>
+					<Text>{invite.maxAccepted}</Text>
+				</Box>
 			{ invite.receiveShips.map(receiveShip => {
 				return (
-				<Box border={1}>
-					<Box><Text>{receiveShip.ship}</Text></Box>
-					<Box><Text>{receiveShip.shipInvite}</Text></Box>
+				<Box 
+					display='flex'
+					border={1}
+					px={2}
+					py={2}
+					m={2}
+					justifyContent='space-between'
+				>
+					{ receiveShip.shipInvite === 'pending' &&
+					<Box
+							><Text color='blue'>Pending</Text></Box>
+					}
+					{ receiveShip.shipInvite === 'accepted' &&
+					<Box
+						marginRight='auto'
+							><Text color='green'>Accepted</Text></Box>
+					}
+					<Box
+						marginLeft='auto'
+					><Text>{receiveShip.ship}</Text></Box>
 				</Box>
 				)
 			})}
