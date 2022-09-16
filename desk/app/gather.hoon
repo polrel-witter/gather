@@ -85,6 +85,7 @@
 ++  on-init
   ^-  (quip card _this)
   :-  :~  (~(watch-our pass:io /gather) %gather /local/all)
+          (~(poke pass:io /(scot %p our.bol)/[%settings]) [our.bol %gather] gather-action+!>(`action`[%refresh-groups ~]))   
       ==
   %=  this
     settings  :*
@@ -161,7 +162,6 @@
                /noun
             ==
          ==
-       ~&  g
        =/  gang=members  -:(need g)
        =/  r=[@p @tas]  (need resource.act)   
        =.  collections.settings
@@ -174,7 +174,6 @@
                 `r
             ==
        ::  ~&  "creating collection called {<`@t`+:r>}"
-       ~&  gang
       :: =/  upd=collections.settings  (~(del by collections.settings) old)
        :_  this(collections.settings (~(del by collections.settings) old))
        :~ :: (~(poke pass:io /(scot %p our.bol)/[%settings]) [our.bol %gather] gather-action+!>(`action`[%del-collection old]))   
@@ -226,6 +225,7 @@
        %refresh-groups
      ~|  [%bad-groups-pull ~]
      ?>  =(our.bol src.bol)
+     ~&  "%gather: refreshing groups"
      =|  r=resource:res-sur
      =/  temp=(set resource:res-sur)  
        .^((set resource:res-sur) %gy /(scot %p our.bol)/group-store/(scot %da now.bol)/groups)
@@ -260,6 +260,7 @@
      =+  eny=eny.bol
      =/  values=(list collection)   (make-collection-values groups)
      :-  :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])
+             [%pass /timers %arvo %b %wait (add now.bol `@dr`~m10)]
          ==
      %=  this
         collections.settings  |-  
@@ -863,8 +864,7 @@
         %poke-ack
       ?~  p.sign
          `this
-      ~&  "%gather: settings poke failed"
-      `this
+      (on-agent:def wire sign) 
     ==
   ::    
       %invite                                                  
@@ -929,7 +929,20 @@
    ==
   == 
 ::
-++  on-arvo   on-arvo:def
+++  on-arvo 
+  |=  [=wire =sign-arvo]
+  ^-  (quip card _this)
+  ?+    wire  (on-arvo:def wire sign-arvo)
+      [%timers ~]
+    ?+    sign-arvo  (on-arvo:def wire sign-arvo)
+        [%behn %wake *]
+      ?~  error.sign-arvo
+        :_  this
+        :~  (~(poke pass:io /(scot %p our.bol)/[%settings]) [our.bol %gather] gather-action+!>(`action`[%refresh-groups ~]))   
+        ==
+      (on-arvo:def wire sign-arvo)
+    ==
+  == 
 ++  on-leave  on-leave:def
 ++  on-peek   on-peek:def  
 ++  on-fail   on-fail:def
