@@ -163,7 +163,7 @@ const FocusedInvite = (props) => {
 						<Text maxWidth={250} pl={4} pr={5} color='blue'> Pending </Text>
 					}
 					{ receiveShip.shipInvite === 'accepted' &&
-						<Text pl={4} pr={5} color='blue'> Accepted </Text>
+						<Text pl={4} pr={5} color='green'> Accepted </Text>
 					}
 					<Box width='100%'><Text>{receiveShip.ship}</Text></Box>
 					<Button width={300} onClick={() => {pDelReceiveShip(id, receiveShip.ship)}}>Uninvite Ship</Button>
