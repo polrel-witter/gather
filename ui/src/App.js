@@ -24,7 +24,7 @@ const AppSwitch = () => {
 
 	if(Object.keys(allState.settings).length === 0)
 		return (
-			<Text>Loading...</Text>
+			<Text>Loading...may take a minute, your groups are being pulled in.</Text>
 		)
 	else
 		switch(route) {
