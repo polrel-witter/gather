@@ -59,7 +59,7 @@ const Actions = (props) => {
 			<Box
 			>
 			{ invite.hostStatus === "sent" &&
-				<Box display='flex'>
+				<Box display='flex' flexDirection='column'>
 					<Button 
 						width='100%' 
 						onClick={() => {console.log(invite); props.focusInvite(props.invite)}}>Inspect</Button>
@@ -76,7 +76,7 @@ const Actions = (props) => {
 				</Box>
 			}
 			{ invite.hostStatus === "closed" &&
-				<Box display='flex'>
+				<Box display='flex' flexDirection='column'>
 					<Button 
 						onClick={() => {console.log(invite); props.focusInvite(props.invite)}}>Inspect</Button>
 				<Button onClick={()=>{
@@ -94,7 +94,7 @@ const Actions = (props) => {
 				</Box>
 			}
 			{ invite.hostStatus === "completed" &&
-				<Box display='flex'>
+				<Box display='flex' flexDirection='column'>
 					<Button 
 						width='100%' 
 						onClick={() => {console.log(invite); props.focusInvite(props.invite)}}>Inspect</Button>
@@ -112,12 +112,12 @@ const Actions = (props) => {
 		console.log(inviteeStatus);
 		if (invite.hostStatus === 'sent') {
 			return (
-				<Box display='flex'>
+				<Box display='flex' flexDirection='column'>
 					<Button 
 						width='100%' 
 						onClick={() => {console.log(invite); props.focusInvite(props.invite)}}>Inspect</Button>
 				{ inviteeStatus === 'pending' &&
-				<Box display='flex'>
+				<Box display='flex' flexDirection='column'>
 					<Button onClick={() => {
 						pAccept(props.invite.id)
 						alert.show('RSVP sent to host');
@@ -131,7 +131,7 @@ const Actions = (props) => {
 				}
 				{ inviteeStatus === 'accepted' &&
 				<Box>
-					<Button onClick={() => {pDeny(props.invite.id)}}> UnRSVP? </Button>
+					<Button onClick={() => {pDeny(props.invite.id)}}> UnRSVP </Button>
 				</Box>
 				}
 				</Box>
