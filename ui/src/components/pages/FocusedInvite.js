@@ -30,6 +30,11 @@ const FocusedInvite = (props) => {
 	if(invite.initShip === '~' + window.urbit.ship && invite.hostStatus === 'sent')	
 		return (
 		<Box>
+			<Button 
+				width='33.33333%'
+				border={1}
+				mt={3}
+				onClick={() => focusInvite({})}>Return</Button>
 			<Box 
 				borderBottom={1}
 				px={px}
@@ -153,66 +158,78 @@ const FocusedInvite = (props) => {
 					// justifyContent='center'
 					alignItems='center'
 				>
-					<Box pl={1} width='100%'><Text>{receiveShip.ship}</Text></Box>
 					{/* <Box><Text>{receiveShip.shipInvite}</Text></Box> */}
 					{ receiveShip.shipInvite === 'pending' &&
-						<Icon position='center' icon="WestCarat" height='30' data-tip='location tooltip'/>
+						<Text maxWidth={250} pl={4} pr={5} color='blue'> Pending </Text>
 					}
 					{ receiveShip.shipInvite === 'accepted' &&
-						<Icon position='center' icon="Checkmark" size={200} data-tip='location tooltip'/>
+						<Text pl={4} pr={5} color='blue'> Accepted </Text>
 					}
-					<Button width={200} onClick={() => {pDelReceiveShip(id, receiveShip.ship)}}>Uninvite Ship</Button>
+					<Box width='100%'><Text>{receiveShip.ship}</Text></Box>
+					<Button width={300} onClick={() => {pDelReceiveShip(id, receiveShip.ship)}}>Uninvite Ship</Button>
 				</Box>
 				)
 			})}
-			<Button 
-				px={px}
-				py={py}
-				my={5}
-				// mx={2}
-				width={200}
-				border={1}
-			onClick={() => focusInvite({})}>Return</Button>
 		</Box>
 	 );
-		else if(invite.initShip === '~' + window.urbit.ship)
-		return (
-			<Box>
-			{ invite.receiveShips.map(receiveShip => {
-				return (
-				<Box border={1}>
-					<Box><Text>{receiveShip.ship}</Text></Box>
-					<Box><Text>{receiveShip.shipInvite}</Text></Box>
-				</Box>
-				)
-			})}
-			<Button 
-				px={px}
-				py={py}
-				width={200}
-				border={1}
-				onClick={() => focusInvite({})}>Return</Button>
-			</Box>
-		)
 	else
 		return (
 			<Box>
-				<Box>
+				<Button 
+					width='33.33333%'
+					border={1}
+					mt={3}
+				onClick={() => focusInvite({})}>Return</Button>
+			<Box
+				px={2}
+				py={2}
+			>
+				<Box
+					borderBottom={1}
+					px={2}
+					py={2}
+				>
+					<Text display='block'>Description:</Text>
 					<Text>{invite.desc}</Text>
 				</Box>
-				<Box>
+				<Box
+					borderBottom={1}
+					px={2}
+					py={2}
+				>
+					<Text display='block'>Location Type:</Text>
 					<Text>{invite.locationType}</Text>
 				</Box>
-				<Box>
+				<Box
+					borderBottom={1}
+					px={2}
+					py={2}
+				>
+					<Text display='block'>Access Link:</Text>
 					<Text>{invite.accessLink}</Text>
 				</Box>
-				<Box>
+				<Box
+					borderBottom={1}
+					px={2}
+					py={2}
+				>
+					<Text display='block'>Address:</Text>
 					<Text>{invite.address}</Text>
 				</Box>
-				<Box>
+				<Box
+					borderBottom={1}
+					px={2}
+					py={2}
+				>
+					<Text display='block'>Radius:</Text>
 					<Text>{invite.radius}</Text>
 				</Box>
-				<Box>
+				<Box
+					borderBottom={1}
+					px={2}
+					py={2}
+				>
+					<Text display='block'>Maximum accepted invitees:</Text>
 					<Text>{invite.maxAccepted}</Text>
 				</Box>
 			{ invite.receiveShips.map(receiveShip => {
@@ -240,7 +257,7 @@ const FocusedInvite = (props) => {
 				</Box>
 				)
 			})}
-			<Button onClick={() => focusInvite({})}>Return</Button>
+			</Box>
 			</Box>
 		)
 }

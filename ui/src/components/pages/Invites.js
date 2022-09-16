@@ -9,20 +9,35 @@ import { useAlert } from 'react-alert';
 
 const InviteeStatus = (props) => {
 	console.log(props);
+	const hostStatus = props.invite.hostStatus;
 	const inviteeStatus = fetchMyReceivedShip(props.invite)?.shipInvite;
 	console.log(inviteeStatus);
 	const isHostShip = props.invite.initShip === '~' + window.urbit.ship; 
 	// console.log(isHostShip);
+		if( !isHostShip )
 	return (
-		<Box>
+		<Box pl={4} display='flex' minWidth={200}>
+			{ hostStatus === 'sent' &&
+			<Text color='blue'> Sent/ </Text>
+			}
+			{ hostStatus === 'closed' &&
+			<Text color='blue'> Closed/ </Text>
+			}
+			{ hostStatus === 'completed' &&
+			<Text color='blue'> Completed/ </Text>
+			}
 			{ inviteeStatus === 'pending' && !isHostShip &&
-			<Text color='blue'> Pending </Text>
+			<Text pr={5} color='blue'> Pending </Text>
 			}
 			{ inviteeStatus === 'accepted' && !isHostShip &&
-			<Text color='green'> Accepted </Text>
+			<Text pr={5} color='green'> Accepted </Text>
 			}
 		</Box>
 	)
+	else 
+		return (
+			<Box></Box>
+		)
 }
 
 const Actions = (props) => {
@@ -41,14 +56,20 @@ const Actions = (props) => {
 
 	if(invite.initShip === '~' + window.urbit.ship) {
 		return (
-			<Box>
+			<Box
+			>
 			{ invite.hostStatus === "sent" &&
 				<Box display='flex'>
-					<Button onClick={()=>{
+					<Button 
+						width='100%' 
+						onClick={() => {console.log(invite); props.focusInvite(props.invite)}}>Inspect</Button>
+					<Button width='100%' onClick={()=>{
 						pClose(props.invite.id);
 						alert.show('Closed: no more RSVPs will be accepted');
 					}}>Close</Button>
-					<Button onClick={()=>{
+					<Button 
+						width='100%' 
+						onClick={()=>{
 						pCancel(props.invite.id);
 						alert.show('Cancelled: this invite has been revoked from all invitees');
 					}}>Cancel</Button>
@@ -56,6 +77,8 @@ const Actions = (props) => {
 			}
 			{ invite.hostStatus === "closed" &&
 				<Box display='flex'>
+					<Button 
+						onClick={() => {console.log(invite); props.focusInvite(props.invite)}}>Inspect</Button>
 				<Button onClick={()=>{
 					pReopen(props.invite.id);
 					alert.show('Reopened: accepting RSVPs again');
@@ -72,6 +95,9 @@ const Actions = (props) => {
 			}
 			{ invite.hostStatus === "completed" &&
 				<Box display='flex'>
+					<Button 
+						width='100%' 
+						onClick={() => {console.log(invite); props.focusInvite(props.invite)}}>Inspect</Button>
 				<Button onClick={()=>{
 					pCancel(props.invite.id)
 					alert.show('Invite Trashed');
@@ -83,14 +109,15 @@ const Actions = (props) => {
 	else {
 		const inviteeStatus = fetchMyReceivedShip(invite).shipInvite;
 		// console.log(fetchMyReceivedShip(props.invite));
-		// const inviteeStatus = 'pending';
 		console.log(inviteeStatus);
 		if (invite.hostStatus === 'sent') {
 			return (
-				<Box>
-				{inviteeStatus}
+				<Box display='flex'>
+					<Button 
+						width='100%' 
+						onClick={() => {console.log(invite); props.focusInvite(props.invite)}}>Inspect</Button>
 				{ inviteeStatus === 'pending' &&
-				<Box>
+				<Box display='flex'>
 					<Button onClick={() => {
 						pAccept(props.invite.id)
 						alert.show('RSVP sent to host');
@@ -163,7 +190,7 @@ const Status = (props) => {
 			return (
 				<Box 
 					pl={4}
-					minWidth={150}
+					minWidth={200}
 				>
 				<Text color='blue'>Sent</Text>
 				</Box>
@@ -171,9 +198,9 @@ const Status = (props) => {
 			break;
 			case 'closed':
 			return (
-				<Box 
-					pl={5}
-					minWidth={150}
+				<Box
+					pl={4}
+					minWidth={200}
 				>
 				<Text color='blue'>Closed</Text>
 				</Box>
@@ -182,8 +209,8 @@ const Status = (props) => {
 			case 'completed':
 			return (
 				<Box 
-					pl={5}
-					minWidth={150}
+					pl={4}
+					minWidth={200}
 				>
 				<Text color='green'>Completed</Text>
 				</Box>
@@ -214,20 +241,22 @@ const Invite = (props) => {
 						m={2}
 						display='flex'
 					>
-						<Status invite={invite}/>
+						{ invite.initShip === '~' + window.urbit.ship &&
+								<Status invite={invite}/>
+						}
 						<InviteeStatus invite={invite}/>
 						<Box 
 							pr={50}
 							width='100%'
+							overflow='hidden'
 						>
-						<Text>From {invite.initShip} </Text>
+						<Text overflow='hidden' >From {invite.initShip} </Text>
 						</Box>
 						<Box 
 							display='flex'
 							right='0'
 						>
-						<Button onClick={() => {console.log(invite); focusInvite(mInvite)}}>Inspect</Button>
-						<Actions invite={mInvite}/>
+						<Actions invite={mInvite} focusInvite={focusInvite}/>
 						</Box>
 						</Box>
 						)})}
@@ -263,7 +292,7 @@ const Invites = () => {
 		case "all":
 			return (
 				<Box>
-					<Text>All</Text>
+					{/* <Text>All</Text> */}
 				<Invite invites={filterDistantInvites(all, settings)}/>
 				</Box>
 			);
