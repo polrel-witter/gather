@@ -75,7 +75,7 @@ const Draft = () => {
 					pr={5}
 					mr='auto'
 				>Happening in
-				<Icon position='center' icon="Info" data-tip='If Meatspace, include a location. If Cyberspace, include an access link... neither are required :)'/>
+				<Icon position='center' icon="Info" data-tip='If Meatspace, include a location. If Cyberspace, include an access link. Neither are required.'/>
 				</Text>
 				<ReactTooltip />
 				<StatelessRadioButtonField
