@@ -1,32 +1,39 @@
-/* .geolookup__suggests--hidden { */
-/*   max-height: 0; */
-/*   overflow: hidden; */
-/*   border-width: 3; */
-/* } */
+.geolookup__suggests--hidden {
+  max-height: 0;
+  overflow: hidden;
+  border-width: 3;
+}
 
-/* .geolookup__item--active { */
-/*   background: #267dc0; */
-/* 	border-style: solid; */
-/*   color: #222; */
-/* } */
+.geolookup__item--active {
+  background: #267dc0;
+	border-style: solid;
+  color: #222;
+}
+
 .geolookup {
-	display: flex;
+	/* display: flex; */
 	/* flex-wrap: wrap; */
 	/* flex-direction: row; */
 	/* justify-content: center; */
 }
 .geolookup__item {
-  /* background: #267dc0; */
 	border-style: solid;
 	border-width: 1px;
 	padding: 5px;
 	margin: 5px;
+
 	display: flex;
 }
 
-.geolookup__suggests {
+.geolookup__suggests-wrapper {
 	display: flex;
 	flex-direction: column;
+}
+.geolookup__suggests {
+	/* display: flex; */
+	/* flex-direction: column; */
+	/* flex-wrap:wrap; */
+	/* width:100%; */
 }
 .geolookup__button-wrapper {
 		/* align-self: center; */
@@ -34,58 +41,35 @@
 
 .geolookup__button {
 	/* color: blue; */
-		width: 195px;
-    box-sizing: border-box;
 		height: 32px;
-		/* justify-content: center; */
-    /* height: 5; */
-    /* /1* px: 2; *1/ */
-    /* display: flex; */
-    /* align-items: center; */
 		border: 1px solid;
-  	/* padding-left: 50px; */
-  	/* padding-right: 50px; */
     border-radius: 4px;
 		border-color: rgba(0,0,0,0.2);
-		/* vertical-align: middle; */
-		/* text-align: center; */
 		overflow: hidden;
-		/* align-self: center; */
-		/* display: flex; */
-		/* align-items: center; */
+
+		width: 195px;
+    box-sizing: border-box;
 }
 
 .geolookup__input-wrapper {
-	width: 100%;
+	/* width: 100%; */
 	/* align-self: center; */
 
 }
 .geolookup__input {
-		/* color: red; */
-  	/* padding-left: 16px; */
-		/* align-self: center; */
-		width: 100%;
-    box-sizing: border-box;
 		border: 1px solid;
   	padding-right: 8px;
   	padding-left: 8px;
     border-radius: 4px;
 		height: 32px;
-    align-items: center;
 		line-height: 1.333334;
 		font-weight: 400;
 		font-size: 14px;
 		border-color: rgba(0,0,0,0.2);
-		/* display: flex; */
-		/* vertical-align: baseline; */
-		/* display: none; */
-    /* box-sizing: "border-box"; */
-    /* height: 5; */
-    /* /1* px: 2; *1/ */
-    /* display: flex; */
-    /* align-items: center; */
-    /* border: 1px solid; */
-    /* border-radius: 2; */
+
+		width: 565px;
+    box-sizing: border-box;
+    align-items: center;
 }
 
 .overbox {

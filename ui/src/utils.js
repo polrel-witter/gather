@@ -15,6 +15,8 @@ export const properPosition = (position) => {
 export const filterDistantInvites = (invites, settings) => {
 	console.log(settings);
 	return invites.filter( invite => {
+		if(invite.invite.locationType === 'virtual')
+			return true;
 		const inviteNA = (invite.invite.radius === 0 || invite.invite.position === '666');
 		const inviteeNA = (settings.radius === 0 || settings.position === '666');
 		const insideInvite = haversine(

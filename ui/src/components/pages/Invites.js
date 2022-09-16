@@ -25,7 +25,7 @@ const Actions = (props) => {
 		return (
 			<Box>
 			{ invite.hostStatus === "sent" &&
-				<Box>
+				<Box display='flex'>
 					<Button onClick={()=>{
 						pClose(props.invite.id);
 						alert.show('Closed: no more RSVPs will be accepted');
@@ -37,7 +37,7 @@ const Actions = (props) => {
 				</Box>
 			}
 			{ invite.hostStatus === "closed" &&
-				<Box>
+				<Box display='flex'>
 				<Button onClick={()=>{
 					pReopen(props.invite.id);
 					alert.show('Reopened: accepting RSVPs again');
@@ -53,7 +53,7 @@ const Actions = (props) => {
 				</Box>
 			}
 			{ invite.hostStatus === "completed" &&
-				<Box>
+				<Box display='flex'>
 				<Button onClick={()=>{
 					pCancel(props.invite.id)
 					alert.show('Invite Trashed');
@@ -143,17 +143,32 @@ const Status = (props) => {
 		switch (props.invite.hostStatus) {
 			case 'sent':
 			return (
+				<Box 
+					pl={5}
+					minWidth={150}
+				>
 				<Text color='blue'>Sent</Text>
+				</Box>
 			)
 			break;
 			case 'closed':
 			return (
+				<Box 
+					pl={5}
+					minWidth={150}
+				>
 				<Text color='blue'>Closed</Text>
+				</Box>
 			)
 			break;
 			case 'completed':
 			return (
+				<Box 
+					pl={5}
+					minWidth={150}
+				>
 				<Text color='green'>Completed</Text>
+				</Box>
 			)
 			break;
 		}
@@ -173,56 +188,66 @@ const Invite = (props) => {
 						const id = mInvite.id;
 						const invite = mInvite.invite;
 						return (
-					<Box border={1}
-						p={2}
-						// py={2}
+					<Box 
+						border={1}
+						// justifyContent='center'
+						alignItems='center'
+					//	p={2}
 						m={2}
+						display='flex'
 					>
 						<Status invite={invite}/>
-						<Box borderBottom={1}>
+						{/* <Box borderBottom={1}> */}
+						<Box 
+							pr={50}
+							width='100%'
+						>
 						<Text>From {invite.initShip} </Text>
 						</Box>
-						<Box borderBottom={1}>
-						<Text>{invite.desc}</Text>
-						</Box>
-						<Box>
-								{ invite.locationType === "meatspace" && 
-									<Text>Location: {invite.address}</Text>
-								}
-						</Box>
-						{  invite.initShip !== '~' + window.urbit.ship &&
-						<Box border={1}>
-						<Text>Your distance from the invite location:</Text>
-						<br/>
-						{ haversine(
-							{ latitude: invite.position.lat, longitude: invite.position.lon },
-							{ latitude: settings.position.lat, longitude: settings.position.lon },
-						) + '  meters'}
-						</Box>
-						}
-						<Box>
-							<Text>
-								Access link: {invite.accessLink}
-							</Text>
-						</Box>
-						{ invite.radius !== 0 &&
-						<Box>
-							<Text>
-								Delivery radius: {invite.radius}
-							</Text>
-						</Box>
-						}
-						{ invite.maxAccepted !== 0 &&
-						<Box>
-							<Text> {invite.receiveShips.filter(x => x.shipInvite === 'accepted').length} / {invite.maxAccepted} RSVP'd </Text>
-						</Box>
-						}
-						<Box display='flex'
+						{/* <Box borderBottom={1}> */}
+						{/* <Box> */}
+						{/* <Text>{invite.desc}</Text> */}
+						{/* </Box> */}
+						{/* <Box> */}
+						{/* 		{ invite.locationType === "meatspace" && */} 
+						{/* 			<Text>Location: {invite.address}</Text> */}
+						{/* 		} */}
+						{/* </Box> */}
+						{/* {  invite.initShip !== '~' + window.urbit.ship && */}
+						{/* <Box border={1}> */}
+						{/* <Text>Your distance from the invite location:</Text> */}
+						{/* <br/> */}
+						{/* { haversine( */}
+						{/* 	{ latitude: invite.position.lat, longitude: invite.position.lon }, */}
+						{/* 	{ latitude: settings.position.lat, longitude: settings.position.lon }, */}
+						{/* ) + '  meters'} */}
+						{/* </Box> */}
+						{/* } */}
+						{/* <Box> */}
+						{/* 	<Text> */}
+						{/* 		Access link: {invite.accessLink} */}
+						{/* 	</Text> */}
+						{/* </Box> */}
+						{/* { invite.radius !== 0 && */}
+						{/* <Box> */}
+						{/* 	<Text> */}
+						{/* 		Delivery radius: {invite.radius} */}
+						{/* 	</Text> */}
+						{/* </Box> */}
+						{/* } */}
+						{/* { invite.maxAccepted !== 0 && */}
+						{/* <Box> */}
+						{/* 	<Text> {invite.receiveShips.filter(x => x.shipInvite === 'accepted').length} / {invite.maxAccepted} RSVP'd </Text> */}
+						{/* </Box> */}
+						{/* } */}
+						<Box 
+							display='flex'
+							right='0'
 						>
-							<Button onClick={() => {console.log(invite); focusInvite(mInvite)}}>Edit</Button>
+						<Button onClick={() => {console.log(invite); focusInvite(mInvite)}}>Inspect</Button>
 						<Actions invite={mInvite}/>
 						</Box>
-					</Box>
+						</Box>
 						)})}
 				</Box>
 			)
@@ -231,6 +256,20 @@ const Invite = (props) => {
 			<FocusedInvite invite={focusedInvite} focusInvite={focusInvite}/>
 		)
 };
+
+const InviteSorter = (inviteRoute) => {
+	return (
+		<Box
+			display='flex'
+		>
+		{ inviteRoute === 'all' &&
+			<Box>
+				{/* <Button> */} 
+			</Box>
+		}
+		</Box>
+	)
+}
 
 const Invites = () => {
 	const inviteRoute = useStore(state => state.inviteRoute);
@@ -241,7 +280,10 @@ const Invites = () => {
 	switch(inviteRoute) {
 		case "all":
 			return (
+				<Box>
+					<Text>All</Text>
 				<Invite invites={filterDistantInvites(all, settings)}/>
+				</Box>
 			);
 		break;
 		case "hosting":

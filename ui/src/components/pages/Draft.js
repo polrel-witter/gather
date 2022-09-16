@@ -155,7 +155,7 @@ const Draft = () => {
 				<Box
 					width='100%'
 				>
-				<Text px={px}> Limit # of RSVPs you will accept
+				<Text px={px}> Limit # of RSVPs accepted
 				<Icon position='center' icon="Info" data-tip='0 = unlimited'/>
 				</Text>
 				<ReactTooltip />
