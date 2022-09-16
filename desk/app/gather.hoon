@@ -1,9 +1,9 @@
 ::
-::  %gather, by ~pontus-fadpun and ~polrel-witter, is a tool for 
-::  martians to host and attend gatherings. It is distributed from: 
-::  ~polrel-witter-pontus-fadpun 
+::  Gather, by ~pontus-fadpun and ~polrel-witter, is a tool 
+::  to host and attend gatherings. It's distributed from 
+::  ~polrel-witter-pontus-fadpun  ...
 :: 
-::  It can perform the following acts:
+::  and, contains the following actions:
 ::
 :::: User settings  
 ::   [%address =address]                                  :: Used to retrieve $position (lat and lon) from Nominatim OSM.
@@ -931,28 +931,3 @@
 ++  on-peek   on-peek:def  
 ++  on-fail   on-fail:def
 --
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
