@@ -17,8 +17,8 @@ export const filterDistantInvites = (invites, settings) => {
 	return invites.filter( invite => {
 		if(invite.invite.locationType === 'virtual')
 			return true;
-		const inviteNA = (invite.invite.radius === 0 || invite.invite.position === '666');
-		const inviteeNA = (settings.radius === 0 || settings.position === '666');
+		const inviteNA = (invite.invite.radius === 0 || invite.invite.position.lon === '1000');
+		const inviteeNA = (settings.radius === 0 || settings.position.lon === '1000');
 		const insideInvite = haversine(
 		{ latitude: invite.invite.position.lat, longitude: invite.invite.position.lon },
 		{ latitude: settings.position.lat, longitude: settings.position.lon }
@@ -131,7 +131,7 @@ export const toggleSelect = (id, groups) => {
 		if (group.id === id) return true;
 		else return false;
 	})[0].collection;
-	return { id: id, title: editedCollection.title, members: editedCollection.members, selected: !editedCollection.selected, resource : ''};
+	return { id: id, title: editedCollection.title, members: editedCollection.members, selected: !editedCollection.selected, resource : editedCollection.resource};
 }
 
 export const deleteGroup = (id, groups) => {
