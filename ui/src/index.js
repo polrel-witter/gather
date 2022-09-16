@@ -9,7 +9,7 @@ import { Reset } from "@tlon/indigo-react";
 import { createContext, useContext } from 'react'
 import { createStore, useStore } from 'zustand'
 import { transitions, positions, Provider as AlertProvider } from 'react-alert'
-import AlertTemplate from 'react-alert-template-mui'
+import AlertTemplate from 'react-alert-template-basic'
 
 // optional configuration
 const options = {
