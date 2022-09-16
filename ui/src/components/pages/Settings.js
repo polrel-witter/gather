@@ -1,5 +1,5 @@
 import React, { Component, useState } from 'react';
-import {StatelessRadioButtonField, Text, Box, ManagedTextAreaField, StatelessTextArea, ManagedTextInputField, Button, StatelessTextInput } from "@tlon/indigo-react";
+import {Icon, StatelessRadioButtonField, Text, Box, ManagedTextAreaField, StatelessTextArea, ManagedTextInputField, Button, StatelessTextInput } from "@tlon/indigo-react";
 import { useStore } from '../../data/store';
 import Location from '../shared/Location';
 import { patpValidate } from '../../utils';
@@ -21,6 +21,7 @@ const MyRadius = () => {
 			py={py}
 		>
 			<Text display="block">My Radius
+				<Icon position='center' icon="Info" data-tip='Paired with the location set above and Only-in-radius option (if selected) to filter out-of-range invites. 0 = unlimited.'/>
 			</Text>
 			<Box display='flex'>
 		{/* TODO make sure the input is a number */}
@@ -86,6 +87,7 @@ const Banned = () => {
 			py={py}
 		>
 			<Text>Banned Ships
+				<Icon position='center' icon="Info" data-tip='Your personal blacklist: hault all sending and receiving invites to/from a ship.'/>
 			</Text>
 		<Box
 			display='flex'
@@ -156,6 +158,7 @@ const Settings = () => {
 			<Text
 				px={5}
 				>Receive invites from
+				<Icon position='center' icon="Info" data-tip='Only in radius will filter out invites which include a location and is outside of your radius (both Radius and Location must be set).'/>
 				</Text>
 				<StatelessRadioButtonField
 					px={5}

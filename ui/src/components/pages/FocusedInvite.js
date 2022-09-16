@@ -79,20 +79,20 @@ const FocusedInvite = (props) => {
 				>Happening in: </Text>
 				<StatelessRadioButtonField
 					px={2}
-					selected={locationType === 'virtual'}
-          onChange={() => { 
-					setLocationType('virtual') 
-					pEditInviteLocation(id, 'virtual');
-					}}
-				> Virtual Space </StatelessRadioButtonField>
-				<StatelessRadioButtonField
-					px={2}
 					selected={locationType === 'meatspace'}
           onChange={() => { 
 						setLocationType('meatspace') 
 						pEditInviteLocation(id, 'meatspace');
 					}}
-				> Meat Space </StatelessRadioButtonField>
+				> Meatspace </StatelessRadioButtonField>
+				<StatelessRadioButtonField
+					px={2}
+					selected={locationType === 'virtual'}
+          onChange={() => { 
+					setLocationType('virtual') 
+					pEditInviteLocation(id, 'virtual');
+					}}
+				> Cyberspace </StatelessRadioButtonField>
 			</Box> 
 			<Box>
 				<Location 
