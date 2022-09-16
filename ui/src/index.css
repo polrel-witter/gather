@@ -79,6 +79,6 @@
 @media only screen and (max-width: 768px) {
   .overbox {
     width: 100%;
-		background-color: red;
+		/* background-color: red; */
   }
 }
