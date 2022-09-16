@@ -13,22 +13,38 @@ export const properPosition = (position) => {
 }
 
 export const filterDistantInvites = (invites, settings) => {
-	console.log(settings);
+	console.log('============')
 	return invites.filter( invite => {
+		console.log(haversine(
+		{ latitude: invite.invite.position.lat, longitude: invite.invite.position.lon },
+		{ latitude: settings.position.lat, longitude: settings.position.lon }
+		));
+		console.log(settings.radius * 1000);
 		if(invite.invite.locationType === 'virtual')
 			return true;
 		if(settings.receiveInvite === 'anyone')
 			return true;
-		const inviteNA = (invite.invite.radius === 0 || invite.invite.position.lon === '1000');
-		const inviteeNA = (settings.radius === 0 || settings.position.lon === '1000');
+		// console.log('=======');
+		if(settings.position.lon === '500' || settings.radius === 0)
+			return true;
+		if(invite.invite.position.lon === '500')
+			return true;
+		const inviteNA = (invite.invite.radius === 0 || invite.invite.position.lon === '500');
+		const inviteeNA = (settings.radius === 0 || settings.position.lon === '500');
 		const insideInvite = haversine(
 		{ latitude: invite.invite.position.lat, longitude: invite.invite.position.lon },
 		{ latitude: settings.position.lat, longitude: settings.position.lon }
-		) <= settings.radius;
+		) <= settings.radius * 1000;
 		const insideInvitee = haversine(
 							{ latitude: invite.invite.position.lat, longitude: invite.invite.position.lon },
 							{ latitude: settings.position.lat, longitude: settings.position.lon }
-		) <= invite.invite.radius;
+		) <= invite.invite.radius * 1000;
+		console.log('--------------')
+		console.log(insideInvite)
+		console.log(inviteNA)
+		console.log(insideInvitee)
+		console.log(inviteeNA)
+		console.log('--------------')
 		if((insideInvite || inviteNA) && (insideInvitee || inviteeNA))
 			return true;
 		return false;

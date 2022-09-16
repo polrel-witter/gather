@@ -25,7 +25,7 @@ const Draft = () => {
 	const [locationType, setLocationType] = useState('meatspace');
 	const [radius, setRadius] = useState(0);
 	const [accessLink, setAccessLink] = useState('');
-	const [position, setPosition] = useState({lat: '.0', lon: '.1000'});
+	const [position, setPosition] = useState({lat: '.0', lon: '.500'});
 	const [address, setAddress] = useState('');
 	const [maxAccepted, setMaxAccepted] = useState(0);
 	const [groupSearch, setGroupSearch] = useState("");
