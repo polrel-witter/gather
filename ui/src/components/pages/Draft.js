@@ -174,7 +174,7 @@ const Draft = () => {
 				{/* <Text display='block'>Create Custom Collection: kkk</Text> */}
 				<Text>
 				     Search ships and create collections
-						 <Icon position='center' icon="Info" data-tip='Valid ships start with a ~'/>
+						 <Icon position='center' icon="Info" data-tip='Valid ships start with a "~", search groups with syntax: ~sampel-palnet/my-group, & to create a collection: select groups or ship, .'/>
 				</Text>
 				<ReactTooltip />
 				<Box display='flex'>
