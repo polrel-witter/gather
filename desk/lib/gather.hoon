@@ -41,10 +41,12 @@
   ?~  keys  
      export
   =/  gang=members  (~(got by groups) i.keys)
+  =/  name=tape  (oust [0 2] `tape`(scow %t ->:keys)) 
+  =/  title=@t  (crip (weld (scow %p -<:keys) (runt [1 '/'] name))) 
   %=  $
      export  ;:  welp  export
                 :~  :*
-                       `@t`->:keys 
+                        title
                         gang
                         %.n
                         `i.keys

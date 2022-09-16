@@ -164,11 +164,13 @@
          ==
        =/  gang=members  -:(need g)
        =/  r=[@p @tas]  (need resource.act)   
+       =/  name=tape  (oust [0 2] `tape`(scow %t +:r)) 
+       =/  title=@t  (crip (weld (scow %p -:r) (runt [1 '/'] name))) 
        =.  collections.settings
          %+  ~(put by collections.settings)
             (scot %uv eny.bol)
             :* 
-               `@t`+:r
+                title 
                 gang
                 %.y
                 `r
