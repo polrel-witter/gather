@@ -29,7 +29,6 @@ export const useStore = create((set) => ({
 	pAddress: (address) => {doPoke({'address': { address: address}}, () => console.log('onSucc'), ()=>{})},
 	pPosition: (position) => {doPoke({'position': position}, () => console.log('onSucc'), ()=>{})},
 	pRadius: (radius) => {doPoke({'radius': {'radius': '.' + radius}}, () => console.log('onSucc'), ()=>{})},
-	pRefreshGroups: () => {doPoke({'refresh-groups': ''}, () => console.log('onSucc'), ()=>{})},
 	pCreateCollection: (collection) => {doPoke({'create-collection': collection}, () => console.log('onSucc'), ()=>{})},
 	pEditCollection: (collection) => {doPoke({'edit-collection': collection}, () => console.log('onSucc'), ()=>{})},
 	pDeleteCollection: (id) => {doPoke({'del-collection': {id: id}}, () => console.log('onSucc'), ()=>{})},

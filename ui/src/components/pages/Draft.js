@@ -31,11 +31,9 @@ const Draft = () => {
 	const [groupSearch, setGroupSearch] = useState("");
 	const collections = useStore(state => state.settings.collections);
 	const [customGroupName, setCustomGroupName] = useState('');
-	const pRefreshGroups = useStore(state => state.pRefreshGroups);
 	const alert = useAlert()
 
   useEffect(() => {
-		pRefreshGroups();
   }, []);
 
 	return (
