@@ -1,4 +1,4 @@
-import React, { Component, useState } from 'react';
+import React, { Component, useState, useEffect } from 'react';
 import StatusGang from "./StatusGang"
 import StatusForeignShips from "./StatusForeignShips"
 import Location from '../shared/Location';
@@ -31,7 +31,13 @@ const Draft = () => {
 	const [groupSearch, setGroupSearch] = useState("");
 	const collections = useStore(state => state.settings.collections);
 	const [customGroupName, setCustomGroupName] = useState('');
+	const pRefreshGroups = useStore(state => state.pRefreshGroups);
 	const alert = useAlert()
+
+  useEffect(() => {
+		pRefreshGroups();
+  }, []);
+
 	return (
 		<Box>
 			<Button 
