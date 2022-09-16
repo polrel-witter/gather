@@ -262,7 +262,7 @@
      =+  eny=eny.bol
      =/  values=(list collection)   (make-collection-values groups)
      :-  :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])
-             [%pass /timers %arvo %b %wait (add now.bol `@dr`~m10)]
+             [%pass /timers %arvo %b %wait (add now.bol `@dr`~h24)]
          ==
      %=  this
         collections.settings  |-  
