@@ -173,8 +173,8 @@ const Draft = () => {
 				{/* <Text display='block'>Create New Collection from group: ~[patp]/[groupid]</Text> */}
 				{/* <Text display='block'>Create Custom Collection: kkk</Text> */}
 				<Text>
-				     Search ships and create collections
-						 <Icon position='center' icon="Info" data-tip='Valid ships start with a "~", search groups with syntax: ~sampel-palnet/my-group, & to create a collection: select groups or ship, .'/>
+				     Search ships, your groups, and create collections
+						 <Icon position='center' icon="Info" data-tip='Valid ships start with "~", group-search syntax is: ~sampel-palnet/my-group, & to create a collection: select groups and/or ships, enter a title, and click Add.'/>
 				</Text>
 				<ReactTooltip />
 				<Box display='flex'>
