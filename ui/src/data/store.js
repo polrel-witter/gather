@@ -14,9 +14,8 @@ export const useStore = create((set) => ({
 	inviteRoute: "all",
 	focusedInvite: {},
 	setRoute: (route) => set(state => ({ route : route })),
-	// focusInvite: (invite) => {console.log('focusInvite'); console.log(invite); set(state => ({ focusedInvite : _.cloneDeep(invite) }))},
-	focusInvite: (invite) => { console.log('fInvite'); console.log(invite); set(state => ({ focusedInvite : invite }))},
-	unFocusInvite: () => { console.log('unfInvite'); set(state => ({ focusedInvite : {} }))},
+	focusInvite: (invite) => {  set(state => ({ focusedInvite : invite }))},
+	unFocusInvite: () => {  set(state => ({ focusedInvite : {} }))},
 	/* STATE
 	 *
 	 */
