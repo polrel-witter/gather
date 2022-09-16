@@ -122,6 +122,7 @@ const Actions = (props) => {
 						pAccept(props.invite.id)
 						alert.show('RSVP sent to host');
 						}}> RSVP </Button>
+					<Button onClick={() => {pCancel(props.invite.id)}}> Delete </Button>
 					<Button onClick={() => {
 						pBan(invite.initShip)
 						alert.show('You will no longer send or receive invites to/from the host ship');
@@ -143,6 +144,7 @@ const Actions = (props) => {
 				{ inviteeStatus === 'pending' &&
 				<Box>
 					<Button onClick={() => {pAccept(props.invite.id)}}> RSVP </Button>
+					<Button onClick={() => {pCancel(props.invite.id)}}> Delete </Button>
 					<Button onClick={() => {pBan(invite.initShip)}} > Ban </Button>
 				</Box>
 				}
@@ -165,6 +167,7 @@ const Actions = (props) => {
 						alert.show('Invite Trashed');
 						pCancel(props.invite.id)
 						}}>Delete (TODO)</Button>
+					<Button onClick={() => {pCancel(props.invite.id)}}> Delete </Button>
 					<Button onClick={() => {pBan(invite.initShip)}} > Ban </Button>
 				</Box>
 			)
