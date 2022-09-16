@@ -16,7 +16,6 @@ const AppSwitch = () => {
 	const sAll = useStore(state => state.sAll);
 
 	const allState = useStore(state => state);
-	console.log(allState);
 
   useEffect(() => {
 		sAll();

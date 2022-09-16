@@ -47,7 +47,7 @@ const FocusedInvite = (props) => {
 				<Button 
 					height='auto'
 					width={250}
-				onClick={ () => pEditDesc(id, desc)}>Edit Description</Button>
+				onClick={ () => pEditDesc(id, desc)}>Set Description</Button>
 			</Box>
 			<Box
 				px={px}
@@ -63,7 +63,7 @@ const FocusedInvite = (props) => {
 					}}/>
 				<Button 
 					width={250}
-				onClick={ () => pEditMaxAccepted(id, maxAccepted)}>Edit Max Accepted</Button>
+				onClick={ () => pEditMaxAccepted(id, maxAccepted)}>Set Max Accepted</Button>
 			</Box>
 			<Box 
 				borderBottom={1}
@@ -111,7 +111,7 @@ const FocusedInvite = (props) => {
 				<StatelessTextInput value={accessLink} onChange={(e) => setAccessLink(e.currentTarget.value)}/>
 				<Button 
 					width={250}
-				onClick={ () => pEditInviteAccessLink(id, accessLink)}>Edit Access link</Button>
+				onClick={ () => pEditInviteAccessLink(id, accessLink)}>Set Access link</Button>
 			</Box>
 			<Box
 				px={px}
@@ -131,7 +131,7 @@ const FocusedInvite = (props) => {
 				/>
 				<Button 
 					width={250}
-				onClick={ () => pEditInviteRadius(id, radius)}>Edit Radius</Button>
+				onClick={ () => pEditInviteRadius(id, radius)}>Set Radius</Button>
 			</Box>
 			<Box 
 				borderBottom={1}
