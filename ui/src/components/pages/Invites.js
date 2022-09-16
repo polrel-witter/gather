@@ -166,8 +166,7 @@ const Actions = (props) => {
 					<Button onClick={()=>{
 						alert.show('Invite Trashed');
 						pCancel(props.invite.id)
-						}}>Delete (TODO)</Button>
-					<Button onClick={() => {pCancel(props.invite.id)}}> Delete </Button>
+						}}>Delete</Button>
 					<Button onClick={() => {pBan(invite.initShip)}} > Ban </Button>
 				</Box>
 			)
