@@ -24,7 +24,7 @@ const Actions = (props) => {
 	if(invite.initShip === '~' + window.urbit.ship) {
 		return (
 			<Box>
-			{ invite.hostStatus === "sent" && 
+			{ invite.hostStatus === "sent" &&
 				<Box>
 					<Button onClick={()=>{
 						pClose(props.invite.id);
@@ -36,7 +36,7 @@ const Actions = (props) => {
 					}}>Cancel</Button>
 				</Box>
 			}
-			{ invite.hostStatus === "closed" && 
+			{ invite.hostStatus === "closed" &&
 				<Box>
 				<Button onClick={()=>{
 					pReopen(props.invite.id);
@@ -52,7 +52,7 @@ const Actions = (props) => {
 				}}>Delete</Button>
 				</Box>
 			}
-			{ invite.hostStatus === "completed" && 
+			{ invite.hostStatus === "completed" &&
 				<Box>
 				<Button onClick={()=>{
 					pCancel(props.invite.id)
@@ -143,7 +143,7 @@ const Status = (props) => {
 		switch (props.invite.hostStatus) {
 			case 'sent':
 			return (
-				<Text color='red'>Sent</Text>
+				<Text color='blue'>Sent</Text>
 			)
 			break;
 			case 'closed':
@@ -186,16 +186,13 @@ const Invite = (props) => {
 						<Text>{invite.desc}</Text>
 						</Box>
 						<Box>
-							<Text>
-								
 								{ invite.locationType === "meatspace" && 
 									<Text>Location: {invite.address}</Text>
 								}
-							</Text>
 						</Box>
 						{  invite.initShip !== '~' + window.urbit.ship &&
 						<Box border={1}>
-						<Text>Your distance from the invite l}ocation:</Text>
+						<Text>Your distance from the invite location:</Text>
 						<br/>
 						{ haversine(
 							{ latitude: invite.position.lat, longitude: invite.position.lon },
@@ -205,13 +202,13 @@ const Invite = (props) => {
 						}
 						<Box>
 							<Text>
-								Access Link: {invite.accessLink}
+								Access link: {invite.accessLink}
 							</Text>
 						</Box>
 						{ invite.radius !== 0 &&
 						<Box>
 							<Text>
-								Delivery Radius: {invite.radius}
+								Delivery radius: {invite.radius}
 							</Text>
 						</Box>
 						}

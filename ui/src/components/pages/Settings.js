@@ -4,6 +4,7 @@ import { useStore } from '../../data/store';
 import Location from '../shared/Location';
 import { patpValidate } from '../../utils';
 import { useAlert } from 'react-alert'
+import ReactTooltip from 'react-tooltip';
 
 const px = '1';
 const py = '2';
@@ -14,12 +15,13 @@ const MyRadius = () => {
 	const pRadius = useStore(state => state.pRadius);
 
 	return(
-		<Box 
+		<Box
 			borderBottom={1}
 			px={px}
 			py={py}
 		>
-			<Text display="block">My Radius:</Text>
+			<Text display="block">My Radius
+			</Text>
 			<Box display='flex'>
 		{/* TODO make sure the input is a number */}
 		<StatelessTextInput
@@ -83,8 +85,9 @@ const Banned = () => {
 			px={px}
 			py={py}
 		>
-			<Text> Banned Ships: </Text>
-		<Box 
+			<Text>Banned Ships
+			</Text>
+		<Box
 			display='flex'
 		>
 				<StatelessTextInput
@@ -104,8 +107,8 @@ const Banned = () => {
 			}}>Ban</Button>
 			</Box>
 			{ banned.length !== 0 &&
-					banned.map(ship => 
-					<Box 
+					banned.map(ship =>
+					<Box
 						border={1}
 						display='flex'
 						alignItems='center'
@@ -134,10 +137,10 @@ const Settings = () => {
 	const pReceiveInvite = useStore(state => state.pReceiveInvite);
 	return(
 		<Box>
-				<Location 
-					address={settings.address} 
-					position={settings.position} 
-					setAddress={pAddress} 
+				<Location
+					address={settings.address}
+					position={settings.position}
+					setAddress={pAddress}
 					setPosition={pPosition}
 			/>
 				<MyRadius/>
@@ -146,13 +149,14 @@ const Settings = () => {
 			px={px}
 			py={py}
 		>
-			<Box 
+			<Box
 				display='flex'
 				justifyContent='center'
 			>
 			<Text
 				px={5}
-			>Set onlyinvite/anyone: </Text>
+				>Receive invites from
+				</Text>
 				<StatelessRadioButtonField
 					px={5}
 					selected={settings.receiveInvite === 'anyone'}

@@ -1,17 +1,32 @@
 ::
-::  %gather, by ~pontus-fadpun and ~polrel-witter, is a tool for 
-::  martians to host and attend gatherings. It is distributed from: 
-::  
-::  It can perform the following acts:
+::  Gather, by ~pontus-fadpun and ~polrel-witter, is a tool 
+::  to host and attend gatherings. It's distributed from 
+::  ~polrel-witter-pontus-fadpun  ...
+:: 
+::  and, contains the following actions:
 ::
-:::: Adjust local user settings:  
+:::: User settings  
 ::   [%address =address]                                  :: Used to retrieve $position (lat and lon) from Nominatim OSM.
 ::   [%position =position]                                :: Used to calculate distance from %meatspace venue addresses 
 ::   [%radius =radius]                                    :: Limit %meatspace invites you receive to only those with venue addresses within this radius
-::   [%create-collection =collection]                     :: Create a collection of ships (combined with groups) you regularly invite
-::   [%edit-collection =id =collection]                   :: Change a collection
-::   [%del-collection =id]                                :: Delete a collection
 ::   [%receive-invite =receive-invite]                    :: Receive invites from either %anyone or %only-in-radius
+::
+:::: Collections
+::   $:  %create-collection                               :: Create a collection of ships (optionally combined with groups) you regularly invite
+::       title=@t
+::       members=(list @p)
+::       =selected
+::       =resource                                        :: If a resource is present, the collection was constructed from a group-store scry and will refresh upon each %create-collection poke
+::   ==                                
+::   $:  %edit-collection                                 :: Change a collection
+::       =id
+::       title=@t
+::       members=(list @p)
+::       =selected
+::       =resource
+::   ==
+::   [%del-collection =id]                                :: Delete a collection
+::   [%refresh-groups ~]                                  :: Scries into all our groups and builds collections with their members included; used in conjunction with %send-invite to send to whole groups
 ::
 :::: Options to edit a %sent invite
 ::   [%del-receive-ship =id del-ships=(list @p)]          :: Delete ships from an invite that's already been sent to them
@@ -106,7 +121,7 @@
      ?>  =(our.bol src.bol)
      =.  address.settings  
          address.act 
-     ~&  "settings address updated"
+     ::  ~&  "settings address updated"
      :_  this
      :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])  
      ==
@@ -116,7 +131,7 @@
      ?>  =(our.bol src.bol)
      =.  position.settings  
          position.act 
-     ~&  "settings position updated"
+     ::  ~&  "settings position updated"
      :_  this
      :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])  
      ==
@@ -126,7 +141,7 @@
      ?>  =(our.bol src.bol)
      =.  radius.settings  
          radius.act 
-     ~&  "settings radius updated"
+     ::  ~&  "settings radius updated"
      :_  this
      :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])  
      ==
@@ -134,17 +149,45 @@
        %create-collection
      ~|  [%unexpected-collection-request %create-collection ~]
      ?>  =(our.bol src.bol)
-     =/  membs=(set @p)  (silt (remove-our [our.bol (remove-banned [(remove-dupes members.act) banned.settings])]))
-     ::
-     =.  collections.settings   %+  ~(put by collections.settings)
-                                  (scot %uv eny.bol)
-                                :*
-                                   title.act 
-                                   membs
-                                   selected.act
-                                   resource.act
-                                ==
-     ~&  "creating collection called {<title.act>}"
+     ?.  =(~ resource.act)
+       =/  old=id  (single-group-id [resource.act collections.settings]) 
+       =/  r=resource:res-sur  (need resource.act)
+       =/  g=(unit group:group) 
+         .^  (unit group:group)  %gx 
+            ;:  welp  
+               (path /(scot %p our.bol)/group-store/(scot %da now.bol))
+               /groups
+               (en-path:res-lib r)
+               /noun
+            ==
+         ==
+       =/  gang=members  -:(need g)
+       =/  r=[@p @tas]  (need resource.act)   
+       =.  collections.settings
+         %+  ~(put by collections.settings)
+            (scot %uv eny.bol)
+            :* 
+               `@t`+:r
+                gang
+                %.n
+                `r
+            ==
+       ::  ~&  "creating collection called {<`@t`+:r>}"
+       :_  this
+       :~  (~(poke pass:io /(scot %p our.bol)/[%settings]) [our.bol %gather] gather-action+!>(`action`[%del-collection old]))   
+           (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])  
+       == 
+     =/  gang=members  (silt (remove-our [our.bol (remove-banned [(remove-dupes members.act) banned.settings])]))
+     =.  collections.settings   
+       %+  ~(put by collections.settings)
+          (scot %uv eny.bol)
+          :*
+             title.act 
+             gang
+             selected.act
+             resource.act
+          ==
+     ::  ~&  "creating collection called {<title.act>}"
      :_  this
      :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])  
      ==  
@@ -152,18 +195,18 @@
        %edit-collection
      ~|  [%unexpected-collection-request %edit-collection-title ~]
      ?>  =(our.bol src.bol)
-     =/  membs=(set @p)  (silt (remove-our [our.bol (remove-banned [(remove-dupes members.act) banned.settings])]))
-     ::                       
-     =.  collections.settings  %+  ~(jab by collections.settings)
-                                 id.act
-                               |=  =collection
-                               %=  collection 
-                                  title     title.act
-                                  members   membs
-                                  selected  selected.act  
-                                  resource  resource.act
-                               ==
-     ~&  "updated collection {<title.act>}"
+     =/  gang=members  (silt (remove-our [our.bol (remove-banned [(remove-dupes members.act) banned.settings])]))
+     =.  collections.settings  
+       %+  ~(jab by collections.settings)
+          id.act
+       |=  =collection
+       %=  collection 
+          title     title.act
+          members   gang
+          selected  selected.act  
+          resource  resource.act
+       ==
+     ::  ~&  "updated collection {<title.act>}"
      :_  this
      :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])  
      ==
@@ -172,12 +215,12 @@
      ~|  [%unexpected-collection-request %del-collection ~]
      ?>  =(our.bol src.bol)
      =.  collections.settings  (~(del by collections.settings) id.act)
-     ~&  "deleting collection"
+     ::  ~&  "deleting collection"
      :_  this
      :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])  
      ==
   ::
-       %pull-groups
+       %refresh-groups
      ~|  [%bad-groups-pull ~]
      ?>  =(our.bol src.bol)
      =|  r=resource:res-sur
@@ -198,47 +241,42 @@
                /noun
             ==
          ==
-       =/  members=(set @p)  -:(need g)
+       =/  gang=members  -:(need g)
        %=  $
-         export  (~(put by export) r members)
+         export  (~(put by export) r gang)
          resources  t.resources
        ==
-     =/  values=(list collection)   (make-collection-values groups)
-     =.  collections.settings  
-       |-
-       ?~  values  collections.settings
-      :: problem is here; bizaar bc only the t value is being input into the map
-       %=  $
-          collections.settings   %+  ~(put by collections.settings) 
-                                    (scot %uv eny.bol)
-                                    i.values
-          values  t.values
-       ==
-     :_  this
-     :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])
-     ==  
-  ::
-       %wipe-groups
-     ~|  [%bad-group-wipe ~]
-     ?>  =(our.bol src.bol)
-     =.  collections.settings  
-       =/  group-ids=(list id)  (get-group-ids collections.settings) 
+     =.  collections.settings
+       =/  group-ids=(list id)  (get-group-ids collections.settings)  
        |-
        ?~  group-ids  collections.settings
        %=  $
           collections.settings  (~(del by collections.settings) i.group-ids)
           group-ids  t.group-ids
-       ==
-     :_  this
-     :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])
-     == 
+       == 
+     =+  eny=eny.bol
+     =/  values=(list collection)   (make-collection-values groups)
+     :-  :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])
+         ==
+     %=  this
+        collections.settings  |-  
+                              ?~  values  collections.settings
+                              %=  $
+                                 collections.settings   
+                                     %+  ~(put by collections.settings) 
+                                        (scot %uv eny) 
+                                        i.values
+                               :: 
+                                  values  t.values
+                                  eny  +(eny)
+     ==                       ==
   ::
        %receive-invite
      ~|  [%failed-receive-invite-change ~]
      ?>  =(our.bol src.bol)
      =.  receive-invite.settings
          receive-invite.act
-     ~&  "changing receive-invite to {<receive-invite.act>}"
+     ::  ~&  "changing receive-invite to {<receive-invite.act>}"
      :_  this
      :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])  
      ==
@@ -250,17 +288,17 @@
        ?>  =(src.bol init-ship)
        ~&  "sucks to suck: you've been uninvited from {<init-ship>}'s invite"
        :_  this(invites (~(del by invites) id.act))
-       :~  (fact:io gather-update+!>(`update`[%init-all invites settings]) ~[/all])  :: TODO not sure if invites will have updated by the time the fact is sent
+       :~  (fact:io gather-update+!>(`update`[%init-all invites settings]) ~[/all])  
        ==
      ?>  =(our.bol init-ship)
      =/  =path  /(scot %p init-ship)/[%invite]/(scot %uv id.act)
-     ~&  "removing {<del-ships.act>} from invite {<id.act>}"    
+     ::  ~&  "removing {<del-ships.act>} from invite {<id.act>}"    
      =+  dek=*(list card:agent:gall)
      |-
      ?~  del-ships.act
        =+  upd=(need (~(get by invites) id.act))
        =+  fak=(fact:io gather-update+!>(`update`[%update-invite id.act upd]) ~[path /all])
-       [(into dek 0 fak) this]                            :: TODO may need to move fac to end; depending on order cards go out 
+       [(into dek 0 fak) this]                           
      %=  $
         invites  %+  ~(jab by invites)
                    id.act
@@ -303,13 +341,13 @@
            :-  (remove-dupes add-ships.act) 
                banned.settings
            ::
-     ~&  "adding {<add-ships>} to invite list on invite {<id.act>}"    
+     ::  ~&  "adding {<add-ships>} to invite list on invite {<id.act>}"    
      =+  dek=*(list card:agent:gall)
      |-
      ?~  add-ships
        =+  upd=(need (~(get by invites) id.act))
        =+  fak=(fact:io gather-update+!>(`update`[%update-invite id.act upd]) ~[path /all])
-       [(into dek 0 fak) this]                            :: TODO may need to move fac to end; depending on order cards go out 
+       [(into dek 0 fak) this]                            
      %=  $
         invites  %+  ~(jab by invites)
                    id.act
@@ -338,11 +376,11 @@
      =.  max-accepted.upd  
      ?.  (lte accepted-count.upd qty.act)
        ?.  =(0 qty.act)
-         ~&  "your new qty is below the number of accepted invites, {<accepted-count.upd>}"
+         ::  ~&  "your new qty is below the number of accepted invites, {<accepted-count.upd>}"
          !!
        qty.act
      qty.act 
-     ~&  "changing max-accepted to {<qty.act>}"
+     ::  ~&  "changing max-accepted to {<qty.act>}"
      :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd]) ~[path /all])
          ==
      %=  this
@@ -360,7 +398,7 @@
      =/  upd=invite  
        (need (~(get by invites) id.act))
      =.  desc.upd  desc.act
-     ~&  "changing description to {<desc.act>}"
+     ::  ~&  "changing description to {<desc.act>}"
      :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd]) ~[path /all])
          ==
      %=  this
@@ -378,7 +416,7 @@
      =/  upd=invite  
        (need (~(get by invites) id.act))
      =.  location-type.upd  location-type.act
-     ~&  "changing location type to {<location-type.act>}"
+     ::  ~&  "changing location type to {<location-type.act>}"
      :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd]) ~[path /all])
          ==
      %=  this
@@ -396,7 +434,7 @@
      =/  upd=invite  
        (need (~(get by invites) id.act))
      =.  position.upd  position.act
-     ~&  "changing position to {<position.act>}"
+     ::  ~&  "changing position to {<position.act>}"
      :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd]) ~[path /all])
          ==
      %=  this
@@ -414,7 +452,7 @@
      =/  upd=invite  
        (need (~(get by invites) id.act))
      =.  address.upd  address.act
-     ~&  "changing address to {<address.act>}"
+     ::  ~&  "changing address to {<address.act>}"
      :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd]) ~[path /all])
          ==
      %=  this
@@ -432,7 +470,7 @@
      =/  upd=invite  
        (need (~(get by invites) id.act))
      =.  access-link.upd  access-link.act
-     ~&  "changing acccess link to {<access-link.act>}"
+     ::  ~&  "changing acccess link to {<access-link.act>}"
      :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd]) ~[path /all])
          ==
      %=  this
@@ -450,7 +488,7 @@
      =/  upd=invite  
        (need (~(get by invites) id.act))
      =.  radius.upd  radius.act
-     ~&  "changing radius to {<radius.act>}"
+     ::  ~&  "changing radius to {<radius.act>}"
      :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd]) ~[path /all])
          ==
      %=  this
@@ -465,9 +503,9 @@
      =/  =path  /(scot %p init-ship)/[%invite]/(scot %uv id.act)
      ?.  =(our.bol src.bol)
        ?>  =(src.bol init-ship)
-       ~&  "{<init-ship>} has revoked an invite"
+       ::  ~&  "{<init-ship>} has revoked an invite"
        :_  this(invites (~(del by invites) id.act))
-       :~  (fact:io gather-update+!>(`update`[%init-all invites settings]) ~[/all])  :: TODO not sure if invites will have updated by the time the fact is sent
+       :~  (fact:io gather-update+!>(`update`[%init-all invites settings]) ~[/all]) 
        ==
      ?.  =(our.bol init-ship)
         ?<  =(our.bol init-ship)
@@ -482,7 +520,7 @@
      =+  dek=*(list card:agent:gall)
      |-
      ?~  receive-ships
-       ~&  "revoking invite with id {<id.act>}"
+       ::  ~&  "revoking invite with id {<id.act>}"
        =.  invites  
           (~(del by invites) id.act)
        =+  kik=[%give %kick ~[path /all] ~]
@@ -505,7 +543,7 @@
      ?>  =(our.bol src.bol)
      =/  init-ship=@p  init-ship:(need (~(get by invites) id.act))
      ?>  =(our.bol init-ship)
-     ~&  "gathering with id {<id.act>} is complete"
+     ::  ~&  "gathering with id {<id.act>} is complete"
      =/  =path  /(scot %p init-ship)/[%invite]/(scot %uv id.act)
      =/  upd=invite  (need (~(get by invites) id.act))
      =.  host-status.upd  %completed
@@ -522,7 +560,7 @@
      ?>  =(our.bol src.bol)
      =/  init-ship=@p  init-ship:(need (~(get by invites) id.act))
      ?>  =(our.bol init-ship)
-     ~&  "gathering with id {<id.act>} has been closed"    
+     ::  ~&  "gathering with id {<id.act>} has been closed"    
      =/  =path  /(scot %p init-ship)/[%invite]/(scot %uv id.act)
      =/  upd=invite  (need (~(get by invites) id.act))
      =.  host-status.upd  %closed
@@ -539,7 +577,7 @@
      ?>  =(our.bol src.bol)
      =/  init-ship=@p  init-ship:(need (~(get by invites) id.act))
      ?>  =(our.bol init-ship)
-     ~&  "gathering with id {<id.act>} has been reopened"    
+     ::  ~&  "gathering with id {<id.act>} has been reopened"    
      =/  =path  /(scot %p init-ship)/[%invite]/(scot %uv id.act)
      =/  upd=invite  (need (~(get by invites) id.act))
      =.  host-status.upd  %sent
@@ -564,7 +602,7 @@
            ::
      =/  receive-ships=(map @p =ship-invite)  
        (make-receive-ships-map send-to)
-     ~&  "sending invite to {<send-to>}"
+     ~&  "%gather: sending invite..."
      =/  new=invite 
      :*  our.bol 
          desc.act 
@@ -583,7 +621,7 @@
      =.  invites  (~(put by invites) id new) 
      |-
      ?~  send-to
-       [(into dek 0 fak) this]        :: TODO may need to move fac to end; depending on order cards go out 
+       [(into dek 0 fak) this]         
      %=  $
         dek  ;:  welp  dek  
                  :~  :*
@@ -608,7 +646,7 @@
      ?>  (~(has by invites) id.act)
      =/  host-status=host-status  host-status:(need (~(get by invites) id.act))
      ?>  ?=([%sent] host-status)
-     ~&  "{<src.bol>} has accepted their invite to event id: {<id.act>}"
+     ::  ~&  "{<src.bol>} has accepted their invite to event id: {<id.act>}"
      =/  upd=invite  (need (~(get by invites) id.act))
      =.  upd
      ?:  =(0 max-accepted.upd)
@@ -619,7 +657,7 @@
                           |=(=ship-invite ship-invite(invitee-status %accepted))
         ==
      ?:  (gth +(accepted-count.upd) max-accepted.upd)
-       ~&  "max accepted count for {<id.act>} has been reached"
+       :: ~&  "%gather: max accepted count for {<id.act>} has been reached"
        !!
      %=  upd
         accepted-count  +(accepted-count.upd)
@@ -648,7 +686,7 @@
      ?>  (~(has by invites) id.act)
      =/  host-status=host-status  host-status:(need (~(get by invites) id.act))
      ?<  ?=([%completed] host-status)    
-     ~&  "{<src.bol>} has declined their invite to event id: {<id.act>}"
+     ::  ~&  "{<src.bol>} has declined their invite to event id: {<id.act>}"
      =/  upd=invite  (need (~(get by invites) id.act))
      =/  invitee-status=invitee-status  +1:(need (~(get by receive-ships.upd) src.bol))
      =: 
@@ -674,7 +712,7 @@
      ?<  =(our.bol src.bol) 
      ?<  (~(has in banned.settings) src.bol)
      ?<  (~(has by invites) id.act)
-     ~&  "{<src.bol>} has sent an invite, subscribing..."
+     ~&  "%gather: {<src.bol>} has sent an invite, subscribing..."
      :_  this
      ^-  (list card:agent:gall)
      :*  [%pass path %agent [src.bol %gather] %watch path]
@@ -698,7 +736,7 @@
      ~|  [%failed-ban ~]
      ?>  =(our.bol src.bol)
      ?<  =(our.bol ship.act)
-     ~&  "banning {<ship.act>}"
+     ~&  "%gather: banning {<ship.act>}"
      ?:  (~(has in banned.settings) ship.act)
         `this
      =/  their-ids=(list id)      (id-comb [ship.act our.bol invites])
@@ -796,7 +834,7 @@
      ~|  [%failed-unban ~]
      ?>  =(our.bol src.bol)
      ?:  (~(has in banned.settings) ship.act)
-        ~&  "unbanning {<ship.act>}"
+        ~&  "%gather: unbanning {<ship.act>}"
         =.  banned.settings
            (~(del in banned.settings) ship.act)
         :_  this
@@ -816,6 +854,15 @@
     ?.  ?=(%poke-ack -.sign)  (on-agent:def wire sign)
     ?~  p.sign  [~ this]
     ((slog '%gather: failed to notify invitee' u.p.sign) [~ this])
+  ::
+      %settings
+    ?+    -.sign  (on-agent:def wire sign)
+        %poke-ack
+      ?~  p.sign
+         `this
+      ~&  "%gather: settings poke failed"
+      `this
+    ==
   ::    
       %invite                                                  
     ?+    -.sign  (on-agent:def wire sign)
@@ -836,11 +883,11 @@
       ?+    -.upd  (on-agent:def wire sign)
           %update-invite
         ?.  (~(has by invites) id.upd)
-          ~&  "adding new invite from {<src.bol>}"
+          ~&  "%gather: adding new invite from {<src.bol>}"
           :_  this(invites (~(put by invites) id.upd invite.upd))
           :~  (fact:io gather-update+!>(`update`[%update-invite id.upd invite.upd]) ~[/all])
           ==
-        ~&  "{<src.bol>} has updated their invite (id {<id.upd>})"
+        ::  ~&  "{<src.bol>} has updated their invite (id {<id.upd>})"
         =/  init-ship=@p  init-ship:(need (~(get by invites) id.upd))
         ?>  =(init-ship src.bol)
         :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.upd invite.upd]) ~[/all]) 
@@ -865,7 +912,7 @@
     ==
   ?>  ?=([@ @ @ ~] path)
   ?+  i.t.path  (on-watch:def path)
-     %invite                                                    :: TODO how to send error message in nack tang, if any of the following fail? not necessary, but would be nice for receiving end
+     %invite                                                 
    =/  invite-id=id  `@uv`(slav %uv i.t.t.path)
    ?>  =(our.bol (slav %p i.path))
    ?>  (~(has by invites) invite-id)
@@ -873,7 +920,7 @@
    =/  host-status=host-status  host-status:(need (~(get by invites) invite-id))
    ?>  ?=([%sent] host-status)  
    =/  invite-detail=invite  (need (~(get by invites) invite-id))
-   ~&  "sending invite details to {<src.bol>}"
+   ::  ~&  "sending invite details to {<src.bol>}"
    :_  this
    :~  (fact:io gather-update+!>(`update`[%update-invite invite-id invite-detail]) ~[path /all])
    ==
@@ -884,28 +931,3 @@
 ++  on-peek   on-peek:def  
 ++  on-fail   on-fail:def
 --
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

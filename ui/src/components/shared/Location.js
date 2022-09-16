@@ -21,8 +21,7 @@ const Location = (props) => {
 		>
 			<Text> 
 				Location 
-				<Icon position='center' icon="Info" data-tip='location tooltip'/>
-				:
+				<Icon position='center' icon="Info" data-tip='Type full address, click Search, then click an address below to save it.'/>
 			</Text>
 			<ReactTooltip/>
 			{/* <Box display='flex'> */}

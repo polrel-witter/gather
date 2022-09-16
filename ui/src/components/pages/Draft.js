@@ -9,6 +9,7 @@ import { fetchPendingInvites, fetchAcceptedInvites, dedup, createGroup, toggleSe
 import * as Nominatim from 'nominatim-browser';
 // import {Geolookup} from 'react-geolookup';
 import { useAlert } from 'react-alert'
+import ReactTooltip from 'react-tooltip';
 
 const px = '1';
 const py = '2';
@@ -53,7 +54,7 @@ const Draft = () => {
 					"location-type": locationType,
 					"position": position,
 					"address": address,
-					"access-link": '~.' + accessLink,
+					"access-link": accessLink,
 					"radius": '.' + radius,
 					"max-accepted": maxAccepted,
 					"desc": desc,
@@ -62,10 +63,14 @@ const Draft = () => {
 				px={px}
 				py={py}
 			>
-				<Text>Description</Text>
+				<Text>
+				      Description
+				      <Icon position='center' icon="Info" data-tip='Enter a description for your event'/>
+				</Text>
+				<ReactTooltip />
 				<StatelessTextArea onChange={(e) => setDesc(e.currentTarget.value)}/>
 			</Box>
-			<Box 
+			<Box
 				borderBottom={1}
 				px={px}
 				py={py}
@@ -73,38 +78,45 @@ const Draft = () => {
 				justifyContent='center'
 				alignItems='center'
 			>
-				<Text 
+				<Text
 					pr={5}
 					mr='auto'
-				>Happening in: </Text>
+				>Happening in
+				<Icon position='center' icon="Info" data-tip='If Meatspace, include a location. If Cyberspace, include an access link. Neither are required.'/>
+				</Text>
+				<ReactTooltip />
 				<StatelessRadioButtonField
 					px={2}
 					selected={locationType === 'meatspace'}
           onChange={() => { setLocationType('meatspace') }}
-				> Meat Space </StatelessRadioButtonField>
+				> Meatspace </StatelessRadioButtonField>
 				<StatelessRadioButtonField
 					px={2}
 					selected={locationType === 'virtual'}
           onChange={() => { setLocationType('virtual') }}
-				> Virtual Space</StatelessRadioButtonField>
+				> Cyberspace</StatelessRadioButtonField>
 			</Box>
-			<Box 
+			<Box
 				borderBottom={1}
 				px={px}
 				py={py}
 			>
-				<Text> Access link to event: </Text>
+				<Text>
+				      Access link
+				      <Icon position='center' icon="Info" data-tip='For virtual, live-streamed meatspace events, or anything you want.'/>
+				</Text>
+				<ReactTooltip />
 				<StatelessTextInput
 					display="block"
 					value={accessLink}
 					onChange={(e) => {setAccessLink(String(e.currentTarget.value));}}
 				/>
 			</Box>
-			
+
 			<Location
-				address={address} 
-				position={position} 
-				setAddress={setAddress} 
+				address={address}
+				position={position}
+				setAddress={setAddress}
 				setPosition={setPosition}
 			/>
 			<Box borderBottom={1}
@@ -117,10 +129,13 @@ const Draft = () => {
 				<Box
 					width='100%'
 				>
-				<Text 
+				<Text
 					display='inline'
 					px={px}
-				>Delivery radius: </Text>
+				>Delivery radius
+				<Icon position='center' icon="Info" data-tip='If you have included a location, your invite will only reach ships in-range of this radius. 0 = unlimited.'/>
+				</Text>
+				<ReactTooltip />
 				<StatelessTextInput
 				value={radius}
 				onChange={(e) =>
@@ -134,9 +149,11 @@ const Draft = () => {
 				<Box
 					width='100%'
 				>
-				<Text px={px}> Number of participants:
+				<Text px={px}> Limit # of RSVPs you will accept
+				<Icon position='center' icon="Info" data-tip='0 = unlimited'/>
 				</Text>
-				<StatelessTextInput value={maxAccepted} onChange={(e) => 
+				<ReactTooltip />
+				<StatelessTextInput value={maxAccepted} onChange={(e) =>
 					{
 						const re = /^[0-9\b]+$/;
 						if(e.currentTarget.value === '' || re.test(e.currentTarget.value))
@@ -151,7 +168,11 @@ const Draft = () => {
 				{/* <Text display='block'>Create New Collection from ship: ~[patp]</Text> */}
 				{/* <Text display='block'>Create New Collection from group: ~[patp]/[groupid]</Text> */}
 				{/* <Text display='block'>Create Custom Collection: kkk</Text> */}
-				<Text>Ships/Groups/Collections to invite:</Text>
+				<Text>
+				     Search ships and create collections
+						 <Icon position='center' icon="Info" data-tip='Valid ships start with a ~'/>
+				</Text>
+				<ReactTooltip />
 				<Box display='flex'>
 			<StatelessTextInput onChange={(e) => setGroupSearch(e.currentTarget.value)}/>
 			<Button 
@@ -167,9 +188,13 @@ const Draft = () => {
 				<Box
 					py={2}
 				>
-					<Text>Invite List:</Text>
+					<Text>
+					      Select ships, groups, or collections to invite
+					      <Icon position='center' icon="Info" data-tip='Ships can be searched above, groups are pulled from your social graph, & collections are made by you.'/>
+					</Text>
+					<ReactTooltip />
 			{ collections !== undefined && collections.length !== 0 && collections.map(collection =>
-				<Box 
+				<Box
 					display='flex'
 					alignItems='center'
 					// justifyContent='center'

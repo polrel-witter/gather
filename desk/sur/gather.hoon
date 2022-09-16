@@ -15,6 +15,7 @@
 +$  receive-invite  ?(%only-in-radius %anyone)   
 +$  collection      [title=@t =members =selected =resource]  
 ::
+::
 +$  invitee-status
   $?  
       %accepted
@@ -87,8 +88,7 @@
          =resource
      ==
      [%del-collection =id]
-     [%pull-groups ~]
-     [%wipe-groups ~]   
+     [%refresh-groups ~]
   ::
   :: Options to edit an invite
      [%del-receive-ship =id del-ships=(list @p)]  
