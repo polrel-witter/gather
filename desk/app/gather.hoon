@@ -88,7 +88,7 @@
       ==
   %=  this
     settings  :*
-                [.1000 .1000] 
+                [.500 .500] 
                 *radius
                 *address
                 *(map id collection)
@@ -170,7 +170,7 @@
             :* 
                `@t`+:r
                 gang
-                %.n
+                %.y
                 `r
             ==
        ::  ~&  "creating collection called {<`@t`+:r>}"
