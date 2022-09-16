@@ -27,7 +27,7 @@ export const filterDistantInvites = (invites, settings) => {
 		// console.log('=======');
 		if(settings.position.lon === '500' || settings.radius === 0)
 			return true;
-		if(invite.invite.position.lon === '500')
+		if(invite.invite.position.lon === '500' || invite.invite.radius === 0)
 			return true;
 		const inviteNA = (invite.invite.radius === 0 || invite.invite.position.lon === '500');
 		const inviteeNA = (settings.radius === 0 || settings.position.lon === '500');

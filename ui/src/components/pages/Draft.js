@@ -47,8 +47,6 @@ const Draft = () => {
 				// right='0'
 				onClick={() => {
 				if (collections.filter(i => i.collection.selected).length !== 0) {
-					console.log('collections----');
-					console.log(collections.filter(i => i.collection.selected).reduce((prev, curr) => prev.concat(curr.collection.members), []));
 					alert.show(<div style={{ color: 'green' }}>Invite Sent</div>);
 					// alert.show('hello');
 					pSendInvite(
@@ -183,8 +181,6 @@ const Draft = () => {
 				py={1}
 				width={250}
 				onClick={() => {
-					console.log('collec-------');
-					console.log(collections);
 				if(createGroup(groupSearch, collections) !== null)
 					pCreateCollection(createGroup(groupSearch, collections));
 				}}>Add</Button>
