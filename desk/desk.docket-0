@@ -2,10 +2,10 @@
   title+'Gather'
   info+'Host and attend gatherings'
   color+0xf2.f3ef
-  version+[0 1 0]
+  version+[0 0 1]
   website+'https://urbit.org/grants/gather'
   license+'MIT'
   image+'https://mocbel.nyc3.digitaloceanspaces.com/gather/IMG_20220823_144220.jpg'
   base+'gather'
-  glob-ames+[~polrel-witter-pontus-fadpun 0v0]
+  glob-ames+[~pontus-fadpun-polrel-witter 0v0]
 ==
