@@ -1,7 +1,7 @@
 ::
 ::  Gather, by ~pontus-fadpun and ~polrel-witter, is a tool 
 ::  to host and attend gatherings. It's distributed from 
-::  ~polrel-witter-pontus-fadpun 
+::  ~pontus-fadpun-polrel-witter
 :: 
 :: ...and can perform the following acts:
 ::
