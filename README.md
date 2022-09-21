@@ -1,5 +1,5 @@
 # Gather
-Gather is an [Urbit](urbit.org)-native meetup app that allows hosts to easily send invites to individual ships and/or members of groups they're a part of. And, from a guest's perspective, they can RSVP to invites they've received. 
+Gather is an [Urbit](https://urbit.org)-native meetup app that allows hosts to easily send invites to individual ships and/or members of groups they're a part of. And, from a guest's perspective, they can RSVP to invites they've received. 
 
 Additionally, it connects to [Nominatim's API](https://nominatim.org/release-docs/develop/api/Search/) to pull in addresses which are used for location-based filtering. 
 
