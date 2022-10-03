@@ -85,7 +85,7 @@
     hc    ~(. +> bol)
 ++  on-init
   ^-  (quip card _this)
-  :-  :~  (~(watch-our pass:io /gather) %gather /local/all)
+  :-  :~  (~(watch-our pass:io /gather) %gather /local/all)   :: TODO probably don't need this
           (~(poke pass:io /(scot %p our.bol)/[%settings]) [our.bol %gather] gather-action+!>(`action`[%refresh-groups ~]))   
       ==
   %=  this
@@ -726,7 +726,7 @@
          ?.  .^(? %gu /(scot %p our.bol)/hark-store/(scot %da now.bol))  ~
          =/  =bin:hark      :*  /[dap.bol] 
                                 q.byk.bol 
-                                path 
+                                /(scot %p src.bol)/[%invite] 
                             ==
          =/  =body:hark     :*  ~[ship+src.bol text+' sent you an invite.']
                                 ~
@@ -736,7 +736,7 @@
                             == 
          =/  =action:hark   [%add-note bin body]
          =/  =cage          [%hark-action !>(action)]
-         [%pass /hark %agent [our.bol %hark-store] %poke cage]~ 
+         [%pass /(scot %p our.bol)/hark %agent [our.bol %hark-store] %poke cage]~ 
      ==
   ::
        %ban
@@ -854,29 +854,39 @@
 ++  on-agent
   |=  [=wire =sign:agent:gall]
   ^-  (quip card _this)
-  ?>  ?=([@ @ @ ~] wire)
-  =/  origin-ship=@p  `@p`(slav %p i.wire)
-  ?+    `@tas`(slav %tas i.t.wire)  ~&([dap.bol %strange-wire wire] [~ this])
-      %hark
-    ?.  ?=(%poke-ack -.sign)  (on-agent:def wire sign)
-    ?~  p.sign  [~ this]
-    ((slog '%gather: failed to notify invitee' u.p.sign) [~ this])
-  ::
-      %settings
-    ?+    -.sign  (on-agent:def wire sign)
-        %poke-ack
-      ?~  p.sign
-         `this
-      (on-agent:def wire sign) 
+  ?.  ?=([@ @ @ ~] wire)
+    ?.  ?=([@ @ ~] wire)                      :: TODO clean up so %gather, %settings, and %hark wire are the same structure
+      ?+   wire  ~&([dap.bol %strange-wire wire] [~ this])
+          [%gather ~]          
+        ?+   -.sign  (on-agent:def wire sign)
+            %watch-ack
+          ?~  p.sign  [~ this]
+          ~&  "%gather: frontend failed to subscribe to %gather agent."
+          [~ this]
+        ==
+      == 
+    ?+   `@tas`(slav %tas +<:wire)  ~&([dap.bol %strange-wire wire] [~ this])
+        %hark      
+      ?+    -.sign  (on-agent:def wire sign)
+          %poke-ack
+        ?~  p.sign  [~ this]
+        ~&  "%gather: failed to notify"
+        [~ this]
+      == 
+    ::
+        %settings
+      ?+    -.sign  (on-agent:def wire sign)
+          %poke-ack
+        [~ this]
+      ==
     ==
-  ::    
+  ?+   `@tas`(slav %tas i.t.wire)  ~&([dap.bol %strange-wire wire] [~ this])    
       %invite                                                  
     ?+    -.sign  (on-agent:def wire sign)
         %watch-ack
-      ?~  p.sign
-        `this
+      ?~  p.sign  [~ this]
       ~&  "%gather: invite subscription to {<src.bol>} failed"
-      `this
+      [~ this] 
     ::
         %kick
       :_  this
@@ -885,18 +895,19 @@
     ::
         %fact
       ?>  ?=(%gather-update p.cage.sign)
-      =/  upd  !<(update q.cage.sign)
-      ?+    -.upd  (on-agent:def wire sign)
+      =/  =update  !<(update q.cage.sign)
+      ?+    -.update  (on-agent:def wire sign)
           %update-invite
+        =+  upd=update
         ?.  (~(has by invites) id.upd)
           ~&  "%gather: adding new invite from {<src.bol>}"
           :_  this(invites (~(put by invites) id.upd invite.upd))
-          :~  (fact:io gather-update+!>(`update`[%update-invite id.upd invite.upd]) ~[/all])
+          :~  (fact:io cage.sign ~[/all])
           ==
         ::  ~&  "{<src.bol>} has updated their invite (id {<id.upd>})"
         =/  init-ship=@p  init-ship:(need (~(get by invites) id.upd))
         ?>  =(init-ship src.bol)
-        :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.upd invite.upd]) ~[/all]) 
+        :-  :~  (fact:io cage.sign ~[/all]) 
             ==
         %=  this
           invites  %+  ~(jab by invites)
