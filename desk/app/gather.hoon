@@ -77,6 +77,7 @@
 =|  state-0
 =*  state  -
 ^-  agent:gall
+=<
 |_  bol=bowl:gall
 +*  this  .
     def   ~(. (default-agent this %.n) bol)
@@ -147,12 +148,12 @@
      :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])  
      ==
   ::
-       %create-collection
+       %create-collection                                               :: TODO change mentions of $resource to group-store $resource
      ~|  [%unexpected-collection-request %create-collection ~]
      ?>  =(our.bol src.bol)
      ?.  =(~ resource.act)
        =/  old=id  (single-group-id [resource.act collections.settings]) 
-       =/  r=resource:res-sur  (need resource.act)
+       =/  r=resource:res-sur  (need resource.act) 
        =/  g=(unit group:group) 
          .^  (unit group:group)  %gx 
             ;:  welp  
@@ -224,7 +225,7 @@
      :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])  
      ==
   ::
-       %refresh-groups
+       %refresh-groups                                      :: TODO change mentions of $resource to group-store $resource
      ~|  [%bad-groups-pull ~]
      ?>  =(our.bol src.bol)
      ~&  "%gather: refreshing groups"
@@ -945,13 +946,29 @@
       (on-arvo:def wire sign-arvo)
     ==
   == 
-++  on-leave  on-leave:def
-++  on-peek   on-peek:def  
+++  on-peek
+  |=  =path
+  ^-  (unit (unit cage))
+  ?+  path  (on-peek:def path)
+    ::
+       [%x %collection %ship @ @ ~]               :: TODO change to group-store $resource
+     =/  rid=(unit resource:res-sur)
+        (de-path-soft:res-lib t.t.path)
+     ?~  rid   ~
+     =/  r=[@p @tas]  (need rid)
+     ``noun+!>(`(unit collection)`(peek-collection `r))
+  == 
+++  on-leave  on-leave:def 
 ++  on-fail   on-fail:def
 --
-
-
-
+|_  bol=bowl:gall
++*  io  ~(. agentio bol)
+++  peek-collection
+  |=  r=resource
+  ^-  (unit collection)
+  =/  cid=id  (single-group-id [r collections.settings])
+  (~(get by collections.settings) cid)
+--
 
 
 
