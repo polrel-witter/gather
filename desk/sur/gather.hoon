@@ -4,16 +4,52 @@
 +$  ship            @p
 +$  id              @
 +$  radius          @rs 
-+$  position        [lat=@rs lon=@rs]
++$  selected        ?
 +$  address         @t
-+$  location-type   ?(%virtual %meatspace) 
 +$  access-link     @t
-+$  selected        ?                   
++$  mars-link       (unit @t)                     :: NEW
++$  earth-link      (unit @t)                     :: NEW
++$  image           (unit @t)
++$  count           (unit @ud)
 +$  banned          (set @p)
 +$  members         (set @p)
++$  msg             [who=@p what=@t]
++$  msgs            (list msg)
++$  position        [lat=@rs lon=@rs]
++$  gather-date     [begin=@da end=@da]
++$  access-type     ?(%public %private)           :: NEW
++$  location-type   ?(%virtual %meatspace) 
 +$  resource        (unit [ship=@p name=@tas])                :: Simplified version of $resource from /landscape/sur
 +$  receive-invite  ?(%only-in-radius %anyone)   
-+$  collection      [title=@t =members =selected =resource]  
++$  collection      [title=@t =members =count =selected =resource]
++$  alarm           [notify=? wen=@da]            :: NEW
++$  reminders                                     :: NEW
+  $:
+     gatherings=(map id alarm)
+  ==
+::
++$  notifications                                 :: NEW
+  $:
+     new-invites=?
+     gather-date=?
+     desc=?
+     location-type=?
+     address=?
+     access-link=?
+     cancellation=?
+  ==
+::
++$  user-options                                  :: NEW
+  $:
+     see-photos=?
+  ==
+::
++$  host-options                                  :: NEW
+  $:
+     hide-guest-list=?
+     excise-comets=?
+     message-access=?(%receive-ships %rsvp)
+  ==
 ::
 ::
 +$  invitee-status
@@ -32,28 +68,36 @@
 +$  ship-invite
   $:
       =invitee-status
+      rsvp-date=@da
   ==
 ::
+:: Invite data structure
 +$  invite
   $:
      init-ship=@p
-     :: title=@t
+     title=@t                            :: NEW
+     =image                              :: NEW
      desc=@t
      receive-ships=(map @p ship-invite)
-     :: date=@da
+     =gather-date                        :: NEW
+     last-updated=@da                    :: NEW
      =location-type
+     =access-type                        :: NEW
      =position     
      =address      
-     =access-link  
+     =access-link 
+     =mars-link                          :: NEW
+     =earth-link                         :: NEW
      =radius       
      max-accepted=@ud
-     accepted-count=@ud      
+     accepted-count=@ud
+     =host-options                       :: NEW      
      =host-status
   ==
 ::
 :: State structures
 +$  invites  (map id invite)
-+$  settings
++$  settings                         :: User settings
   $: 
      =position
      =radius
@@ -61,6 +105,9 @@
      collections=(map id collection)
      =banned                        
      =receive-invite
+     =user-options                         :: NEW
+     =reminders                            :: NEW
+     =notifications                        :: NEW
   ==
 ::
 :: Gall actions

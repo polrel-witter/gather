@@ -68,13 +68,15 @@
 |%
 +$  versioned-state
   $%  state-0
+      state-1
   ==
 +$  state-0  [%0 =invites =settings]
++$  state-1  [%1 =invites =settings]
 +$  card  card:agent:gall
 --
 ::
 %-  agent:dbug
-=|  state-0
+=|  state-1
 =*  state  -
 ^-  agent:gall
 =<
@@ -102,9 +104,13 @@
 ++  on-save  !>(state)
 ::
 ++  on-load  
-  |=  old-vase=vase
+  |=  old-state=vase
   ^-  (quip card _this)
-  [~ this(state !<(state-0 old-vase))]
+  =/  old  !<(versioned-state old-state)
+  ?-  -.old
+    %1  `this(state old)
+    %0  `this(state 1+[invites.old settings.old])  :: TODO update transition function once new state is solidified
+  ==
 ::
 ++  on-poke
   |=  [=mark =vase]
