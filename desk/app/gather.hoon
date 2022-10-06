@@ -855,7 +855,7 @@
   |=  [=wire =sign:agent:gall]
   ^-  (quip card _this)
   ?.  ?=([@ @ @ ~] wire)
-    ?.  ?=([@ @ ~] wire)                      :: TODO clean up so %gather, %settings, and %hark wire are the same structure
+    ?.  ?=([@ @ ~] wire)                      :: TODO this is a mess; clean up so %gather, %settings, and %hark wire are the same structure
       ?+   wire  ~&([dap.bol %strange-wire wire] [~ this])
           [%gather ~]          
         ?+   -.sign  (on-agent:def wire sign)
