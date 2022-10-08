@@ -5,7 +5,7 @@ import Location from '../shared/Location';
 import Collection from "./Collection"
 import { useStore } from '../../data/store';
 import { DisclosureButton, DisclosureBox, Row, Text, Box, Button, StatelessTextArea, StatelessTextInput, StatelessRadioButtonField, RadioButton, Menu, MenuButton, Icon, MenuList, MenuItem} from "@tlon/indigo-react";
-import { fetchPendingInvites, fetchAcceptedInvites, dedup, createGroup, toggleSelect, deleteGroup} from '../../utils';
+import { fetchPendingInvites, fetchAcceptedInvites, dedup, createGroup, toggleSelect, deleteGroup, sortSelected } from '../../utils';
 import * as Nominatim from 'nominatim-browser';
 // import {Geolookup} from 'react-geolookup';
 import { useAlert } from 'react-alert'
@@ -193,7 +193,7 @@ const Draft = () => {
 					      <Icon position='center' icon="Info" data-tip='Ships can be searched above, groups are pulled from your social graph, & collections are made by you.'/>
 					</Text>
 					<ReactTooltip />
-			{ collections !== undefined && collections.length !== 0 && collections.map(collection =>
+			{ collections !== undefined && collections.length !== 0 && collections.sort(sortSelected).map(collection =>
 				<Box
 					display='flex'
 					alignItems='center'

@@ -21,6 +21,8 @@ const AppSwitch = () => {
 		sAll();
   }, []);
 
+	console.log(allState);
+
 	if(Object.keys(allState.settings).length === 0)
 		return (
 			<Text>Loading...may take a minute, your groups are being pulled in.</Text>
@@ -49,13 +51,15 @@ class App extends Component {
 	  constructor(props) {
     super(props);
 
-	//	window.urbit = new Urbit("http://localhost:8080","","linmer-hodtev-nidhex-worted");
-	//	window.urbit.ship = 'difhut-mogsel-pontus-fadpun';
+		window.urbit = new Urbit("http://localhost:8080","","linmer-hodtev-nidhex-worted");
+		window.urbit.ship = 'difhut-mogsel-pontus-fadpun';
+		// window.urbit = new Urbit("http://localhost:8081","","fittyv-nactex-topdep-nordes");
+		// window.urbit.ship = 'sarfur-pinber-pontus-fadpun';
 		// window.urbit = new Urbit("http://localhost:8080","","magsub-micsev-bacmug-moldex");
 		// window.urbit.ship = 'dev';
 
-		   window.urbit = new Urbit("");
-		   window.urbit.ship = window.ship;
+		   // window.urbit = new Urbit("");
+		   // window.urbit.ship = window.ship;
 
 		window.urbit.onOpen = () => this.setState({conn: "ok"});
     window.urbit.onRetry = () => this.setState({conn: "try"});

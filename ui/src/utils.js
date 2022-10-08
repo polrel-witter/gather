@@ -268,3 +268,16 @@ export const scryGroup = (str) => {
 	console.log(result);
 	return result;
 }
+
+export const sortSelected = (a,b) => {
+	console.log(a);
+	console.log('---------------');
+	if ( a.collection.selected === true  && b.collection.selected === true)
+		return 0;
+	if ( a.collection.selected === true  && b.collection.selected === false)
+		return -1;
+	if ( a.collection.selected === false && b.collection.selected === true)
+		return 1;
+	if ( a.collection.selected === false && b.collection.selected === false)
+		return 0;
+}

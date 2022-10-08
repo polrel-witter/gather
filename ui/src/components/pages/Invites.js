@@ -1,7 +1,7 @@
 import React, { Component, useState } from 'react';
 import { useStore } from '../../data/store';
 import { Text, Box, Button } from "@tlon/indigo-react";
-import { filterDistantInvites, fetchMyInvites, fetchReceivedShips, fetchMyReceivedShip } from '../../utils';
+import { filterDistantInvites, fetchMyInvites, fetchReceivedShips, fetchMyReceivedShip, sortSelected } from '../../utils';
 import FocusedInvite from './FocusedInvite';
 import { getDistance } from 'geolib';
 import haversine from 'haversine-distance';
@@ -295,7 +295,7 @@ const Invites = () => {
 			return (
 				<Box>
 					{/* <Text>All</Text> */}
-				<Invite invites={filterDistantInvites(all, settings)}/>
+					<Invite invites={filterDistantInvites(all, settings)}/>
 				</Box>
 			);
 		break;
