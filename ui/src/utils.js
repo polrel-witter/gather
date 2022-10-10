@@ -15,22 +15,13 @@ export const properPosition = (position) => {
 export const filterDistantInvites = (invites, settings) => {
 	console.log('============')
 	return invites.filter( invite => {
-		console.log(haversine(
-		{ latitude: invite.invite.position.lat, longitude: invite.invite.position.lon },
-		{ latitude: settings.position.lat, longitude: settings.position.lon }
-		));
-		console.log(settings.radius * 1000);
-		if(invite.invite.locationType === 'virtual')
+		if( invite.invite.locationType === 'virtual' ||
+				settings.receiveInvite === 'anyone'      ||
+			  invite.invite.initShip === '~' + window.urbit.ship
+		)
 			return true;
-		if(settings.receiveInvite === 'anyone')
-			return true;
-		// console.log('=======');
-		if(settings.position.lon === '500' || settings.radius === 0)
-			return true;
-		if(invite.invite.position.lon === '500' || invite.invite.radius === 0)
-			return true;
-		const inviteNA = (invite.invite.radius === 0 || invite.invite.position.lon === '500');
-		const inviteeNA = (settings.radius === 0 || settings.position.lon === '500');
+		const inviteNA = (invite.invite.radius === '0' || invite.invite.position.lon === '500');
+		const inviteeNA = (settings.radius === '0' || settings.position.lon === '500');
 		const insideInvite = haversine(
 		{ latitude: invite.invite.position.lat, longitude: invite.invite.position.lon },
 		{ latitude: settings.position.lat, longitude: settings.position.lon }
@@ -40,12 +31,22 @@ export const filterDistantInvites = (invites, settings) => {
 							{ latitude: settings.position.lat, longitude: settings.position.lon }
 		) <= invite.invite.radius * 1000;
 		console.log('--------------')
+		console.log(invite.invite.desc);
+		console.log(haversine(
+		{ latitude: invite.invite.position.lat, longitude: invite.invite.position.lon },
+		{ latitude: settings.position.lat, longitude: settings.position.lon }
+		));
+		console.log(settings.radius * 1000);
 		console.log(insideInvite)
 		console.log(inviteNA)
 		console.log(insideInvitee)
 		console.log(inviteeNA)
+		console.log(settings.position.lon);
+		console.log(settings.radius);
 		console.log('--------------')
-		if((insideInvite || inviteNA) && (insideInvitee || inviteeNA))
+		if(inviteeNA || inviteNA)
+			return true;
+		if(insideInvite && insideInvitee)
 			return true;
 		return false;
 	})
