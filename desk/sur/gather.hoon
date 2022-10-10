@@ -11,7 +11,6 @@
 +$  mars-link       (unit @t)                     :: NEW
 +$  earth-link      (unit @t)                     :: NEW
 +$  image           (unit @t)                     :: NEW
-+$  count           (unit @ud)                    :: NEW
 +$  banned          (set @p)
 +$  members         (set @p)
 +$  msg             [who=@p what=@t]              :: NEW
@@ -22,22 +21,17 @@
 +$  location-type   ?(%virtual %meatspace) 
 +$  resource        (unit [ship=@p name=@tas])                :: Simplified version of $resource from /landscape/sur
 +$  receive-invite  ?(%only-in-radius %anyone)   
-+$  collection      [title=@t =members =count =selected =resource]
-+$  alarm           [notify=? wen=@da]            :: NEW
++$  collection      [title=@t =members =selected =resource]
++$  alarm           (unit wen=@da)                :: NEW
 +$  reminders                                     :: NEW
   $:
      gatherings=(map id alarm)
   ==
 ::
-+$  mod-notifications                                 :: NEW
++$  mod-notifications                                 :: NEW simplify
   $:
      new-invites=?
-     gather-date=?
-     desc=?
-     location-type=?
-     address=?
-     access-link=?
-     cancellation=?
+     invite-updates=?                             :: NEW includes changes to gathering date, description, location-type, address, access-link, and cancellations
   ==
 ::
 +$  user-options                                  :: NEW
