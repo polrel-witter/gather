@@ -26,7 +26,7 @@
 ::       =resource
 ::   ==
 ::   [%del-collection =id]                                :: Delete a collection
-::   [%refresh-groups ~]                                  :: Scries into all our groups and builds collections with their members included; used in conjunction with %send-invite to send to whole groups
+::   [%refresh-groups ~]                                  :: Scries into %group-store to build group collections; used in conjunction with %send-invite to send to members of a group we're a part of
 ::
 :::: Options to edit a %sent invite
 ::   [%del-receive-ship =id del-ships=(list @p)]          :: Delete ships from an invite that's already been sent to them
@@ -85,8 +85,7 @@
     hc    ~(. +> bol)
 ++  on-init
   ^-  (quip card _this)
-  :-  :~  (~(watch-our pass:io /gather) %gather /local/all)   :: TODO probably don't need this
-          (~(poke pass:io /(scot %p our.bol)/[%settings]) [our.bol %gather] gather-action+!>(`action`[%refresh-groups ~]))   
+  :-  :~  (~(poke pass:io /(scot %p our.bol)/[%settings]) [our.bol %gather] gather-action+!>(`action`[%refresh-groups ~]))   
       ==
   %=  this
     settings  :*
