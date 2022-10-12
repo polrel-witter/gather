@@ -20,16 +20,23 @@ export const filterDistantInvites = (invites, settings) => {
 			  invite.invite.initShip === '~' + window.urbit.ship
 		)
 			return true;
+
+		if ( invite.invite.position.lon === '500' ||
+				 settings.position.lon === '500' )
+			return true;
+
 		const inviteNA = (invite.invite.radius === '0' || invite.invite.position.lon === '500');
 		const inviteeNA = (settings.radius === '0' || settings.position.lon === '500');
-		const insideInvite = haversine(
-		{ latitude: invite.invite.position.lat, longitude: invite.invite.position.lon },
-		{ latitude: settings.position.lat, longitude: settings.position.lon }
-		) <= settings.radius * 1000;
-		const insideInvitee = haversine(
+		const isInviteInside = haversine(
+			{ latitude: invite.invite.position.lat, longitude: invite.invite.position.lon },
+			{ latitude: settings.position.lat, longitude: settings.position.lon }
+			) <= settings.radius * 1000;
+		const isInviteeInside = haversine(
 							{ latitude: invite.invite.position.lat, longitude: invite.invite.position.lon },
 							{ latitude: settings.position.lat, longitude: settings.position.lon }
 		) <= invite.invite.radius * 1000;
+
+
 		console.log('--------------')
 		console.log(invite.invite.desc);
 		console.log(haversine(
@@ -37,18 +44,18 @@ export const filterDistantInvites = (invites, settings) => {
 		{ latitude: settings.position.lat, longitude: settings.position.lon }
 		));
 		console.log(settings.radius * 1000);
-		console.log(insideInvite)
+		console.log(isInviteInside)
 		console.log(inviteNA)
-		console.log(insideInvitee)
+		console.log(isInviteeInside)
 		console.log(inviteeNA)
 		console.log(settings.position.lon);
 		console.log(settings.radius);
 		console.log('--------------')
-		if(inviteeNA || inviteNA)
-			return true;
-		if(insideInvite && insideInvitee)
-			return true;
-		return false;
+
+		if ((!isInviteInside && settings.radius !== '0') || 
+			  (!isInviteeInside && invite.invite.radius !== '0')) 
+			return false;
+		return true;
 	})
 }
 
