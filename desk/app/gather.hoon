@@ -70,9 +70,10 @@
   $%  state-0
       state-1
   ==
-+$  state-0  [%0 =invites =settings]
++$  state-0  [%0 =invites-0 =settings-0]
 +$  state-1  [%1 =invites =settings]
 +$  card  card:agent:gall
+::
 --
 ::
 %-  agent:dbug
@@ -87,30 +88,79 @@
     hc    ~(. +> bol)
 ++  on-init
   ^-  (quip card _this)
-  :-  :~  (~(watch-our pass:io /gather) %gather /local/all)   :: TODO probably don't need this
-          (~(poke pass:io /(scot %p our.bol)/[%settings]) [our.bol %gather] gather-action+!>(`action`[%refresh-groups ~]))   
+  :-  :~  (~(poke pass:io /(scot %p our.bol)/[%settings]) [our.bol %gather] gather-action+!>(`action`[%refresh-groups ~]))   
       ==
   %=  this
     settings  :*
-                [.500 .500] 
-                *radius
-                *address
-                *(map id collection)
-                *banned
-                %anyone
-              ==
-  ==
+                 [.500 .500] 
+                 *radius
+                 *address
+                 *(map id collection)
+                 *banned
+                 %anyone
+                 *reminders
+                 *notifications
+  ==          ==
 :: 
 ++  on-save  !>(state)
 ::
 ++  on-load  
   |=  old-state=vase
-  ^-  (quip card _this)
+  |^  ^-  (quip card _this)
   =/  old  !<(versioned-state old-state)
   ?-  -.old
     %1  `this(state old)
-    %0  `this(state 1+[invites.old settings.old])  :: TODO update transition function once new state is solidified
+    %0  `this(state (from-0-to-1 old))     
   ==
+  ++  from-0-to-1
+    |=  state-0
+    ^-  state-1
+    =+  old-invites=+<:state-0
+    =+  old-settings=+>:state-0 
+    =/  new-invites=invites 
+      %-  (run by old-invites)
+      |=  i=invite-0
+      ^-  invite
+      =/  rs=(map @p ship-invite)
+        %-  (run by receive-ships.i)
+        |=  is=[invitee-status]
+        ^-  ship-invite
+        :-  -:is  [~]
+      :*
+         init-ship.i       
+         *title.invite
+         *image            
+         desc.i
+         rs
+         *date
+         [~]               
+         location-type.i
+         *access           
+         position.i
+         address.i         
+         access-link.i
+         *mars-link        
+         *earth-link
+         radius.i          
+         max-accepted.i
+         accepted-count.i  
+         %.n
+         *chat.invite    
+         host-status.i
+      == 
+    =/  new-settings=settings 
+      :* 
+         position.old-settings   
+         radius.old-settings
+         address.old-settings
+         collections.old-settings
+         banned.old-settings
+         receive-invite.old-settings
+         *reminders.settings
+         *notifications.settings
+      ==       
+    [%1 new-invites new-settings]
+  --
 ::
 ++  on-poke
   |=  [=mark =vase]
@@ -317,7 +367,7 @@
                    id.act
                  |=  =invite
                  =/  sts=invitee-status
-                   +1:(need (~(get by receive-ships.invite) i.del-ships.act))
+                   -:(need (~(get by receive-ships.invite) i.del-ships.act))
                  ::
                  %=  invite
                     accepted-count  ?:  =(%accepted sts)

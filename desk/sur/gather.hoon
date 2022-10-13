@@ -8,47 +8,33 @@
 +$  selected        ?
 +$  address         @t
 +$  access-link     @t
-+$  mars-link       (unit @t)                     :: NEW
-+$  earth-link      (unit @t)                     :: NEW
-+$  image           (unit @t)                     :: NEW
++$  mars-link       (unit @t)                         :: NEW
++$  earth-link      (unit @t)                         :: NEW
++$  image           (unit @t)                         :: NEW
 +$  banned          (set @p)
 +$  members         (set @p)
-+$  msg             [who=@p what=@t]              :: NEW
-+$  msgs            (list msg)                    :: NEW
++$  msg             [who=@p what=@t]                  :: NEW
++$  msgs            (list msg)                        :: NEW
 +$  position        [lat=@rs lon=@rs]
-+$  gather-date     [begin=@da end=@da]           :: NEW
-+$  entrance        ?(%public %private)           :: NEW
++$  date            [begin=(unit @da) end=(unit @da)] :: NEW
++$  access          ?(%public %private)               :: NEW
 +$  location-type   ?(%virtual %meatspace) 
 +$  resource        (unit [ship=@p name=@tas])                :: Simplified version of $resource from /landscape/sur
 +$  receive-invite  ?(%only-in-radius %anyone)   
 +$  collection      [title=@t =members =selected =resource]
-+$  alarm           (unit wen=@da)                :: NEW
-+$  reminders                                     :: NEW
++$  alarm           (unit @da)                        :: NEW
++$  reminders                                         :: NEW
   $:
      gatherings=(map id alarm)
   ==
 ::
-+$  mod-notifications                                 :: NEW simplify
++$  notifications                                 :: NEW
   $:
      new-invites=?
      invite-updates=?                             :: NEW includes changes to gathering date, description, location-type, address, access-link, and cancellations
   ==
 ::
-+$  user-options                                  :: NEW
-  $:
-     see-photos=?
-     msg-bottle=(list [init-ship id])             :: Stores which invites user is willing to receive message threads from; all invite ids received should be stored by default
-  ==
-::
-+$  host-options                                  :: NEW
-  $:
-     hide-guest-list=?
-     excise-comets=?
-     chat-access=?(%receive-ships %rsvp)
-  ==
-::
-::
-+$  invitee-status
++$  invitee-status                                :: TODO change to guest-status
   $?  
       %accepted
       %pending
@@ -63,27 +49,21 @@
 ::
 +$  ship-invite
   $:
-      =invitee-status
-      rsvp-date=@da                     :: NEW
+      =invitee-status                    :: TODO change to guest-status
+      rsvp-date=(unit @da)               :: NEW
   ==
-::
 :: Invite data structure
-+$  shadow                              :: NEW -- Restricted information, controlled by host
-  $:
-     =init-ship
-     chat=(unit msgs)
-  ==
 +$  invite
   $:
      =init-ship                          :: TODO change to host
      title=@t                            :: NEW
      =image                              :: NEW
      desc=@t
-     receive-ships=(map @p ship-invite)  :: TODO move to $shadow bc host now has control over guest list visibility
-     =gather-date                        :: NEW
-     change-stamp=@da                    :: NEW
+     receive-ships=(map @p ship-invite)  
+     =date                               :: NEW
+     last-updated=(unit @da)             :: NEW
      =location-type
-     =entrance                           :: NEW
+     =access                             :: NEW
      =position     
      =address      
      =access-link 
@@ -92,12 +72,13 @@
      =radius       
      max-accepted=@ud
      accepted-count=@ud
-     =host-options                       :: NEW      
+     excise-comets=?                     :: NEW      
+     chat=(unit msgs)                    :: NEW 
      =host-status
   ==
 ::
 :: State structures
-+$  invites  (map id [invite shadow])    :: Expanded to include $shadow
++$  invites  (map id invite)   
 +$  settings                             :: User settings
   $: 
      =position
@@ -106,9 +87,8 @@
      collections=(map id collection)
      =banned                        
      =receive-invite
-     =user-options                         :: NEW
      =reminders                            :: NEW
-     =mod-notifications                    :: NEW
+     =notifications                        :: NEW
   ==
 ::
 :: Gall actions
@@ -120,9 +100,8 @@
      [%position =position]
      [%radius =radius]
      [%receive-invite =receive-invite]
-     [%user-options =user-options]                  :: NEW
      [%reminders =reminders]                        :: NEW
-     [%mod-notifications =mod-notifications]        :: NEW
+     [%notifications =notifications]                :: NEW
   ::
   :: Collections
      $:  %create-collection 
@@ -151,13 +130,13 @@
      [%edit-title =id title=@t]                       :: NEW
      [%edit-image =id =image]                         :: NEW
      [%edit-desc =id desc=@t]
-     [%edit-gather-date =id =gather-date]             :: NEW
-     [%edit-change-stamp =id change-stamp=@da]        :: NEW
-     [%edit-entrance =id =entrance]                   :: NEW
+     [%edit-date =id =date]                           :: NEW
+     [%edit-last-updated =id last-updated=(unit @da)] :: NEW
+     [%edit-access =id =access]                       :: NEW
      [%edit-mars-link =id =mars-link]                 :: NEW
      [%edit-earth-link =id =earth-link]               :: NEW
      [%edit-max-accepted =id qty=@ud]
-     [%edit-host-options =id =host-options]           :: NEW
+     [%edit-excise-comets =id excise-comets=?]        :: NEW
      [%edit-invite-location =id =location-type]   
      [%edit-invite-position =id =position]       
      [%edit-invite-address =id =address]          
@@ -177,8 +156,6 @@
      ==
      [%accept =id]
      [%deny =id]
-     [%messenger =id]                     :: NEW -- request chat:shadow from host
-     [%harkener =id]                      :: NEW -- ask guest to receive chat:shadow
      [%subscribe-to-invite =id]
   ::
   :: Banning
@@ -189,7 +166,37 @@
   $%
      [%init-all =invites =settings] 
      [%update-invite =id =invite]      
-     [%update-harkener =id =chat:shadow]       :: NEW -- subscribed to separately
      [%update-settings =settings]   
+  ==
+::
+::
+:: Old versions
++$  ship-invite-0
+  $:
+     =invitee-status
+  ==
++$  invite-0
+  $:
+     init-ship=@p
+     desc=@t
+     receive-ships=(map @p ship-invite-0)
+     =location-type
+     =position     
+     =address      
+     =access-link  
+     =radius       
+     max-accepted=@ud
+     accepted-count=@ud      
+     =host-status
+  ==
++$  invites-0  (map id invite-0)
++$  settings-0
+  $: 
+     =position
+     =radius
+     =address
+     collections=(map id collection)
+     =banned                        
+     =receive-invite
   ==
 --
