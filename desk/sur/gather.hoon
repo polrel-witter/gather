@@ -131,7 +131,6 @@
      [%edit-image =id =image]                         :: NEW
      [%edit-desc =id desc=@t]
      [%edit-date =id =date]                           :: NEW
-     [%edit-last-updated =id last-updated=(unit @da)] :: NEW
      [%edit-access =id =access]                       :: NEW
      [%edit-mars-link =id =mars-link]                 :: NEW
      [%edit-earth-link =id =earth-link]               :: NEW
@@ -146,13 +145,20 @@
   :: Invite communication 
      $:  %send-invite       
          send-to=(list @p)
+         title=@t
+         =image
+         desc=@t
+         =date
          =location-type       
+         =access
          =position              
          =address              
          =access-link           
+         =mars-link
+         =earth-link
          =radius                
          max-accepted=@ud
-         desc=@t 
+         excise-comets=?
      ==
      [%accept =id]
      [%deny =id]

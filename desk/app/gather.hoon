@@ -110,25 +110,25 @@
   =/  old  !<(versioned-state old-state)
   ?-  -.old
     %1  `this(state old)
-    %0  `this(state (from-0-to-1 old))     
+    %0  `this(state (jump-to-1 old))     
   ==
-  ++  from-0-to-1
-    |=  state-0
+  ++  jump-to-1
+    |=  old=state-0
     ^-  state-1
-    =+  old-invites=+<:state-0
-    =+  old-settings=+>:state-0 
-    =/  new-invites=invites 
-      %-  (run by old-invites)
+    =/  old-invites=invites-0    +<:old
+    =/  old-settings=settings-0  +>:old 
+    =/  new-invites=_invites 
+      %-  ~(run by old-invites)
       |=  i=invite-0
       ^-  invite
       =/  rs=(map @p ship-invite)
-        %-  (run by receive-ships.i)
+        %-  ~(run by receive-ships.i)
         |=  is=[invitee-status]
         ^-  ship-invite
         :-  -:is  [~]
       :*
          init-ship.i       
-         *title.invite
+         ''
          *image            
          desc.i
          rs
@@ -145,10 +145,10 @@
          max-accepted.i
          accepted-count.i  
          %.n
-         *chat.invite    
+         [~]    
          host-status.i
       == 
-    =/  new-settings=settings 
+    =/  new-settings=_settings 
       :* 
          position.old-settings   
          radius.old-settings
@@ -156,8 +156,8 @@
          collections.old-settings
          banned.old-settings
          receive-invite.old-settings
-         *reminders.settings
-         *notifications.settings
+         *reminders
+         *notifications
       ==       
     [%1 new-invites new-settings]
   --
@@ -203,6 +203,20 @@
      :_  this
      :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])  
      ==
+  ::
+       %receive-invite
+     ~|  [%failed-receive-invite-change ~]
+     ?>  =(our.bol src.bol)
+     =.  receive-invite.settings
+         receive-invite.act
+     ::  ~&  "changing receive-invite to {<receive-invite.act>}"
+     :_  this
+     :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])  
+     ==
+  ::
+       %reminders  !!
+  ::
+       %notifications  !!
   ::
        %create-collection                                               :: TODO change mentions of $resource to group-store $resource
      ~|  [%unexpected-collection-request %create-collection ~]
@@ -333,16 +347,6 @@
                                   values  t.values
                                   eny  +(eny)
      ==                       ==
-  ::
-       %receive-invite
-     ~|  [%failed-receive-invite-change ~]
-     ?>  =(our.bol src.bol)
-     =.  receive-invite.settings
-         receive-invite.act
-     ::  ~&  "changing receive-invite to {<receive-invite.act>}"
-     :_  this
-     :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])  
-     ==
   ::  
        %del-receive-ship
      ~|  [%failed-del-receive-ship ~]
@@ -417,7 +421,7 @@
                  |=  =invite
                  %=  invite
                     receive-ships  %+  ~(put by receive-ships.invite) 
-                                     i.add-ships  [%pending]
+                                     i.add-ships  [[%pending] [~]] 
                  ==
         dek  ;:  welp  dek  
                  :~  :*
@@ -428,6 +432,36 @@
              ==  ==  ==
         add-ships  t.add-ships
      == 
+  ::
+       %edit-title  !!
+  ::
+       %edit-image  !!
+  ::   
+       %edit-desc
+     ~|  [%failed-edit-desc ~]
+     ?>  =(our.bol src.bol)
+     =/  init-ship=@p  init-ship:(need (~(get by invites) id.act))
+     ?>  =(our.bol init-ship)
+     =/  =path  /(scot %p init-ship)/[%invite]/(scot %uv id.act)
+     =/  upd=invite  
+       (need (~(get by invites) id.act))
+     =.  desc.upd  desc.act
+     ::  ~&  "changing description to {<desc.act>}"
+     :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd]) ~[path /all])
+         ==
+     %=  this
+       invites  %+  ~(jab by invites)
+                  id.act
+                |=(=invite upd) 
+     ==
+  ::
+       %edit-date  !!
+  ::
+       %edit-access  !!
+  ::
+       %edit-mars-link  !!
+  ::
+       %edit-earth-link  !!
   ::   
        %edit-max-accepted
      ~|  [%failed-edit-max-accepted ~]
@@ -451,24 +485,8 @@
                   id.act
                 |=(=invite upd) 
      ==
-  ::   
-       %edit-desc
-     ~|  [%failed-edit-desc ~]
-     ?>  =(our.bol src.bol)
-     =/  init-ship=@p  init-ship:(need (~(get by invites) id.act))
-     ?>  =(our.bol init-ship)
-     =/  =path  /(scot %p init-ship)/[%invite]/(scot %uv id.act)
-     =/  upd=invite  
-       (need (~(get by invites) id.act))
-     =.  desc.upd  desc.act
-     ::  ~&  "changing description to {<desc.act>}"
-     :-  :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd]) ~[path /all])
-         ==
-     %=  this
-       invites  %+  ~(jab by invites)
-                  id.act
-                |=(=invite upd) 
-     == 
+  ::
+       %edit-excise-comets  !!
   ::
        %edit-invite-location
      ~|  [%failed-edit-invite-location ~]
@@ -668,15 +686,24 @@
      ~&  "%gather: sending invite..."
      =/  new=invite 
      :*  our.bol 
+         title.act
+         image.act
          desc.act 
          receive-ships
+         date.act
+         `now.bol
          location-type.act
+         access.act
          position.act
          address.act
          access-link.act
+         mars-link.act
+         earth-link.act
          radius.act 
          max-accepted.act 
-         0 
+         0
+         excise-comets.act
+         [~] 
          %sent
      ==
      =+  dek=*(list card:agent:gall)
@@ -751,7 +778,7 @@
      ?<  ?=([%completed] host-status)    
      ::  ~&  "{<src.bol>} has declined their invite to event id: {<id.act>}"
      =/  upd=invite  (need (~(get by invites) id.act))
-     =/  invitee-status=invitee-status  +1:(need (~(get by receive-ships.upd) src.bol))
+     =/  invitee-status=invitee-status  -:(need (~(get by receive-ships.upd) src.bol))
      =: 
          accepted-count.upd  ?:  =(%accepted invitee-status)
                                (dec accepted-count.upd)
@@ -911,16 +938,6 @@
   |=  [=wire =sign:agent:gall]
   ^-  (quip card _this)
   ?.  ?=([@ @ @ ~] wire)
-    ?.  ?=([@ @ ~] wire)                      :: TODO clean up so %gather, %settings, and %hark wire are the same structure
-      ?+   wire  ~&([dap.bol %strange-wire wire] [~ this])
-          [%gather ~]          
-        ?+   -.sign  (on-agent:def wire sign)
-            %watch-ack
-          ?~  p.sign  [~ this]
-          ~&  "%gather: frontend failed to subscribe to %gather agent."
-          [~ this]
-        ==
-      == 
     ?+   `@tas`(slav %tas +<:wire)  ~&([dap.bol %strange-wire wire] [~ this])
         %hark      
       ?+    -.sign  (on-agent:def wire sign)
