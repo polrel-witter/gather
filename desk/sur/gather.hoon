@@ -7,7 +7,7 @@
 +$  radius          @rs 
 +$  selected        ?
 +$  address         @t
-+$  access-link     @t
++$  access-link     (unit @t)                         :: Changed to unit
 +$  mars-link       (unit @t)                         :: NEW
 +$  earth-link      (unit @t)                         :: NEW
 +$  image           (unit @t)                         :: NEW
@@ -47,37 +47,53 @@
      %sent
   ==
 ::
-+$  ship-invite
++$  ship-invite                   :: Changed to unit
+  %-  unit
   $:
-      =invitee-status                    :: TODO change to guest-status
-      rsvp-date=(unit @da)               :: NEW
+     invitee-status=?(%accepted %pending)     
+     rsvp-date=(unit @da) 
   ==
+::
++$  switches
+  %-  unit
+  $:
+     receive-ships=?
+     access-link=?
+     max-accepted=?
+     accepted-count=?
+     chat=?
+     ship-invite=?
+  == 
+::
+::
 :: Invite data structure
 +$  invite
   $:
-     =init-ship                          :: TODO change to host
-     title=@t                            :: NEW
-     =image                              :: NEW
+     init-ship=@p
      desc=@t
-     receive-ships=(map @p ship-invite)  
-     =date                               :: NEW
-     last-updated=(unit @da)             :: NEW
+     receive-ships=(map @p ship-invite)   
      =location-type
-     =access                             :: NEW
      =position     
      =address      
-     =access-link 
+     =access-link  
+     =radius       
+     max-accepted=(unit @ud)            :: Changed to unit
+     accepted-count=(unit @ud)           :: Changed to unit
+     =host-status
+     title=(unit @t)                     :: NEW
+     =image                              :: NEW
+     =date                               :: NEW
+     last-updated=(unit @da)             :: NEW
+     =access                             :: NEW
      =mars-link                          :: NEW
      =earth-link                         :: NEW
-     =radius       
-     max-accepted=@ud
-     accepted-count=@ud
-     excise-comets=?                     :: NEW      
+     excise-comets=(unit ?)              :: NEW      
      chat=(unit msgs)                    :: NEW 
-     =host-status
+     =switches                           :: NEW
   ==
 ::
-:: State structures
+::
+:: Latest state structure
 +$  invites  (map id invite)   
 +$  settings                             :: User settings
   $: 
@@ -91,6 +107,7 @@
      =notifications                        :: NEW
   ==
 ::
+::
 :: Gall actions
 +$  action
   $%
@@ -100,7 +117,7 @@
      [%position =position]
      [%radius =radius]
      [%receive-invite =receive-invite]
-     [%reminders =reminders]                        :: NEW
+     [%gathering-reminder =id =alarm]                        :: NEW
      [%notifications =notifications]                :: NEW
   ::
   :: Collections
@@ -124,7 +141,8 @@
      [%cancel =id]
      [%complete =id]                              
      [%close =id]            
-     [%reopen =id]     
+     [%reopen =id]
+     [%switch =id =switches]                          :: NEW     
      [%del-receive-ship =id del-ships=(list @p)]  
      [%add-receive-ship =id add-ships=(list @p)]  
      [%edit-title =id title=@t]                       :: NEW
@@ -145,20 +163,21 @@
   :: Invite communication 
      $:  %send-invite       
          send-to=(list @p)
-         title=@t
-         =image
+         =location-type
+         =position
+         =address
+         =access-link
+         =radius 
+         max-accepted=(unit @ud)
          desc=@t
-         =date
-         =location-type       
-         =access
-         =position              
-         =address              
-         =access-link           
-         =mars-link
-         =earth-link
-         =radius                
-         max-accepted=@ud
-         excise-comets=?
+         title=(unit @t)                                :: NEW
+         =image                                         :: NEW
+         =date                                          :: NEW
+         =access                                        :: NEW
+         =mars-link                                     :: NEW
+         =earth-link                                    :: NEW
+         excise-comets=(unit ?)                         :: NEW
+         =switches                                      :: NEW
      ==
      [%accept =id]
      [%deny =id]
@@ -170,39 +189,47 @@
   ==
 +$  update
   $%
-     [%init-all =invites =settings] 
-     [%update-invite =id =invite]      
+     [%init-all =invites =settings]
+     [%update-aired =id =invite]                 :: NEW; for passing public updates to subscribers
+     [%update-covert =id =invite]                :: NEW; for passing private updates to frontend
      [%update-settings =settings]   
   ==
 ::
 ::
-:: Old versions
-+$  ship-invite-0
-  $:
-     =invitee-status
-  ==
-+$  invite-0
-  $:
-     init-ship=@p
-     desc=@t
-     receive-ships=(map @p ship-invite-0)
-     =location-type
-     =position     
-     =address      
-     =access-link  
-     =radius       
-     max-accepted=@ud
-     accepted-count=@ud      
-     =host-status
-  ==
-+$  invites-0  (map id invite-0)
-+$  settings-0
-  $: 
-     =position
-     =radius
-     =address
-     collections=(map id collection)
-     =banned                        
-     =receive-invite
-  ==
+:: Old state structures
+++  zero
+  |%
+  ::
+  +$  access-link  @t
+  ::
+  +$  ship-invite
+    $:
+       invitee-status=?(%accepted %pending)      
+    ==  
+  ::
+  +$  invite
+    $:
+       init-ship=@p
+       desc=@t
+       receive-ships=(map @p ship-invite)
+       =location-type
+       =position     
+       =address      
+       =access-link  
+       =radius       
+       max-accepted=@ud
+       accepted-count=@ud      
+       =host-status
+    ==
+  +$  invites  (map id invite)
+  +$  settings
+    $: 
+       =position
+       =radius
+       =address
+       collections=(map id collection)
+       =banned                        
+       =receive-invite
+    ==
+  --
 --

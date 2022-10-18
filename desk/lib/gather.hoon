@@ -1,8 +1,6 @@
 /-  *gather, res-sur=resource
 |%
 ::
-::
-::
 :: Remove a single ship from a list
 ++  remove-our
   |=  [ship=@p import=(list @p)]
@@ -96,7 +94,7 @@
   |-  ^-  (list id)
   ?~  ids  accepted-ids
   =+  inv=(need (~(get by invites) i.ids)) 
-  ?.  =(%accepted +1:(need (~(get by receive-ships.inv) our)))
+  ?.  =(%accepted -:(need (~(get by receive-ships.inv) our)))
      $(ids t.ids)  
   %=  $ 
     accepted-ids  (weld accepted-ids ~[i.ids])
@@ -113,11 +111,55 @@
   =|  export=(list id)
   |-  ^-  (list id)
   ?~  ids  export
-  =+  dets=(need (~(get by invites) i.ids))
-  ?.  ?&  =(init init-ship:dets)
-          (~(has by receive-ships.dets) menace) 
+  =+  detail=(need (~(get by invites) i.ids))
+  ?.  ?&  =(init init-ship:detail)
+          (~(has by receive-ships.detail) menace) 
       ==
     $(ids t.ids)
   $(export (weld export `(list id)`~[i.ids]), ids t.ids)
+::
+::
+:: Checks $switches to determine hidden info 
+++  veil 
+  |=  i=invite
+  ^-  =invite
+  =/  switch=[? ? ? ? ? ?]  (need switches.i)
+  =/  receive-ships=_receive-ships.i 
+    ?.  -:switch
+      *(map @p ship-invite) 
+    ?:  +>+>+:switch
+      receive-ships.i
+    %-  ~(run by receive-ships.i)
+      |=  si=ship-invite
+      ^-  ~
+      ~
+  =/  access-link=_access-link.i     
+    ?.  +<:switch  
+      ~
+    access-link.i
+  =/  max-accepted=_max-accepted.i    
+    ?.  +>-:switch
+      ~  
+    max-accepted.i
+  =/  accepted-count=_accepted-count.i
+    ?.  +>+<:switch
+      ~
+    accepted-count.i
+  =/  chat=_chat.i 
+    ?.  +>+>-:switch
+      ~
+    chat.i
+  :*  init-ship.i        desc.i
+      receive-ships      location-type.i
+      position.i         address.i
+      access-link        radius.i
+      max-accepted       accepted-count 
+      host-status.i      title.i
+      image.i            date.i
+      last-updated.i     access.i
+      mars-link.i        earth-link.i
+      ~                  chat
+      ~
+  ==
 --
 
