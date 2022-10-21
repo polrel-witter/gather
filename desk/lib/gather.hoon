@@ -81,10 +81,11 @@
 ++  make-receive-ships-map
   |=  send-to=(list @p)
   ^-  (map @p =ship-invite)
+  =/  si=ship-invite  `[%pending [~]]
   =|  receive-ships=(map @p =ship-invite)
   |-
   ?~  send-to  receive-ships
-  $(receive-ships (~(put by receive-ships) i.send-to *ship-invite), send-to t.send-to)
+  $(receive-ships (~(put by receive-ships) i.send-to si), send-to t.send-to)
 ::
 ::
 :: Get a list of ids we've accepted
@@ -119,47 +120,17 @@
   $(export (weld export `(list id)`~[i.ids]), ids t.ids)
 ::
 ::
-:: Checks $switches to determine hidden info 
-++  veil 
-  |=  i=invite
-  ^-  =invite
-  =/  switch=[? ? ? ? ? ?]  (need switches.i)
-  =/  receive-ships=_receive-ships.i 
-    ?.  -:switch
-      *(map @p ship-invite) 
-    ?:  +>+>+:switch
-      receive-ships.i
-    %-  ~(run by receive-ships.i)
-      |=  si=ship-invite
-      ^-  ~
-      ~
-  =/  access-link=_access-link.i     
-    ?.  +<:switch  
-      ~
-    access-link.i
-  =/  max-accepted=_max-accepted.i    
-    ?.  +>-:switch
-      ~  
-    max-accepted.i
-  =/  accepted-count=_accepted-count.i
-    ?.  +>+<:switch
-      ~
-    accepted-count.i
-  =/  chat=_chat.i 
-    ?.  +>+>-:switch
-      ~
-    chat.i
-  :*  init-ship.i        desc.i
-      receive-ships      location-type.i
-      position.i         address.i
-      access-link        radius.i
-      max-accepted       accepted-count 
-      host-status.i      title.i
-      image.i            date.i
-      last-updated.i     access.i
-      mars-link.i        earth-link.i
-      ~                  chat
-      ~
-  ==
+:: Removes ships from $receive-ships map if invitee-status=%pending 
+++  drop-pending-ships
+  |=  rs=(map @p ship-invite)
+  ^-  (map @p ship-invite)
+  =/  ships=(list @p)  ~(tap in ~(key by rs))
+  |-
+  ?~  ships  rs
+  =/  =invitee-status  
+    -:(need (~(got by rs) i.ships))
+  ?.  ?=(%pending invitee-status)
+    $(ships t.ships)
+  $(rs (~(del by rs) i.ships), ships t.ships)
 --
 

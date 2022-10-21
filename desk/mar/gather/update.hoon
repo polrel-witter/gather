@@ -33,15 +33,25 @@
       %-  pairs
       :~  ['initShip' s+(scot %p init-ship.invite)]
           ['desc' s+desc.invite]
-          ['receiveShips' (en-receive-ships receive-ships.invite)]
-          ['locationType' s+(scot %tas location-type.invite)]      :: ADDITION
-          ['invitePosition' (en-position position.invite)]         :: ADDITION
-          ['inviteAddress' s+address.invite]            :: ADDITION
-          ['accessLink' s+access-link.invite]           :: ADDITION
-          ['inviteRadius' s+(scot %rs radius.invite)]              :: ADDITION
-          ['maxAccepted' (numb max-accepted.invite)]
-          ['acceptedCount' (numb accepted-count.invite)]
+          ['receiveShips' (en-receive-ships receive-ships.invite)]    ::CHANGED to handle unit
+          ['locationType' s+(scot %tas location-type.invite)] 
+          ['invitePosition' (en-position position.invite)]   
+          ['inviteAddress' s+address.invite]           
+          ['accessLink' (en-unit-cord access-link.invite)]            ::CHANGED to handle unit
+          ['inviteRadius' s+(scot %rs radius.invite)] 
+          ['maxAccepted' (en-unit-decimal max-accepted.invite)]       ::CHANGED to handle unit
+          ['acceptedCount' (en-unit-decimal accepted-count.invite)]   ::CHANGED to handle unit
           ['hostStatus' s+(scot %tas host-status.invite)]
+          ['title' (en-unit-cord title.invite)]                       :: ADDITION
+          ['date' (en-date date.invite)]                              :: ADDITION
+          ['lastUpdated' (en-unit-date last-updated.invite)]          :: ADDITION
+          ['access' s+(scot %tas access.invite)]                      :: ADDITION
+          ['marsLink' (en-unit-cord mars-link.invite)]                :: ADDITION
+          ['earthLink' (en-unit-cord earth-link.invite)]              :: ADDITION
+          ['exciseComets' (en-unit-bool excise-comets.invite)]        :: ADDITION
+          ['chat' (en-chat chat.invite)]                              :: ADDITION
+          ['catalog' (en-catalog catalog.invite)]                     :: ADDITION
+          ['enableChat' b+enable-chat.invite]                         :: ADDITION
       ==
     ++  en-invites
       |=  =invites
@@ -63,6 +73,8 @@
           ['collections' (en-collections collections.settings)]
           ['banned' (en-banned banned.settings)] 
           ['receiveInvite' s+(scot %tas receive-invite.settings)]
+          ['reminders' (en-reminders reminders.settings)]                    :: ADDITION
+          ['notifications' (en-notifications notifications.settings)]        :: ADDITION
       ==
     ++  en-receive-ships
       |=  receive-ships=(map @p ship-invite)
@@ -72,7 +84,52 @@
       |=  [ship=@p =ship-invite]
       %-  pairs
       :~  ['ship' s+(scot %p ship)]
-          ['shipInvite' s+(scot %tas invitee-status.ship-invite)]
+          ['shipInvite' (en-ship-invite ship-invite)]      :: CHANGED to handle unit
+      ==
+    ++  en-ship-invite                                     :: ADDITION
+      |=  =ship-invite
+      ^-  ^json
+      ?~  ship-invite  s+'~'
+      =/  d-unit=[?(%accepted %pending) (unit @da)] 
+        (need ship-invite)
+      %-  pairs
+      :~  ['inviteeStatus' s+(scot %tas -:d-unit)]
+          ['rsvpDate' (en-unit-date +:d-unit)]
+      == 
+    ++  en-unit-date                                       :: ADDITION
+      |=  a=(unit @da)
+      ^-  ^json
+      ?~  a  s+'~'
+      =/  d-unit=@da  (need a)
+      (sect d-unit)
+      ::
+    ++  en-unit-cord                                       :: ADDITION
+      |=  a=(unit @t)
+      ^-  ^json
+      ?~  a  s+'~'
+      =/  d-unit=@t  (need a)
+      s+d-unit 
+      ::
+    ++  en-unit-decimal                                    :: ADDITION
+      |=  a=(unit @ud)
+      ^-  ^json
+      ?~  a  s+'~'
+      =/  d-unit=@ud  (need a)
+      (numb d-unit) 
+      ::
+    ++  en-unit-bool                                       :: ADDITION
+      |=  a=(unit ?)
+      ^-  ^json
+      ?~  a  s+'~'
+      =/  d-unit=?  (need a)
+      b+d-unit
+      :: 
+    ++  en-date                                            :: ADDITION
+      |=  =date
+      ^-  ^json
+      %-  pairs
+      :~  ['begin' (en-unit-date begin.date)]
+          ['end' (en-unit-date end.date)]
       ==
     ++  en-position
       |=  =position
@@ -80,6 +137,43 @@
       %-  pairs
       :~  ['lat' s+(scot %rs lat.position)]
           ['lon' s+(scot %rs lon.position)]
+      ==
+    ++  en-notifications                                :: ADDITION
+      |=  =notifications
+      ^-  ^json
+      %-  pairs
+      :~  ['newInvites' b+new-invites.notifications]
+          ['inviteUpdates' b+invite-updates.notifications]
+      ==
+    ++  en-reminders
+      |=  =reminders
+      ^-  ^json
+      %-  pairs
+      :~  ['gatherings' (en-gathering-reminder gatherings.reminders)]
+      ==
+    ++  en-gathering-reminder                           :: ADDITION
+      |=  a=(map id alarm)
+      ^-  ^json
+      :-  %a
+      %+  turn  ~(tap by a)
+      |=  [=id =alarm]
+      ^-  ^json
+      %-  pairs
+      :~  ['id' (tape (trip id))]
+          ['alarm' (en-unit-date alarm)]
+      ==
+    ++  en-catalog                                      :: ADDITION
+      |=  =catalog
+      ^-  ^json
+      ?~  catalog  s+'~'
+      =+  c=(need catalog)
+      %-  pairs
+      :~  ['inviteList' s+(scot %tas -:c)]
+          ['accessLink' s+(scot %tas +<:c)]
+          ['rsvpLimit' s+(scot %tas +>-:c)]
+          ['rsvpCount' s+(scot %tas +>+<:c)]
+          ['chat' s+(scot %tas +>+>-:c)]
+          ['rsvpList' s+(scot %tas +>+>+:c)]
       ==
     ++  en-collections
       |=  collections=(map id collection)
@@ -110,6 +204,18 @@
       :~  ['ship' s+(scot %p -:d-unit)]
           ['name' s+(scot %tas +:d-unit)]
       ==
+    ++  en-chat                                                     :: ADDITION
+      |=  chat=(unit msgs)
+      ^-  ^json
+      ?~  chat  s+'~'
+      =/  =msgs  (need chat)
+      (en-msgs msgs) 
+      ::
+    ++  en-msgs  |=(=msgs `^json`a+(turn (flop msgs) en-msg))       :: ADDITION
+    ++  en-msg                                                      :: ADDITION
+      |=  =msg
+      ^-  ^json
+      (pairs ~[['who' s+(scot %p who.msg)] ['what' s+what.msg]])
     ++  en-banned
       |=  =banned
       ^-  ^json

@@ -22,6 +22,7 @@
 +$  resource        (unit [ship=@p name=@tas])                :: Simplified version of $resource from /landscape/sur
 +$  receive-invite  ?(%only-in-radius %anyone)   
 +$  collection      [title=@t =members =selected =resource]
++$  veil-options    ?(%anyone %rsvp-only %host-only)  :: NEW
 +$  alarm           (unit @da)                        :: NEW
 +$  reminders                                         :: NEW
   $:
@@ -47,22 +48,22 @@
      %sent
   ==
 ::
-+$  ship-invite                   :: Changed to unit
++$  ship-invite                                    :: Changed to unit
   %-  unit
   $:
      invitee-status=?(%accepted %pending)     
-     rsvp-date=(unit @da) 
+     rsvp-date=(unit @da)                          :: NEW 
   ==
 ::
-+$  switches
++$  catalog                                        :: NEW
   %-  unit
   $:
-     receive-ships=?
-     access-link=?
-     max-accepted=?
-     accepted-count=?
-     chat=?
-     ship-invite=?
+     invite-list=veil-options          
+     access-link=veil-options     
+     rsvp-limit=veil-options           
+     rsvp-count=veil-options
+     chat=veil-options            
+     rsvp-list=veil-options    
   == 
 ::
 ::
@@ -89,7 +90,8 @@
      =earth-link                         :: NEW
      excise-comets=(unit ?)              :: NEW      
      chat=(unit msgs)                    :: NEW 
-     =switches                           :: NEW
+     =catalog                            :: NEW
+     enable-chat=?                       :: NEW
   ==
 ::
 ::
@@ -142,7 +144,7 @@
      [%complete =id]                              
      [%close =id]            
      [%reopen =id]
-     [%switch =id =switches]                          :: NEW     
+     [%pick =id =catalog]                             :: NEW     
      [%del-receive-ship =id del-ships=(list @p)]  
      [%add-receive-ship =id add-ships=(list @p)]  
      [%edit-title =id title=@t]                       :: NEW
@@ -153,7 +155,8 @@
      [%edit-mars-link =id =mars-link]                 :: NEW
      [%edit-earth-link =id =earth-link]               :: NEW
      [%edit-max-accepted =id qty=@ud]
-     [%edit-excise-comets =id excise-comets=?]        :: NEW
+     [%edit-chat-enable =id enable-chat=?]            :: NEW
+     [%edit-excise-comets =id excise-comets=(unit ?)]        :: NEW
      [%edit-invite-location =id =location-type]   
      [%edit-invite-position =id =position]       
      [%edit-invite-address =id =address]          
@@ -177,10 +180,12 @@
          =mars-link                                     :: NEW
          =earth-link                                    :: NEW
          excise-comets=(unit ?)                         :: NEW
-         =switches                                      :: NEW
+         =catalog                                       :: NEW
+         enable-chat=?                                  :: NEW
      ==
      [%accept =id]
      [%deny =id]
+     [%subscribe-to-rsvp =id]                           :: NEW
      [%subscribe-to-invite =id]
   ::
   :: Banning
@@ -190,8 +195,7 @@
 +$  update
   $%
      [%init-all =invites =settings]
-     [%update-aired =id =invite]                 :: NEW; for passing public updates to subscribers
-     [%update-covert =id =invite]                :: NEW; for passing private updates to frontend
+     [%update-invite =id =invite]       
      [%update-settings =settings]   
   ==
 ::
