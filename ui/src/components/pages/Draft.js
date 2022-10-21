@@ -189,7 +189,7 @@ const Draft = () => {
 					py={2}
 				>
 					<Text>
-					      Select ships, groups, or collections to invite. Note: currently, invite and rsvp lists are visible to all ships included in the invite. A feature to optionally hide these list will be available at the conclusion of milestone 2.
+					      Select ships, groups, or collections to invite. Note: currently, invite and rsvp lists are visible to all ships included in the invite. A feature to optionally hide these will be available at the conclusion of milestone 2.
 					      <Icon position='center' icon="Info" data-tip='Ships can be searched above, groups are pulled from your social graph, & collections are made by you.'/>
 					</Text>
 					<ReactTooltip />
