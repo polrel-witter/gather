@@ -22,7 +22,7 @@
 +$  resource        (unit [ship=@p name=@tas])                :: Simplified version of $resource from /landscape/sur
 +$  receive-invite  ?(%only-in-radius %anyone)   
 +$  collection      [title=@t =members =selected =resource]
-+$  veil-options    ?(%anyone %rsvp-only %host-only)  :: NEW
++$  veils           ?(%anyone %rsvp-only %host-only)  :: NEW
 +$  alarm           (unit @da)                        :: NEW
 +$  reminders                                         :: NEW
   $:
@@ -58,12 +58,12 @@
 +$  catalog                                        :: NEW
   %-  unit
   $:
-     invite-list=veil-options          
-     access-link=veil-options     
-     rsvp-limit=veil-options           
-     rsvp-count=veil-options
-     chat=veil-options            
-     rsvp-list=veil-options    
+     invite-list=veils          
+     access-link=veils     
+     rsvp-limit=veils           
+     rsvp-count=veils
+     chat=veils            
+     rsvp-list=veils    
   == 
 ::
 ::
@@ -107,6 +107,7 @@
      =receive-invite
      =reminders                            :: NEW
      =notifications                        :: NEW
+     =catalog                              :: NEW
   ==
 ::
 ::
@@ -119,8 +120,9 @@
      [%position =position]
      [%radius =radius]
      [%receive-invite =receive-invite]
-     [%gathering-reminder =id =alarm]                        :: NEW
+     [%gathering-reminder =id =alarm]               :: NEW
      [%notifications =notifications]                :: NEW
+     [%catalog =catalog]                            :: NEW
   ::
   :: Collections
      $:  %create-collection 
@@ -144,24 +146,9 @@
      [%complete =id]                              
      [%close =id]            
      [%reopen =id]
-     [%pick =id =catalog]                             :: NEW     
      [%del-receive-ship =id del-ships=(list @p)]  
      [%add-receive-ship =id add-ships=(list @p)]  
-     [%edit-title =id title=@t]                       :: NEW
-     [%edit-image =id =image]                         :: NEW
-     [%edit-desc =id desc=@t]
-     [%edit-date =id =date]                           :: NEW
-     [%edit-access =id =access]                       :: NEW
-     [%edit-mars-link =id =mars-link]                 :: NEW
-     [%edit-earth-link =id =earth-link]               :: NEW
-     [%edit-max-accepted =id qty=@ud]
-     [%edit-chat-enable =id enable-chat=?]            :: NEW
-     [%edit-excise-comets =id excise-comets=(unit ?)]        :: NEW
-     [%edit-invite-location =id =location-type]   
-     [%edit-invite-position =id =position]       
-     [%edit-invite-address =id =address]          
-     [%edit-invite-access-link =id =access-link]   
-     [%edit-invite-radius =id =radius]              
+     [%edit-invite =id =invite]                        :: NEW; simplified       
   ::
   :: Invite communication 
      $:  %send-invite       

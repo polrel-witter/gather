@@ -22,6 +22,8 @@
         receive-invite+(ot ~[receive-invite+(se %tas)]) 
         gathering-reminder+(ot ~[id+so alarm+da:dejs-soft:format]) 
         notifications+de-notifications
+        catalog+(ot ~[catalog+de-catalog])
+        ::
         create-collection+de-create-collection
         edit-collection+de-collection                
         del-collection+(ot ~[id+so])
@@ -30,7 +32,6 @@
         complete+(ot ~[id+so])
         close+(ot ~[id+so])
         reopen+(ot ~[id+so])
-        pick+(ot ~[id+so catalog+de-catalog])
         del-receive-ship+(ot ~[id+so del-ships+(ar (se %p))])     
         add-receive-ship+(ot ~[id+so add-ships+(ar (se %p))])    
         edit-title+(ot ~[id+so title+so])
@@ -41,7 +42,7 @@
         edit-mars-link+(ot ~[id+so mars-link+so:dejs-soft:format])
         edit-earth-link+(ot ~[id+so earth-link+so:dejs-soft:format])
         edit-max-accepted+(ot ~[id+so qty+ni:dejs-soft:format])
-        edit-chat-enable+(ot ~[id+so enable-chat+bo])
+        edit-enable-chat+(ot ~[id+so enable-chat+bo])
         edit-excise-comets+(ot ~[id+so excise-comets+bo:dejs-soft:format])
         edit-invite-location+(ot ~[id+so location-type+(se %tas)]) 
         edit-invite-position+(ot ~[id+so position+de-position])    
