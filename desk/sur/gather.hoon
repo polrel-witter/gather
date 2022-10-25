@@ -107,7 +107,9 @@
      =receive-invite
      =reminders                            :: NEW
      =notifications                        :: NEW
+     excise-comets=(unit ?)                :: NEW
      =catalog                              :: NEW
+     enable-chat=?                         :: NEW
   ==
 ::
 ::
@@ -116,13 +118,17 @@
   $%
   ::
   :: Adjust Settings
-     [%address =address]
-     [%position =position]
-     [%radius =radius]
-     [%receive-invite =receive-invite]
-     [%gathering-reminder =id =alarm]               :: NEW
-     [%notifications =notifications]                :: NEW
-     [%catalog =catalog]                            :: NEW
+     [%gathering-reminder =id =alarm]      :: NEW
+     $:  %edit-settings                    :: NEW; combined with other edits 
+         =address
+         =position
+         =radius
+         =receive-invite
+         excise-comets=(unit ?)
+         =notifications
+         =catalog
+         enable-chat=?
+      == 
   ::
   :: Collections
      $:  %create-collection 
@@ -143,12 +149,27 @@
   ::
   :: Adjust an invite
      [%cancel =id]
-     [%complete =id]                              
-     [%close =id]            
-     [%reopen =id]
      [%del-receive-ship =id del-ships=(list @p)]  
      [%add-receive-ship =id add-ships=(list @p)]  
-     [%edit-invite =id =invite]                        :: NEW; simplified       
+     $:  %edit-invite                    :: NEW; combined with all other previous edit options       
+         =id
+         desc=@t
+         =location-type
+         =position
+         =address
+         =access-link
+         max-accepted=(unit @ud)
+         =radius
+         =host-status
+         title=(unit @t)
+         =image
+         =date
+         =access
+         =mars-link
+         =earth-link
+         excise-comets=(unit ?)
+         enable-chat=?
+      ==    
   ::
   :: Invite communication 
      $:  %send-invite       

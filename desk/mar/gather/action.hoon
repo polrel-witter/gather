@@ -16,39 +16,17 @@
     ++  action-noun
       %-  of
       :~  
-        address+(ot ~[address+so])
-        position+de-position
-        radius+(ot ~[radius+(se %rs)])
-        receive-invite+(ot ~[receive-invite+(se %tas)]) 
+        edit-settings+de-edit-settings
         gathering-reminder+(ot ~[id+so alarm+da:dejs-soft:format]) 
-        notifications+de-notifications
-        catalog+(ot ~[catalog+de-catalog])
         ::
         create-collection+de-create-collection
         edit-collection+de-collection                
         del-collection+(ot ~[id+so])
         ::
+        edit-invite+de-edit-invite
         cancel+(ot ~[id+so])
-        complete+(ot ~[id+so])
-        close+(ot ~[id+so])
-        reopen+(ot ~[id+so])
         del-receive-ship+(ot ~[id+so del-ships+(ar (se %p))])     
         add-receive-ship+(ot ~[id+so add-ships+(ar (se %p))])    
-        edit-title+(ot ~[id+so title+so])
-        edit-image+(ot ~[id+so image+so:dejs-soft:format])
-        edit-desc+(ot ~[id+so desc+so])
-        edit-date+(ot ~[id+so date+de-date])
-        edit-access+(ot ~[id+so access+(se %tas)])
-        edit-mars-link+(ot ~[id+so mars-link+so:dejs-soft:format])
-        edit-earth-link+(ot ~[id+so earth-link+so:dejs-soft:format])
-        edit-max-accepted+(ot ~[id+so qty+ni:dejs-soft:format])
-        edit-enable-chat+(ot ~[id+so enable-chat+bo])
-        edit-excise-comets+(ot ~[id+so excise-comets+bo:dejs-soft:format])
-        edit-invite-location+(ot ~[id+so location-type+(se %tas)]) 
-        edit-invite-position+(ot ~[id+so position+de-position])    
-        edit-invite-address+(ot ~[id+so address+so])   
-        edit-invite-access-link+(ot ~[id+so access-link+so]) 
-        edit-invite-radius+(ot ~[id+so radius+(se %rs)])     
         ::
         send-invite+de-send-invite
         accept+(ot ~[id+so])
@@ -101,26 +79,57 @@
           chat+so
           rsvp-list+so
       ==
+    ++  de-edit-settings
+      %-  ot
+      :~  address+so
+          position+de-position
+          radius+(se %rs)
+          receive-invite+(se %tas) 
+          notifications+de-notifications
+          excise-comets+bo:dejs-soft:format
+          catalog+de-catalog
+          enable-chat+bo
+      ==
     ++  de-send-invite
       %-  ot
       :~  send-to+(ar (se %p))
           location-type+(se %tas) 
           position+de-position    
           address+so              
-          access-link+so    
+          access-link+so:dejs-soft:format    
           radius+(se %rs)         
-          max-accepted+ni
+          max-accepted+ni:dejs-soft:format
           desc+so
           title+so:dejs-soft:format
           image+so:dejs-soft:format
           date+de-date
-          access+bo
+          access+(se %tas)
           mars-link+so:dejs-soft:format
           earth-link+so:dejs-soft:format
           excise-comets+bo:dejs-soft:format
           catalog+de-catalog
           enable-chat+bo 
-      == 
+      ==
+    ++  de-edit-invite
+      %-  ot
+      :~  id+so 
+          desc+so
+          location-type+(se %tas)
+          position+de-position
+          address+so
+          access-link+so:dejs-soft:format
+          max-accepted+ni:dejs-soft:format
+          radius+(se %rs)
+          host-status+(se %tas) 
+          title+so:dejs-soft:format
+          image+so:dejs-soft:format
+          date+de-date
+          access+(se %tas)
+          mars-link+so:dejs-soft:format
+          earth-link+so:dejs-soft:format
+          excise-comets+bo:dejs-soft:format
+          enable-chat+bo
+      ==
     --
   --
 ++  grad  %noun
