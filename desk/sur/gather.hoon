@@ -90,7 +90,7 @@
      =earth-link                         :: NEW
      excise-comets=(unit ?)              :: NEW      
      chat=(unit msgs)                    :: NEW 
-     =catalog                            :: NEW
+     =catalog                            :: NEW; pulled from settings
      enable-chat=?                       :: NEW
   ==
 ::
@@ -165,8 +165,7 @@
          =image
          =date
          =access
-         =mars-link
-         =earth-link
+         =earth-link                     :: remove?
          excise-comets=(unit ?)
          enable-chat=?
       ==    
@@ -185,16 +184,14 @@
          =image                                         :: NEW
          =date                                          :: NEW
          =access                                        :: NEW
-         =mars-link                                     :: NEW
-         =earth-link                                    :: NEW
+         =earth-link                                    :: remove?
          excise-comets=(unit ?)                         :: NEW
-         =catalog                                       :: NEW
          enable-chat=?                                  :: NEW
      ==
-     [%accept =id]
+     [%accept =id ship=(unit @p)]                       :: ADDED ship for public invite rsvping
      [%deny =id]
      [%subscribe-to-rsvp =id]                           :: NEW
-     [%subscribe-to-invite =id]
+     [%subscribe-to-invite =id ship=(unit @p)]          :: ADDED ship for public invite rsvping
   ::
   :: Banning
      [%ban =ship]

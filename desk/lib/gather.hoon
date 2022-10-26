@@ -16,6 +16,10 @@
   ~(tap in (~(dif in import) banned))
 ::
 ::
+::
+++  remove-comets  !!
+::
+::
 :: Remove duplicate ships from a list
 ++  remove-dupes
   |=  import=(list @p)

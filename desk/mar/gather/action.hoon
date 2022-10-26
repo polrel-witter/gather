@@ -29,7 +29,7 @@
         add-receive-ship+(ot ~[id+so add-ships+(ar (se %p))])    
         ::
         send-invite+de-send-invite
-        accept+(ot ~[id+so])
+        accept+(ot ~[id+so ship+(se %p)])
         deny+(ot ~[id+so])
         subscribe-to-rsvp+(ot ~[id+so])
         subscribe-to-invite+(ot ~[id+so])
@@ -104,10 +104,8 @@
           image+so:dejs-soft:format
           date+de-date
           access+(se %tas)
-          mars-link+so:dejs-soft:format
           earth-link+so:dejs-soft:format
           excise-comets+bo:dejs-soft:format
-          catalog+de-catalog
           enable-chat+bo 
       ==
     ++  de-edit-invite
@@ -125,7 +123,6 @@
           image+so:dejs-soft:format
           date+de-date
           access+(se %tas)
-          mars-link+so:dejs-soft:format
           earth-link+so:dejs-soft:format
           excise-comets+bo:dejs-soft:format
           enable-chat+bo
