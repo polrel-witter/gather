@@ -620,7 +620,7 @@
        %accept        
      ~|  [%failed-accept ~]
      ?:  =(our.bol src.bol)
-       ?.  =(ship.act ~)
+       ?.  =(ship.act ~)             :: if ~ = accepting private invite; if ship is included it's a public invite to which we're tryna sub
          =/  =ship  (need ship.act)
          ?<  =(our.bol ship)
          ?<  (~(has in banned.settings) ship)
@@ -637,26 +637,39 @@
      =/  inv=invite  (~(got by invites) id.act)
      ?>  =(our.bol init-ship.inv)
      ?>  ?=([%sent] host-status.inv)
-     ?>  (~(has by receive-ships.inv) src.bol)
      ?>  ?=(%private access.inv)
+     ?>  (~(has by receive-ships.inv) src.bol)
+     =.  inv
+       ?>  ?:  =(max-accepted.inv ~)  %.y
+           ?.  (gth +((need accepted-count.inv)) (need max-accepted.inv))  %.y
+           ~&  "%gather: max accepted count for {<(need title.inv)>} has been reached"
+           !!
+       %=  inv
+          accepted-count  (some +((need accepted-count.inv)))
+          receive-ships   %+  ~(jab by receive-ships.inv)
+                              src.bol
+                          |=  =ship-invite
+                          ^-  _ship-invite
+                          `[%accepted `now.bol]
+       ==
      =/  paths=[path path]  (forge [id.act init-ship.inv])
      =+  rsv=(veil [%rsvp inv])
      =+  air=(veil [%invite inv])
-     :-  :~  :*
-               %pass  +:paths 
-               %agent  [src.bol %gather] 
-               %poke  %gather-action 
-               !>(`action`[%subscribe-to-rsvp id.act])
-             ==
-             [%give %kick ~[-:paths] `src.bol]
-             (fact:io gather-update+!>(`update`[%update-invite id.act inv]) ~[/all])
-             (fact:io gather-update+!>(`update`[%update-invite id.act rsv]) ~[+:paths])
-             (fact:io gather-update+!>(`update`[%update-invite id.act air]) ~[-:paths])
+     :_  %=  this
+            invites  %+  ~(jab by invites)
+                       id.act
+                     |=(=invite inv)
          ==
-     %=  this
-        invites  %+  ~(jab by invites)
-                   id.act
-                 |=(=invite inv)
+     :~  :*
+            %pass  +:paths
+            %agent  [src.bol %gather]
+            %poke  %gather-action
+            !>(`action`[%subscribe-to-rsvp id.act])
+         ==
+         [%give %kick ~[-:paths] `src.bol]
+         (fact:io gather-update+!>(`update`[%update-invite id.act inv]) ~[/all])
+         (fact:io gather-update+!>(`update`[%update-invite id.act rsv]) ~[+:paths])
+         (fact:io gather-update+!>(`update`[%update-invite id.act air]) ~[-:paths])
      ==
   ::
        %deny
@@ -672,23 +685,28 @@
      ?<  ?=(%completed host-status.inv)    
      =/  =invitee-status  -:(need (~(got by receive-ships.inv) src.bol))
      ?>  ?=(%accepted invitee-status)
+     =:  accepted-count.inv  (some (dec (need accepted-count.inv)))
+         receive-ships.inv   %+  ~(jab by receive-ships.inv)
+                                src.bol
+                             |=(=ship-invite ship-invite(invitee-status `[`%pending [~]]))
+     ==
      =+  rsv=(veil [%rsvp inv])
      =+  air=(veil [%invite inv])
-     :-  :~  [%give %kick ~[+:paths] `src.bol]
-             :*
-               %pass  -:paths 
-               %agent  [src.bol %gather] 
-               %poke  %gather-action 
-               !>(`action`[%subscribe-to-invite id.act [~]])
-             == 
-             (fact:io gather-update+!>(`update`[%update-invite id.act inv]) ~[/all])
-             (fact:io gather-update+!>(`update`[%update-invite id.act rsv]) ~[+:paths])
-             (fact:io gather-update+!>(`update`[%update-invite id.act air]) ~[-:paths])
+     :_  %=  this
+            invites  %+  ~(jab by invites)
+                       id.act
+                     |=(=invite inv)
          ==
-     %=  this
-        invites  %+  ~(jab by invites)
-                   id.act
-                 |=(=invite inv)
+     :~  :*
+           %pass  -:paths
+           %agent  [src.bol %gather]
+           %poke  %gather-action
+           !>(`action`[%subscribe-to-invite id.act [~]])
+         ==
+        [%give %kick ~[+:paths] `src.bol]
+        (fact:io gather-update+!>(`update`[%update-invite id.act inv]) ~[/all])
+        (fact:io gather-update+!>(`update`[%update-invite id.act rsv]) ~[+:paths])
+        (fact:io gather-update+!>(`update`[%update-invite id.act air]) ~[-:paths])
      ==
   ::
        %subscribe-to-rsvp    
@@ -1037,46 +1055,24 @@
     =/  inv=invite  (~(got by invites) id)
     ?>  =(our.bol init-ship.inv)
     ?>  ?=(%sent host-status.inv)  
-    ?<  (~(has in banned.settings) src.bol) 
-    ?:  ?=(%private access.inv)
-      =/  =invitee-status
-        -:(need (~(got by receive-ships.inv) src.bol))
-      ?.  ?=(%pending invitee-status)
-        !! 
-      =.  accepted-count.inv  (some (dec (need accepted-count.inv)))
-      =/  air=invite  (veil [%invite inv])
-      :-  :~  (fact:io gather-update+!>(`update`[%update-invite id air]) ~[path])
-          ==
-      %=  this
-         invites  %+  ~(jab by invites)
-                    id
-                  |=(=invite inv)
-      ==
-    =:  accepted-count.inv  ?.  (~(has by receive-ships.inv) src.bol)
-                              accepted-count.inv
-                            =/  =invitee-status
-                              -:(need (~(got by receive-ships.inv) src.bol))
-                            ?.  ?=(%accepted invitee-status)
-                              accepted-count.inv
-                            (some (dec (need accepted-count.inv)))
-    ::
-        receive-ships.inv   ?.  (~(has by receive-ships.inv) src.bol)
-                              %+  ~(put by receive-ships.inv) 
-                                 src.bol  `[%pending [~]] 
-                            %+  ~(jab by receive-ships.inv)
-                                 src.bol
-                              |=  =ship-invite 
-                              ^-  _ship-invite
-                              `[%pending [~]]
-    ==
+    ?<  (~(has in banned.settings) src.bol)
+    =.  inv
+      ?.  (~(has by receive-ships.inv) src.bol)
+        ?>  ?=(%public access.inv)
+        %+  ~(put by receive-ships.inv)
+          src.bol `[%pending [~]]
+        ::
+      =/  =invitee-status  -:(need (~(got by receive-ships.inv) src.bol))
+      ?>  ?=(%pending invitee-status)
+      inv
     =/  air=invite  (veil [%invite inv])
-    :-  :~  (fact:io gather-update+!>(`update`[%update-invite id air]) ~[path])
+    :_  %=  this
+           invites  %+  ~(jab by invites)
+                      id
+                    |=(=invite inv)
         ==
-    %=  this
-       invites  %+  ~(jab by invites)
-                   id
-                 |=(=invite inv)
-    ==           
+    :~  (fact:io gather-update+!>(`update`[%update-invite id air]) ~[path])
+    ==
   ::
       %rsvp  
     =/  =id  `@uv`(slav %uv i.t.t.path)
@@ -1084,48 +1080,23 @@
     =/  inv=invite  (~(got by invites) id)
     ?>  =(our.bol init-ship.inv)
     ?>  ?=(%sent host-status.inv)  
-    ?>  ^-   ?
-        ?-   access.inv
-            %public
-          ?<  (~(has in banned.settings) src.bol)  %.y
-        ::
-            %private
-          =/  =invitee-status  -:(need (~(got by receive-ships.inv) src.bol))
-          ?>  ?=(%pending invitee-status)  %.y
+    ?<  (~(has in banned.settings) src.bol)
+    =.  inv
+      ?.  (~(has by receive-ships.inv) src.bol)
+        ?>  ?=(%public access.inv)
+        %+  ~(put by receive-ships.inv)
+          src.bol `[%accepted [~]]
+      =/  =invitee-status  -:(need (~(got by receive-ships.inv) src.bol))
+      ?>  ?=(%accepted invitee-status)
+      inv
+    =/  rsv=invite  %-  veil  [%rsvp inv]
+    :_  %=  this
+           invites  %+  ~(jab by invites)
+                      id
+                    |=(=invite inv)
         ==
-     =.  inv 
-     ?>  ?:  =(max-accepted.inv ~)  %.y
-         ?.  (gth +((need accepted-count.inv)) (need max-accepted.inv))  %.y
-         ~&  "%gather: max accepted count for {<(need title.inv)>} has been reached"
-         !! 
-     %=  inv
-        accepted-count  (some +((need accepted-count.inv)))
-        receive-ships   ^-  (map @p ship-invite) 
-                        ?-   access.inv
-                            %private
-                          %+  ~(jab by receive-ships.inv)
-                            src.bol
-                          |=  =ship-invite 
-                          ^-  _ship-invite
-                          `[%accepted `now.bol] 
-                        ::   
-                            %public
-                          ?:  (~(has by receive-ships.inv) src.bol)
-                            %+  ~(jab by receive-ships.inv)
-                              src.bol
-                            |=  =ship-invite 
-                            ^-  _ship-invite
-                            `[%accepted `now.bol] 
-                          (~(put by receive-ships.inv) src.bol `[%accepted `now.bol])
-     ==                 ==
-     =/  rsv=invite  %-  veil  [%rsvp inv]
-     :-  :~  (fact:io gather-update+!>(`update`[%update-invite id rsv]) ~[path])
-         ==
-     %=  this
-        invites  %+  ~(jab by invites)
-                   id
-                 |=(=invite inv)
-     ==
+    :~  (fact:io gather-update+!>(`update`[%update-invite id rsv]) ~[path])
+    ==
   ==
 ::
 ++  on-arvo 
