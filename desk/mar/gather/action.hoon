@@ -29,14 +29,18 @@
         add-receive-ship+(ot ~[id+so add-ships+(ar (se %p))])    
         ::
         send-invite+de-send-invite
-        accept+(ot ~[id+so ship+(se %p)])
+        accept+(ot ~[id+so ship+(su ;~(pfix sig fed:ag)):dejs-soft:format])                    
         deny+(ot ~[id+so])
         subscribe-to-rsvp+(ot ~[id+so])
-        subscribe-to-invite+(ot ~[id+so])
-        ::
+        subscribe-to-invite+(ot ~[id+so ship+(su ;~(pfix sig fed:ag)):dejs-soft:format])       
+        :: 
         ban+(ot ~[ship+(se %p)])
         unban+(ot ~[ship+(se %p)])
       ==
+    ++  de-resource
+      =,  dejs-soft:format 
+      (ot ship+(su ;~(pfix sig fed:ag)) name+so ~)
+      ::
     ++  de-position
       %-  ot
       :~  lat+(se %rs)
@@ -67,9 +71,6 @@
           selected+bo
           resource+de-resource 
       ==
-    ++  de-resource
-      =,  dejs-soft:format 
-      (ot ship+(su ;~(pfix sig fed:ag)) name+so ~)
     ++  de-catalog
       =,  dejs-soft:format
       %-  ot

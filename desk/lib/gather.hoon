@@ -82,7 +82,7 @@
 ::
 ::
 :: Constructs the $receive-ships map for invites :: TODO probably can be faster using combo of ++turn and somehow pinning the [%pending] as value
-++  make-receive-ships-map
+++  blend 
   |=  send-to=(list @p)
   ^-  (map @p =ship-invite)
   =/  si=ship-invite  `[%pending [~]]
