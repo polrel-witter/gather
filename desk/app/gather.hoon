@@ -17,7 +17,7 @@
 ::
 ::
 :: Old state structures
-+$  state-0        [%0 =invites-0 =settings-0] 
++$  state-0        [%0 =invites-0 =settings-0]
 +$  ship-invite-0  ship-invite:zero
 +$  invite-0       invite:zero
 +$  invites-0      invites:zero
@@ -48,11 +48,10 @@
     %description    %location-type
     %position       %address
     %access-link    %radius
-    %max-accepted   %host-status
+    %rsvp-limit     %host-status
     %title          %image
-    %date           %access
-    %earth-link     %excise-comets  
-    %enable-chat
+    %date           %earth-link     
+    %excise-comets  %enable-chat
   ==
 ::
 --
@@ -105,22 +104,23 @@
       %-  ~(run by old-invites)
       |=  i=invite-0
       ^-  invite
-      =/  rs=(map @p ship-invite)          
+      =/  guest-list=(map @p ship-invite)          
         %-  ~(run by receive-ships.i)
-        |=  si=ship-invite-0
+        |=  a=ship-invite-0
         ^-  =ship-invite
-        `[si [~]]
+        =/  b=?(%rsvpd %pending)  (coerce-si a)
+        `[b [~]]
       :*
-         init-ship.i                 desc.i
-         rs                          location-type.i
-         position.i                  address.i
-         `access-link.i              radius.i
-         `max-accepted.i             `accepted-count.i
-         host-status.i               [~] 
-         *image                      *date
-         [~]                         *access           
-         *mars-link                  *earth-link
-         `%.n                        [~] 
+         init-ship.i                    desc.i
+         guest-list                     location-type.i
+         position.i                     address.i
+         `access-link.i                 radius.i
+         `max-accepted.i                `accepted-count.i
+         (coerce-h host-status.i)       [~] 
+         *image                         *date
+         [~]                            %private           
+         *mars-link                     *earth-link
+         `%.n                           [~] 
          `[%anyone %anyone %anyone %anyone %anyone %anyone]
          %.n
       == 
@@ -139,6 +139,17 @@
          %.y
       ==       
     [%1 new-invites new-settings]
+    ++  coerce-si
+      |=  old=?(%accepted %pending)
+      ^-  ?(%rsvpd %pending) 
+      ?.  =(%accepted old)  %pending 
+      %rsvpd
+    ++  coerce-h  
+      |=  old=?(%closed %completed %sent)
+      ^-  host-status
+      ?:  =(%closed old)  %closed
+      ?:  =(%sent old)  %open
+      %completed
   --
 ::
 ++  on-poke
@@ -329,14 +340,14 @@
                                   values  t.values
                                   eny  +(eny)
      ==                       ==
-  ::  
+  :: 
        %cancel
      ~|  [%failed-cancel ~]
      =/  inv=invite  (~(got by invites) id.act)
-     =/  paths=[path path]  (forge [id.act init-ship.inv])
+     =/  pax=[invite=path rsvp=path]  (forge [id.act host.inv])
      ?.  =(our.bol src.bol)
-       ?>  =(src.bol init-ship.inv)
-       ::  ~&  "{<init-ship.inv>} has revoked an invite"
+       ?>  =(src.bol host.inv)
+       ~&  "{<host.inv>} has revoked an invite"
        :_  this(invites (~(del by invites) id.act))
        ^-  (list card)
        :*  (fact:io gather-update+!>(`update`[%init-all invites settings]) ~[/all]) 
@@ -358,54 +369,73 @@
            =/  =cage          [%hark-action !>(action)]
            [%pass /(scot %p our.bol)/hark %agent [our.bol %hark-store] %poke cage]~ 
        ==
-     ?.  =(our.bol init-ship.inv)
-        ?<  =(our.bol init-ship.inv)
+     ?.  =(our.bol host.inv)
+        ?<  =(our.bol host.inv)
+        =/  =path  
+          ?:  -:(~(got by wex.bol) [/(scot %p host.inv)/[%invite]/(scot %uv id.act) host.inv %gather])
+             invite.pax
+          ?:  -:(~(got by wex.bol) [/(scot %p host.inv)/[%rsvp]/(scot %uv id.act) host.inv %gather])
+             rsvp.pax
+          !!
         :_  this(invites (~(del by invites) id.act))
-        :~  [%pass -:paths %agent [init-ship.inv %gather] %leave ~]
-            [%pass +:paths %agent [init-ship.inv %gather] %leave ~]
+        :~  [%pass path %agent [host.inv %gather] %leave ~]
             (fact:io gather-update+!>(`update`[%init-all invites settings]) ~[/all]) 
+            [%pass path %agent [host.inv %gather] %poke gather-action+!>(`action`[%uninvite-ships id.act [~]])]
         ==
-     ?>  =(our.bol init-ship.inv)
-     =/  receive-ships=(list @p)  
-       ~(tap in ~(key by receive-ships.inv))
+     ?>  =(our.bol host.inv)
+     =/  guest-list=(list @p)  
+       ~(tap in ~(key by guest-list.inv))
      =+  dek=*(list card)
      |-
-     ?~  receive-ships
+     ?~  guest-list
        ::  ~&  "revoking invite with id {<id.act>}"
        =.  invites  
           (~(del by invites) id.act)
-       =+  kik=[%give %kick ~[-:paths +:paths /all] ~]
+       =+  kik=[%give %kick ~[invite.pax rsvp.pax /all] ~]
        =+  fak=(fact:io gather-update+!>(`update`[%init-all invites settings]) ~[/all]) 
        :_  this  
           (snoc (into dek 0 fak) kik)
-     %=  $
+      =/  =path  =/  =invitee-status  -:(need (~(got by guest-list.inv) i.guest-list))
+                 ?:  ?=(%rsvpd invitee-status)
+                   rsvp.pax
+                 invite.pax 
+      %=  $
         dek  ;:  welp  dek  
                  :~  :*
-                       %pass  -:paths
-                       %agent  [i.receive-ships %gather]
-                       %poke  %gather-action
-                       !>(`action`[%cancel id.act])
-                     ==
-                     :*
-                       %pass  +:paths
-                       %agent  [i.receive-ships %gather]
+                       %pass  path
+                       %agent  [i.guest-list %gather]
                        %poke  %gather-action
                        !>(`action`[%cancel id.act])
              ==  ==  ==
-        receive-ships  t.receive-ships
+        guest-list  t.guest-list
      ==
   ::  
-       %del-receive-ship
-     ~|  [%failed-to-del-receive-ship ~]
+       %uninvite-ships
+     ~|  [%failed-to-uninvite-ships ~]
      =/  inv=invite  (~(got by invites) id.act) 
+     =/  pax=[invite=path rsvp=path]  (forge [id.act host.inv])
      ?.  =(our.bol src.bol)
-       ?>  =(src.bol init-ship.inv)                                       
-       ~&  "you've been uninvited from {<init-ship.inv>}'s invite"
+       ?.  =(src.bol host.inv)
+         =/  =invitee-status  -:(need (~(got by guest-list.inv) src.bol))
+         =:  guest-list.inv   (~(del by guest-list.inv) src.bol)
+             rsvp-count.inv  ?:  =(%rsvpd invitee-status)
+                                    (some (dec (need rsvp-count.inv)))
+                                 rsvp-count.inv
+         ==
+         :_  %=  this
+                invites  (~(jab by invites) id.act |=(=invite inv))
+             ==
+         =+  rsv=(veil [%rsvp inv])
+         =+  air=(veil [%invite inv])
+         :~  (fact:io gather-update+!>(`update`[%update-invite id.act inv]) ~[/all])
+             (fact:io gather-update+!>(`update`[%update-invite id.act rsv]) ~[rsvp.pax])
+             (fact:io gather-update+!>(`update`[%update-invite id.act air]) ~[invite.pax])
+         == 
+       ~&  "you've been uninvited from {<host.inv>}'s invite"
        :_  this(invites (~(del by invites) id.act))
        :~  (fact:io gather-update+!>(`update`[%init-all invites settings]) ~[/all])  
        ==
-     ?>  =(our.bol init-ship.inv)
-     =/  paths=[path path]  (forge [id.act init-ship.inv])
+     ?>  =(our.bol host.inv)
      ~&  "removing {<del-ships.act>} from invite {<id.act>}"    
      =+  dek=*(list card)
      |-
@@ -415,52 +445,50 @@
        =+  air=(veil [%invite upd])
        =/  faks=(list card)
          :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd]) ~[/all])
-             (fact:io gather-update+!>(`update`[%update-invite id.act rsv]) ~[+:paths])
-             (fact:io gather-update+!>(`update`[%update-invite id.act air]) ~[-:paths])
+             (fact:io gather-update+!>(`update`[%update-invite id.act rsv]) ~[rsvp.pax])
+             (fact:io gather-update+!>(`update`[%update-invite id.act air]) ~[invite.pax])
          == 
        [(welp faks dek) this]                           
+     =/  =path  =/  =invitee-status  -:(need (~(got by guest-list.inv) i.del-ships.act))
+                ?:  ?=(%rsvpd invitee-status)
+                  rsvp.pax
+                invite.pax 
      %=  $
         invites  %+  ~(jab by invites)
                    id.act
                  |=  =invite
-                 =/  sts=invitee-status
-                   -:(need (~(got by receive-ships.invite) i.del-ships.act))
-                 ::
+                 =/  =invitee-status
+                   -:(need (~(got by guest-list.invite) i.del-ships.act))
                  %=  invite
-                    accepted-count  ?:  =(%accepted sts)
-                                       (some (dec (need accepted-count.invite)))
-                                    accepted-count.invite
+                    rsvp-count  ?:  =(%rsvpd invitee-status)
+                                       (some (dec (need rsvp-count.invite)))
+                                    rsvp-count.invite
                                     ::
-                    receive-ships   %-  ~(del by receive-ships.invite) 
+                    guest-list   %-  ~(del by guest-list.invite) 
                                       i.del-ships.act
                  ==
         dek  ;:  welp  dek  
                  :~  :*
-                       %pass  -:paths
+                       %pass  path 
                        %agent  [i.del-ships.act %gather]
                        %poke  %gather-action
-                       !>(`action`[%del-receive-ship id.act *(list @p)])
-                     ==
-                     :*
-                       %pass  +:paths
-                       %agent  [i.del-ships.act %gather]
-                       %poke  %gather-action
-                       !>(`action`[%del-receive-ship id.act *(list @p)])
+                       !>(`action`[%uninvite-ships id.act *(list @p)])
                      ==
                      :*
                        %give  %kick
-                       ~[-:paths +:paths]
+                       ~[path]
                        `i.del-ships.act
              ==  ==  ==
         del-ships.act  t.del-ships.act
      ==
   ::  
-       %add-receive-ship
-     ~|  [%failed-add-receive-ship ~]
+       %invite-ships
+     ~|  [%failed-invite-ships ~]
      ?>  =(our.bol src.bol)
      =/  inv=invite  (~(got by invites) id.act) 
-     ?>  =(our.bol init-ship.inv)
-     =/  paths=[path path]  (forge [id.act init-ship.inv])
+     ?>  =(our.bol host.inv)
+     ?>  ?=(%private access.inv)
+     =/  pax=[invite=path rsvp=path]  (forge [id.act host.inv])
      =/  add-ships=(list @p)
        %+  remove-our  our.bol
          %-  remove-banned  
@@ -468,33 +496,45 @@
                banned.settings
            ::
      ::  ~&  "adding {<add-ships>} to invite list on invite {<id.act>}"    
-     =+  dek=*(list card)
+     =+  kiks=*(list card)
+     =+  poks=*(list card)
      |-
      ?~  add-ships
-       =+  upd=(~(got by invites) id.act)
-       =+  rsv=(veil [%rsvp upd])
-       =+  air=(veil [%invite upd])
+       =+  inv=(~(got by invites) id.act)
+       =+  rsv=(veil [%rsvp inv])
+       =+  air=(veil [%invite inv])
        =/  faks=(list card)
-         :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd]) ~[/all])
-             (fact:io gather-update+!>(`update`[%update-invite id.act rsv]) ~[+:paths])
-             (fact:io gather-update+!>(`update`[%update-invite id.act air]) ~[-:paths])
+         :~  (fact:io gather-update+!>(`update`[%update-invite id.act inv]) ~[/all])
+             (fact:io gather-update+!>(`update`[%update-invite id.act rsv]) ~[rsvp.pax])
+             (fact:io gather-update+!>(`update`[%update-invite id.act air]) ~[invite.pax])
          ==
-       [(welp faks dek) this]                            
+       [:(welp faks kiks poks) this]
+     =/  kik=card 
+       ?.  (~(has by guest-list.inv) i.add-ships)
+         *card
+       =/  kik-pax=path   
+         =/  =invitee-status  -:(need (~(got by guest-list.inv) i.add-ships))
+         ?:  ?=(%rsvpd invitee-status)
+            rsvp.pax
+         invite.pax
+       [%give %kick ~[kik-pax] `i.add-ships]
+     ~&  kik
      %=  $
         invites  %+  ~(jab by invites)
                    id.act
                  |=  =invite
                  %=  invite
-                    receive-ships  %+  ~(put by receive-ships.invite) 
-                                     i.add-ships  `[%pending [~]] 
+                    guest-list   %+  ~(put by guest-list.invite) 
+                                   i.add-ships  `[%pending [~]] 
                  ==
-        dek  ;:  welp  dek  
+        poks  ;:  welp  poks  
                  :~  :*
-                       %pass  -:paths 
+                       %pass  invite.pax 
                        %agent  [i.add-ships %gather]
                        %poke  %gather-action
-                       !>(`action`[%subscribe-to-invite id.act [~]])
+                       !>(`action`[%sub-invite id.act [~]])
              ==  ==  ==
+        kiks  :(welp kiks ~[kik])
         add-ships  t.add-ships
      == 
   ::
@@ -502,17 +542,17 @@
      ~|  [%failed-to-edit-invite ~]
      ?>  =(our.bol src.bol)
      =/  inv=invite  (~(got by invites) id.act)
-     ?>  =(our.bol init-ship.inv)
-     =/  paths=[path path]  (forge [id.act init-ship.inv])
+     ?>  =(our.bol host.inv)
+     =/  pax=[invite=path rsvp=path]  (forge [id.act host.inv])
      =/  alt=(list wut)  %-  alter-invite 
                            :*  inv                 desc.act
                                location-type.act   position.act
                                address.act         access-link.act
-                               max-accepted.act    radius.act
+                               rsvp-limit.act    radius.act
                                host-status.act     title.act
                                image.act           date.act
-                               access.act          earth-link.act     
-                               excise-comets.act   enable-chat.act
+                               earth-link.act      excise-comets.act   
+                               enable-chat.act
                            == 
      |-
      ?~  alt
@@ -525,8 +565,8 @@
         ~&  "{<(need title.inv)>} has been updated"
         :_  this
         :~  (fact:io gather-update+!>(`update`[%update-invite id.act inv]) ~[/all])
-            (fact:io gather-update+!>(`update`[%update-invite id.act rsv]) ~[+:paths])
-            (fact:io gather-update+!>(`update`[%update-invite id.act air]) ~[-:paths])
+            (fact:io gather-update+!>(`update`[%update-invite id.act rsv]) ~[rsvp.pax])
+            (fact:io gather-update+!>(`update`[%update-invite id.act air]) ~[invite.pax])
         ==
      %=  $
         invites  %+  ~(jab by invites)
@@ -544,23 +584,22 @@
                     %title           inv(title title.act)
                     %image           inv(image image.act)
                     %date            inv(date date.act)
-                    %access          inv(access access.act)
                     %earth-link      inv(earth-link earth-link.act)
                     %excise-comets   inv(excise-comets excise-comets.act)
                     %enable-chat     inv(enable-chat enable-chat.act)
-                    %max-accepted    %=  inv
-                                       max-accepted  ?.  (lte (need accepted-count.inv) (need max-accepted.act))
-                                                       ?.  =(0 (need max-accepted.act))
+                    %rsvp-limit    %=  inv
+                                       rsvp-limit  ?.  (lte (need rsvp-count.inv) (need rsvp-limit.act))
+                                                       ?.  =(0 (need rsvp-limit.act))
                                                          ~&  "%gather... fail: new RSVP limit is below the number of existing RSVPs"
                                                          !!
-                                                       max-accepted.act
-                                                     max-accepted.act
+                                                       rsvp-limit.act
+                                                     rsvp-limit.act
            ==                        == 
         alt  t.alt
      ==
   :: 
-       %send-invite
-     ~|  [%failed-send-invite ~]
+       %new-invite
+     ~|  [%failed-to-create-new-invite ~]
      ?>  =(our.bol src.bol)
      =/  =id  (scot %uv eny.bol)
      =/  =path  /(scot %p our.bol)/[%invite]/id
@@ -588,8 +627,8 @@
            juice.carton       location-type.act
            position.act       address.act
            access-link.act    radius.act
-           max-accepted.act   `0
-           %sent              title.act
+           rsvp-limit.act   `0
+           %open              title.act
            image.act          date.act
            `now.bol           access.act
            mars-link          earth-link.act
@@ -612,47 +651,40 @@
                        %pass  path
                        %agent  [i.sugar.carton %gather]
                        %poke  %gather-action
-                       !>(`action`[%subscribe-to-invite id [~]])
+                       !>(`action`[%sub-invite id [~]])
              ==  ==  ==
         sugar.carton  t.sugar.carton
      ==
   ::
-       %accept        
-     ~|  [%failed-accept ~]
-     ?:  =(our.bol src.bol)
-       ?.  =(ship.act ~)             :: if ~ = accepting private invite; if ship is included it's a public invite to which we're tryna sub
-         =/  =ship  (need ship.act)
-         ?<  =(our.bol ship)
-         ?<  (~(has in banned.settings) ship)
-         =/  =path  /(scot %p ship)/[%invite]/(scot %uv id.act)
-         :_  this
-         :~  [%pass path %agent [ship %gather] %watch path]
-         ==
-       =/  inv=invite  (~(got by invites) id.act)
-       ?<  =(our.bol init-ship.inv)
-       =/  =path  /(scot %p init-ship.inv)/[%invite]/(scot %uv id.act)
-       :_  this
-       :~  (~(poke pass:io path) [init-ship.inv %gather] gather-action+!>(`action`[%accept id.act [~]]))   
-       ==
+       %find  !!
+  ::
+       %rsvp        
+     ~|  [%failed-to-rsvp ~]
      =/  inv=invite  (~(got by invites) id.act)
-     ?>  =(our.bol init-ship.inv)
-     ?>  ?=([%sent] host-status.inv)
-     ?>  ?=(%private access.inv)
-     ?>  (~(has by receive-ships.inv) src.bol)
+     =/  pax=[invite=path rsvp=path]  (forge [id.act host.inv])
+     ?:  =(our.bol src.bol)
+       ?<  =(our.bol host.inv)
+       ~&  "%gather: sending rsvp subscription request to {<host.inv>}"
+       :_  this
+       :~  (~(poke pass:io invite.pax) [host.inv %gather] gather-action+!>(`action`[%rsvp id.act]))   
+       ==
+     ?>  =(our.bol host.inv)
+     ?>  ?=(%open host-status.inv)
+     =/  =invitee-status  -:(need (~(got by guest-list.inv) src.bol))
+     ?<  ?=(%rsvpd invitee-status)
      =.  inv
-       ?>  ?:  =(max-accepted.inv ~)  %.y
-           ?.  (gth +((need accepted-count.inv)) (need max-accepted.inv))  %.y
+       ?>  ?:  =(rsvp-limit.inv ~)  %.y
+           ?.  (gth +((need rsvp-count.inv)) (need rsvp-limit.inv))  %.y
            ~&  "%gather: max accepted count for {<(need title.inv)>} has been reached"
            !!
        %=  inv
-          accepted-count  (some +((need accepted-count.inv)))
-          receive-ships   %+  ~(jab by receive-ships.inv)
+          rsvp-count  (some +((need rsvp-count.inv)))
+          guest-list   %+  ~(jab by guest-list.inv)
                               src.bol
                           |=  =ship-invite
                           ^-  _ship-invite
-                          `[%accepted `now.bol]
+                          `[%rsvpd `now.bol]
        ==
-     =/  paths=[path path]  (forge [id.act init-ship.inv])
      =+  rsv=(veil [%rsvp inv])
      =+  air=(veil [%invite inv])
      :_  %=  this
@@ -661,34 +693,36 @@
                      |=(=invite inv)
          ==
      :~  :*
-            %pass  +:paths
+            %pass  rsvp.pax
             %agent  [src.bol %gather]
             %poke  %gather-action
-            !>(`action`[%subscribe-to-rsvp id.act])
+            !>(`action`[%sub-rsvp id.act])
          ==
-         [%give %kick ~[-:paths] `src.bol]
+         [%give %kick ~[invite.pax] `src.bol]
          (fact:io gather-update+!>(`update`[%update-invite id.act inv]) ~[/all])
-         (fact:io gather-update+!>(`update`[%update-invite id.act rsv]) ~[+:paths])
-         (fact:io gather-update+!>(`update`[%update-invite id.act air]) ~[-:paths])
+         (fact:io gather-update+!>(`update`[%update-invite id.act rsv]) ~[rsvp.pax])
+         (fact:io gather-update+!>(`update`[%update-invite id.act air]) ~[invite.pax])
      ==
   ::
-       %deny
-     ~|  [%failed-deny ~]
+       %unrsvp
+     ~|  [%failed-to-unrsvp ~]
      =/  inv=invite  (~(got by invites) id.act) 
-     =/  paths=[path path]  (forge [id.act init-ship.inv])
+     =/  pax=[invite=path rsvp=path]  (forge [id.act host.inv])
      ?:  =(our.bol src.bol)
-       ?<  =(our.bol init-ship.inv)
+       ?<  =(our.bol host.inv)
        :_  this
-       :~  (~(poke pass:io +:paths) [init-ship.inv %gather] gather-action+!>(`action`[%deny id.act]))   
+       :~  (~(poke pass:io rsvp.pax) [host.inv %gather] gather-action+!>(`action`[%unrsvp id.act]))   
        ==
-     ?>  =(our.bol init-ship.inv)
+     ?>  =(our.bol host.inv)
      ?<  ?=(%completed host-status.inv)    
-     =/  =invitee-status  -:(need (~(got by receive-ships.inv) src.bol))
-     ?>  ?=(%accepted invitee-status)
-     =:  accepted-count.inv  (some (dec (need accepted-count.inv)))
-         receive-ships.inv   %+  ~(jab by receive-ships.inv)
+     =/  =invitee-status  -:(need (~(got by guest-list.inv) src.bol))
+     ?>  ?=(%rsvpd invitee-status)
+     =:  rsvp-count.inv  (some (dec (need rsvp-count.inv)))
+         guest-list.inv   %+  ~(jab by guest-list.inv)
                                 src.bol
-                             |=(=ship-invite ship-invite(invitee-status `[`%pending [~]]))
+                             |=  =ship-invite 
+                             ^-  _ship-invite
+                             `[%pending [~]]
      ==
      =+  rsv=(veil [%rsvp inv])
      =+  air=(veil [%invite inv])
@@ -698,27 +732,30 @@
                      |=(=invite inv)
          ==
      :~  :*
-           %pass  -:paths
+           %pass  invite.pax
            %agent  [src.bol %gather]
            %poke  %gather-action
-           !>(`action`[%subscribe-to-invite id.act [~]])
+           !>(`action`[%sub-invite id.act [~]])
          ==
-        [%give %kick ~[+:paths] `src.bol]
+        [%give %kick ~[rsvp.pax] `src.bol]
         (fact:io gather-update+!>(`update`[%update-invite id.act inv]) ~[/all])
-        (fact:io gather-update+!>(`update`[%update-invite id.act rsv]) ~[+:paths])
-        (fact:io gather-update+!>(`update`[%update-invite id.act air]) ~[-:paths])
+        (fact:io gather-update+!>(`update`[%update-invite id.act rsv]) ~[rsvp.pax])
+        (fact:io gather-update+!>(`update`[%update-invite id.act air]) ~[invite.pax])
      ==
   ::
-       %subscribe-to-rsvp    
+
+       %sub-rsvp    
      ~|  [%failed-subscribe-to-rsvp ~]
      ?<  =(our.bol src.bol)
      ?<  (~(has in banned.settings) src.bol)
-     =/  =path  /(scot %p src.bol)/[%rsvp]/(scot %uv id.act)
+     =/  inv=invite  (~(got by invites) id.act) 
+     ?>  =(src.bol host.inv)
+     =/  pax=[invite=path rsvp=path]  (forge [id.act host.inv])
      :_  this
-     :~  [%pass path %agent [src.bol %gather] %watch path]
+     :~  [%pass rsvp.pax %agent [src.bol %gather] %watch rsvp.pax]
      == 
   ::
-       %subscribe-to-invite   
+       %sub-invite   
      ~|  [%failed-subscribe-to-invite ~]
      ?:  =(our.bol src.bol)
        ?<  =(ship.act ~)      
@@ -731,14 +768,14 @@
        == 
      ?:  (~(has by invites) id.act) 
        =/  inv=invite  (~(got by invites) id.act) 
-       ?>  =(src.bol init-ship.inv)
-       =/  =path  /(scot %p init-ship.inv)/[%invite]/(scot %uv id.act)
-       ~&  "%gather: successfully unrsvp'd from {<init-ship.inv>}'s invite"
+       =/  pax=[invite=path rsvp=path]  (forge [id.act host.inv])
+       ?>  =(src.bol host.inv)
+       ~&  "%gather: sending invite subscription request for existing invite from {<host.inv>}"
        :_  this
-       :~  [%pass path %agent [init-ship.inv %gather] %watch path]
+       :~  [%pass invite.pax %agent [host.inv %gather] %watch invite.pax]
        ==  
-     ~&  "%gather: received invite from {<src.bol>}, subscribing..."
      =/  =path  /(scot %p src.bol)/[%invite]/(scot %uv id.act)
+     ~&  "%gather: received new invite from {<src.bol>}, subscribing..."
      :_  this
      ^-  (list card)
      :*  [%pass path %agent [src.bol %gather] %watch path]
@@ -767,7 +804,7 @@
      ?:  (~(has in banned.settings) ship.act)
         `this
      =/  their-ids=(list id)      (id-comb [ship.act our.bol invites])
-     =/  accepted-ids=(list id)   %-  get-accepted-ids  
+     =/  rsvpd-ids=(list id)   %-  get-rsvpd-ids  
                                     :*  
                                       our.bol 
                                       invites 
@@ -782,74 +819,78 @@
      ?~  our-ids
         =:  banned.settings  (~(put in banned.settings) ship.act)
          ::
+           levs   |-
+                  ?~  their-ids  levs
+                  =/  inv=invite  (~(got by invites) i.their-ids)
+                  =/  pax=[invite=path rsvp=path]  (forge [i.their-ids host.inv])
+                  =/  =invitee-status  -:(need (~(got by guest-list.inv) our.bol))
+                  =/  =path 
+                    =/  =wire   /(scot %p host.inv)/[%invite]/(scot %uv i.their-ids)
+                    ?:  -:(~(got by wex.bol) [wire host.inv %gather])
+                       invite.pax
+                    rsvp.pax
+                 %=  $
+                    levs  ;:  welp  levs
+                             :~  :*
+                                   %pass
+                                   path 
+                                   %agent  [ship.act %gather]
+                                   %leave  ~
+                         ==  ==  ==
+                    their-ids  t.their-ids
+                 ==
+         ::
            invites  |- 
                     ?~  their-ids  invites
                     %=  $
                       invites       (~(del by invites) i.their-ids)
                       their-ids  t.their-ids  
-                    ==        
-         ::
-           levs   |-
-                  ?~  accepted-ids  levs
-                  %=  $
-                    levs  ;:  welp  levs
-                             :~  :*
-                                   %pass
-                                   /(scot %p ship.act)/[%rsvp]/(scot %uv i.accepted-ids)
-                                   %agent  [ship.act %gather]
-                                   %leave  ~
-                         ==  ==  ==
-                    accepted-ids  t.accepted-ids
-                  ==
+                    ==
          ::
            poks   |-
-                  ?~  accepted-ids  poks
+                  ?~  rsvpd-ids  poks
                   %=  $
                      poks  ;:  welp  poks
                               :~  :*
                                     %pass  
-                                    /(scot %p ship.act)/[%rsvp]/(scot %uv i.accepted-ids)
+                                    /(scot %p ship.act)/[%rsvp]/(scot %uv i.rsvpd-ids)
                                     %agent  [ship.act %gather]
                                     %poke  %gather-action
-                                    !>(`action`[%deny i.accepted-ids])
+                                    !>(`action`[%unrsvp i.rsvpd-ids])
                           ==  ==  ==
-                     accepted-ids  t.accepted-ids
+                     rsvpd-ids  t.rsvpd-ids
        ==          ==
        =+  fak=~[(fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])]  
        :_  this
            :(welp fak kiks levs poks faks)  
      ::
      =/  inv=invite  (~(got by invites) i.our-ids)
-     =/  =invitee-status  -:(need (~(got by receive-ships.inv) ship.act))
-     =:  
-         accepted-count.inv  ?:  =(%accepted invitee-status)
-                               (some (dec (need accepted-count.inv)))
-                             accepted-count.inv
+     =/  =invitee-status  -:(need (~(got by guest-list.inv) ship.act))
+     =/  pax=[invite=path rsvp=path]  (forge [i.our-ids our.bol])
+     =/  =path  ?:  ?=(%rsvpd invitee-status)
+                  rsvp.pax
+                invite.pax   
+     =:  rsvp-count.inv  ?:  =(%rsvpd invitee-status)
+                               (some (dec (need rsvp-count.inv)))
+                             rsvp-count.inv
 
-         receive-ships.inv   %-  ~(del by receive-ships.inv) 
+         guest-list.inv   %-  ~(del by guest-list.inv) 
                                ship.act
                              ==
      =+  rsv=(veil [%rsvp inv])
      =+  air=(veil [%invite inv])
-     =/  paths=[path path]  (forge [i.our-ids our.bol])
      %=  $
         poks  ;:  welp  poks
                  :~  :*
-                       %pass   -:paths
+                       %pass   path
                        %agent  [ship.act %gather]
                        %poke  %gather-action
                        !>(`action`[%cancel i.our-ids])
-                     ==
-                     :*
-                       %pass   +:paths
-                       %agent  [ship.act %gather]
-                       %poke  %gather-action
-                       !>(`action`[%cancel i.our-ids])
-             ==  ==  ==
+              ==  ==  ==
         kiks  ;:  welp  kiks  
                  :~  :* 
                        %give  %kick
-                       ~[-:paths +:paths]
+                       ~[path]
                        `ship.act
              ==  ==  ==
         invites  %+  ~(jab by invites)
@@ -865,13 +906,13 @@
                  :~  :*
                        %give
                        %fact
-                       ~[+:paths]
+                       ~[rsvp.pax]
                        gather-update+!>(`update`[%update-invite i.our-ids rsv])
                  ==  ==
                  :~  :*
                        %give
                        %fact
-                       ~[-:paths]
+                       ~[invite.pax]
                        gather-update+!>(`update`[%update-invite i.our-ids air])
              ==  ==  ==
         our-ids  t.our-ids
@@ -881,12 +922,12 @@
      ~|  [%failed-unban ~]
      ?>  =(our.bol src.bol)
      ?:  (~(has in banned.settings) ship.act)
-        ~&  "%gather: unbanning {<ship.act>}"
-        =.  banned.settings
-           (~(del in banned.settings) ship.act)
-        :_  this
-        :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])  
-        ==
+       ~&  "%gather: unbanning {<ship.act>}"
+       =.  banned.settings
+          (~(del in banned.settings) ship.act)
+       :_  this
+       :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])  
+       ==
      `this
     ==   
   -- 
@@ -936,30 +977,15 @@
           ==
         ::  ~&  "{<src.bol>} has updated their invite (id {<id.upd>})"
         =/  inv=invite  (~(got by invites) id.upd)
-        ?>  =(src.bol init-ship.inv)
- ::   |-  ^-  (list card)
- ::   =+  hrks=(list card)
- ::   =/  alt=(list wut)  (alter-invite [inv invite.upd])
- ::   ?~  alt 
- ::     :-  :(welp hrks (fact:io cage.sign ~[/all]))
+        ?>  =(src.bol host.inv)
         :_  %=  this
               invites  %+  ~(jab by invites)
                          id.upd
                        |=(=invite invite.upd)
             ==
- ::   %=  $
- ::      hrks
- ::          ?-    i.alt
- ::              %description
- ::              %location-type
- ::              %address
- ::              %access-link
         ^-  (list card)
         :*  (fact:io cage.sign ~[/all])
             ?.  invite-updates.notifications.settings  ~
- ::     =/  alt=[? (unit ?(%description %location-type %address %access-link))] 
- ::       (alter-invite [inv invite.upd])
- ::     ?.  -:alt  ~
             =/  inscript=@t 
               (crip "has made a change to {<(need title.inv)>}") 
             ?.  .^(? %gu /(scot %p our.bol)/hark-store/(scot %da now.bol))  ~
@@ -1005,7 +1031,7 @@
           ==
         ~&  "{<src.bol>} has updated their rsvp details"
         =/  inv=invite  (~(got by invites) id.upd)
-        ?>  =(src.bol init-ship.inv)
+        ?>  =(src.bol host.inv)
         :_  %=  this
               invites  %+  ~(jab by invites)
                          id.upd
@@ -1014,9 +1040,6 @@
         ^-  (list card)
         :*  (fact:io cage.sign ~[/all])
             ?.  invite-updates.notifications.settings  ~
-       ::     =/  alt=[? (unit ?(%description %location-type %address %access-link))]
-       ::       (alter-invite [inv invite.upd])
-       ::     ?.  -:alt  ~
             =/  inscript=@t 
               (crip "has made a change to {<(need title.inv)>}") 
             ?.  .^(? %gu /(scot %p our.bol)/hark-store/(scot %da now.bol))  ~
@@ -1053,18 +1076,19 @@
     =/  =id  `@uv`(slav %uv i.t.t.path)
     ?>  =(our.bol (slav %p i.path))
     =/  inv=invite  (~(got by invites) id)
-    ?>  =(our.bol init-ship.inv)
-    ?>  ?=(%sent host-status.inv)  
+    ?>  =(our.bol host.inv)
+    ?>  ?=(%open host-status.inv)  
     ?<  (~(has in banned.settings) src.bol)
-    =.  inv
-      ?.  (~(has by receive-ships.inv) src.bol)
+    =.  guest-list.inv
+      ?.  (~(has by guest-list.inv) src.bol)
         ?>  ?=(%public access.inv)
-        %+  ~(put by receive-ships.inv)
-          src.bol `[%pending [~]]
+        %+  ~(put by guest-list.inv)
+          src.bol  `[%pending [~]]
         ::
-      =/  =invitee-status  -:(need (~(got by receive-ships.inv) src.bol))
+      ?>  (~(has by guest-list.inv) src.bol)
+      =/  =invitee-status  -:(need (~(got by guest-list.inv) src.bol))
       ?>  ?=(%pending invitee-status)
-      inv
+      guest-list.inv
     =/  air=invite  (veil [%invite inv])
     :_  %=  this
            invites  %+  ~(jab by invites)
@@ -1078,18 +1102,27 @@
     =/  =id  `@uv`(slav %uv i.t.t.path)
     ?>  =(our.bol (slav %p i.path))
     =/  inv=invite  (~(got by invites) id)
-    ?>  =(our.bol init-ship.inv)
-    ?>  ?=(%sent host-status.inv)  
+    ?>  =(our.bol host.inv)
+    ?>  ?=(%open host-status.inv)  
     ?<  (~(has in banned.settings) src.bol)
     =.  inv
-      ?.  (~(has by receive-ships.inv) src.bol)
+      ?.  (~(has by guest-list.inv) src.bol)
         ?>  ?=(%public access.inv)
-        %+  ~(put by receive-ships.inv)
-          src.bol `[%accepted [~]]
-      =/  =invitee-status  -:(need (~(got by receive-ships.inv) src.bol))
-      ?>  ?=(%accepted invitee-status)
+        ?>  ?:  =(rsvp-limit.inv ~)  %.y
+            ?.  (gth +((need rsvp-count.inv)) (need rsvp-limit.inv))  %.y
+            ~&  "%gather: max accepted count for {<(need title.inv)>} has been reached"
+            !!
+        %=  inv
+           rsvp-count  (some +((need rsvp-count.inv)))
+           guest-list   %+  ~(put by guest-list.inv)
+                             src.bol  `[%rsvpd `now.bol]
+  
+        ==
+      =/  =invitee-status  -:(need (~(got by guest-list.inv) src.bol))
+      ?.  ?=(%rsvpd invitee-status)
+        !!
       inv
-    =/  rsv=invite  %-  veil  [%rsvp inv]
+    =/  rsv=invite  (veil [%rsvp inv])
     :_  %=  this
            invites  %+  ~(jab by invites)
                       id
@@ -1175,10 +1208,10 @@
 ::
 :: Creates invite & rsvp paths
 ++  forge
-  |=  [=id init-ship=@p]
+  |=  [=id host=@p]
   ^-  [path path]
-  :_  /(scot %p init-ship)/[%rsvp]/(scot %uv id)
-      /(scot %p init-ship)/[%invite]/(scot %uv id)
+  :_  /(scot %p host)/[%rsvp]/(scot %uv id)
+      /(scot %p host)/[%invite]/(scot %uv id)
 ::
 ::
 :: Builds list of what has changed in settings
@@ -1231,13 +1264,12 @@
           =position
           =address
           =access-link
-          max-accepted=(unit @ud)
+          rsvp-limit=(unit @ud)
           =radius
           =host-status
           title=(unit @t)
           =image
           =date
-          =access
           =earth-link
           excise-comets=(unit ?)
           enable-chat=?
@@ -1248,11 +1280,10 @@
        %description    %location-type
        %position       %address
        %access-link    %radius
-       %max-accepted   %host-status
+       %rsvp-limit     %host-status
        %title          %image
-       %date           %access
-       %earth-link     %excise-comets  
-       %enable-chat
+       %date           %earth-link     
+       %excise-comets  %enable-chat
     ==
   |-  ^-  (list wut)
   ?~  chk  chg
@@ -1265,12 +1296,11 @@
               %address          ?:(=(address.inv address) chg (weld chg `(list wut)`~[i.chk])) 
               %access-link      ?:(=(access-link.inv access-link) chg (weld chg `(list wut)`~[i.chk]))
               %radius           ?:(=(radius.inv radius) chg (weld chg `(list wut)`~[i.chk]))
-              %max-accepted     ?:(=(max-accepted.inv max-accepted) chg (weld chg `(list wut)`~[i.chk])) 
+              %rsvp-limit       ?:(=(rsvp-limit.inv rsvp-limit) chg (weld chg `(list wut)`~[i.chk])) 
               %host-status      ?:(=(host-status.inv host-status) chg (weld chg `(list wut)`~[i.chk])) 
               %title            ?:(=(title.inv title) chg (weld chg `(list wut)`~[i.chk])) 
               %image            ?:(=(image.inv image) chg (weld chg `(list wut)`~[i.chk])) 
               %date             ?:(=(date.inv date) chg (weld chg `(list wut)`~[i.chk])) 
-              %access           ?:(=(access.inv access) chg (weld chg `(list wut)`~[i.chk])) 
               %earth-link       ?:(=(earth-link.inv earth-link) chg (weld chg `(list wut)`~[i.chk])) 
               %excise-comets    ?:(=(excise-comets.inv excise-comets) chg (weld chg `(list wut)`~[i.chk])) 
               %enable-chat      ?:(=(enable-chat.inv enable-chat) chg (weld chg `(list wut)`~[i.chk])) 
@@ -1285,16 +1315,16 @@
   |=  [pax=?(%rsvp %invite) i=invite]
   ^-  =invite
   =/  c=catalog  catalog.i
-  :*  init-ship.i        
+  :*  host.i        
       desc.i
-      (rs-check [receive-ships.i +<:c +>+>+>:c pax]) 
+      (rs-check [guest-list.i +<:c +>+>+>:c pax]) 
       location-type.i
       position.i         
       address.i
       (al-check [access-link.i +>-:c pax])        
       radius.i
-      (ma-check [max-accepted.i +>+<:c])       
-      (ac-check [accepted-count.i +>+>-:c]) 
+      (ma-check [rsvp-limit.i +>+<:c])       
+      (ac-check [rsvp-count.i +>+>-:c]) 
       host-status.i      
       title.i
       image.i            
@@ -1323,37 +1353,37 @@
        %rsvp    chat
     ==
   ++  rs-pax-check-1
-    |=  [receive-ships=(map @p ship-invite) pax=?(%rsvp %invite)]
+    |=  [guest-list=(map @p ship-invite) pax=?(%rsvp %invite)]
     ^-  (map @p ship-invite)
     ?-    pax
         %invite  *(map @p ship-invite)
-        %rsvp    (drop-pending-ships receive-ships)
+        %rsvp    (drop-pending-ships guest-list)
     ==
   ++  rs-pax-check-2
-    |=  [receive-ships=(map @p ship-invite) pax=?(%rsvp %invite)]
+    |=  [guest-list=(map @p ship-invite) pax=?(%rsvp %invite)]
     ^-  (map @p ship-invite)
     ?-    pax
-        %rsvp    receive-ships 
+        %rsvp    guest-list 
         %invite  
-      %-  ~(run by receive-ships)
+      %-  ~(run by guest-list)
       |=  =ship-invite
       ^-  ~
       ~
     ==
   ++  ma-check
-    |=  [max-accepted=(unit @ud) ma=veils]
+    |=  [rsvp-limit=(unit @ud) ma=veils]
     ^-  (unit @ud)
     ?-    ma
         %host-only  ~
-        %anyone     max-accepted
+        %anyone     rsvp-limit
         %rsvp-only   ~|("invalid veil for rsvp-limit.catalog" !!)   
     ==
   ++  ac-check
-    |=  [accepted-count=(unit @ud) ac=veils]
+    |=  [rsvp-count=(unit @ud) ac=veils]
     ^-  (unit @ud)
     ?-    ac 
         %host-only  ~
-        %anyone     accepted-count
+        %anyone     rsvp-count
         %rsvp-only  ~|("invalid veil for rsvp-count.catalog" !!) 
     ==
   ++  al-check
@@ -1373,34 +1403,33 @@
         %host-only  ~|("invalid veil for chat.catalog" !!) 
     ==
   ++  rs-check
-    |=  $:  receive-ships=(map @p ship-invite) 
+    |=  $:  guest-list=(map @p ship-invite) 
             inv=veils 
             rsv=veils
             pax=?(%rsvp %invite)
         ==
     ^-  (map @p ship-invite)
     ?-    inv                                
-        %rsvp-only    ~|("invalid veil for invite-list.catalog" !!) 
+        %rsvp-only    ~|("invalid veil for guest-list.catalog" !!) 
       ::
         %host-only
       ?-    rsv
           %host-only  *(map @p ship-invite)
-          %anyone     (drop-pending-ships receive-ships) 
-          %rsvp-only  (rs-pax-check-1 [receive-ships pax])
+          %anyone     (drop-pending-ships guest-list) 
+          %rsvp-only  (rs-pax-check-1 [guest-list pax])
       ==
       :: 
         %anyone
       ?-    rsv
-          %anyone     receive-ships
-          %rsvp-only  (rs-pax-check-2 [receive-ships pax])
+          %anyone     guest-list
+          %rsvp-only  (rs-pax-check-2 [guest-list pax])
           %host-only 
-        %-  ~(run by receive-ships)
+        %-  ~(run by guest-list)
         |=  =ship-invite
         ^-  ~
         ~
       ==
     ==
-::
 --
 
 

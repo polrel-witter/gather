@@ -2,7 +2,7 @@
 ::
 :: Basic types
 +$  ship            @p
-+$  init-ship       @p                            :: TODO change to host
++$  host            @p                               :: CHANGED name
 +$  id              @
 +$  radius          @rs 
 +$  selected        ?
@@ -37,7 +37,7 @@
 ::
 +$  invitee-status                                :: TODO change to guest-status
   $?  
-      %accepted
+      %rsvpd                                       :: CHANGED %accepted -> %rsvpd
       %pending
   ==
 ::
@@ -45,20 +45,20 @@
   $?
      %closed
      %completed
-     %sent
+     %open                                         :: CHANGED %sent -> %open
   ==
 ::
 +$  ship-invite                                    :: Changed to unit
   %-  unit
   $:
-     invitee-status=?(%accepted %pending)     
+     invitee-status=?(%rsvpd %pending)             :: CHANGED %accepted -> %rsvpd
      rsvp-date=(unit @da)                          :: NEW 
   ==
 ::
 +$  catalog                                        :: NEW
   %-  unit
   $:
-     invite-list=veils          
+     guest-list=veils          
      access-link=veils     
      rsvp-limit=veils           
      rsvp-count=veils
@@ -70,16 +70,16 @@
 :: Invite data structure
 +$  invite
   $:
-     init-ship=@p
+     =host                                      :: CHANGED name
      desc=@t
-     receive-ships=(map @p ship-invite)   
+     guest-list=(map @p ship-invite)   
      =location-type
      =position     
      =address      
      =access-link  
      =radius       
-     max-accepted=(unit @ud)            :: Changed to unit
-     accepted-count=(unit @ud)           :: Changed to unit
+     rsvp-limit=(unit @ud)               :: Changed name & to unit
+     rsvp-count=(unit @ud)               :: Changed name & to unit
      =host-status
      title=(unit @t)                     :: NEW
      =image                              :: NEW
@@ -149,36 +149,35 @@
   ::
   :: Adjust an invite
      [%cancel =id]
-     [%del-receive-ship =id del-ships=(list @p)]  
-     [%add-receive-ship =id add-ships=(list @p)]  
-     $:  %edit-invite                    :: NEW; combined with all other previous edit options       
+     [%uninvite-ships =id del-ships=(list @p)]  :: CHANGED 
+     [%invite-ships =id add-ships=(list @p)]    :: CHANGED
+     $:  %edit-invite                        :: NEW; combined with all other previous edit options       
          =id
          desc=@t
          =location-type
          =position
          =address
          =access-link
-         max-accepted=(unit @ud)
+         rsvp-limit=(unit @ud)
          =radius
          =host-status
          title=(unit @t)
          =image
          =date
-         =access
          =earth-link                     :: remove?
          excise-comets=(unit ?)
          enable-chat=?
       ==    
   ::
   :: Invite communication 
-     $:  %send-invite       
+     $:  %new-invite                                   :: ChANGED       
          send-to=(list @p)
          =location-type
          =position
          =address
          =access-link
          =radius 
-         max-accepted=(unit @ud)
+         rsvp-limit=(unit @ud)
          desc=@t
          title=(unit @t)                                :: NEW
          =image                                         :: NEW
@@ -188,10 +187,11 @@
          excise-comets=(unit ?)                         :: NEW
          enable-chat=?                                  :: NEW
      ==
-     [%accept =id ship=(unit @p)]                       :: ADDED ship for public invite rsvping
-     [%deny =id]
-     [%subscribe-to-rsvp =id]                           :: NEW
-     [%subscribe-to-invite =id ship=(unit @p)]          :: ADDED ship for public invite rsvping
+     [%find =mars-link]                                 :: NEW; use for searching mars link
+     [%rsvp =id]                                        :: CHANGED name
+     [%unrsvp =id]                                      :: CHANGED
+     [%sub-rsvp =id]                                    :: NEW
+     [%sub-invite =id ship=(unit @p)]                   :: CHANGED & ADDED ship for public invite rsvping
   ::
   :: Banning
      [%ban =ship]
@@ -211,6 +211,12 @@
   ::
   +$  access-link  @t
   ::
+  +$  host-status
+    $?
+       %closed
+       %completed
+       %sent     
+    ==
   +$  ship-invite
     $:
        invitee-status=?(%accepted %pending)      
@@ -218,7 +224,7 @@
   ::
   +$  invite
     $:
-       init-ship=@p
+       init-ship=@p 
        desc=@t
        receive-ships=(map @p ship-invite)
        =location-type

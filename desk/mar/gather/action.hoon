@@ -25,14 +25,15 @@
         ::
         edit-invite+de-edit-invite
         cancel+(ot ~[id+so])
-        del-receive-ship+(ot ~[id+so del-ships+(ar (se %p))])     
-        add-receive-ship+(ot ~[id+so add-ships+(ar (se %p))])    
+        uninvite-ships+(ot ~[id+so del-ships+(ar (se %p))])     
+        invite-ships+(ot ~[id+so add-ships+(ar (se %p))])    
         ::
-        send-invite+de-send-invite
-        accept+(ot ~[id+so ship+(su ;~(pfix sig fed:ag)):dejs-soft:format])                    
-        deny+(ot ~[id+so])
-        subscribe-to-rsvp+(ot ~[id+so])
-        subscribe-to-invite+(ot ~[id+so ship+(su ;~(pfix sig fed:ag)):dejs-soft:format])       
+        new-invite+de-new-invite
+        find+(ot ~[mars-link+so:dejs-soft:format])
+        rsvp+(ot ~[id+so])                    
+        unrsvp+(ot ~[id+so])
+        sub-rsvp+(ot ~[id+so])
+        sub-invite+(ot ~[id+so ship+(su ;~(pfix sig fed:ag)):dejs-soft:format])       
         :: 
         ban+(ot ~[ship+(se %p)])
         unban+(ot ~[ship+(se %p)])
@@ -91,7 +92,7 @@
           catalog+de-catalog
           enable-chat+bo
       ==
-    ++  de-send-invite
+    ++  de-new-invite
       %-  ot
       :~  send-to+(ar (se %p))
           location-type+(se %tas) 
@@ -99,7 +100,7 @@
           address+so              
           access-link+so:dejs-soft:format    
           radius+(se %rs)         
-          max-accepted+ni:dejs-soft:format
+          rsvp-limit+ni:dejs-soft:format
           desc+so
           title+so:dejs-soft:format
           image+so:dejs-soft:format
@@ -117,13 +118,12 @@
           position+de-position
           address+so
           access-link+so:dejs-soft:format
-          max-accepted+ni:dejs-soft:format
+          rsvp-limit+ni:dejs-soft:format
           radius+(se %rs)
           host-status+(se %tas) 
           title+so:dejs-soft:format
           image+so:dejs-soft:format
           date+de-date
-          access+(se %tas)
           earth-link+so:dejs-soft:format
           excise-comets+bo:dejs-soft:format
           enable-chat+bo

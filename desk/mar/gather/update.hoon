@@ -31,16 +31,16 @@
       |=  =invite
       ^-  ^json
       %-  pairs
-      :~  ['initShip' s+(scot %p init-ship.invite)]
+      :~  ['initShip' s+(scot %p host.invite)]
           ['desc' s+desc.invite]
-          ['receiveShips' (en-receive-ships receive-ships.invite)]    ::CHANGED to handle unit
+          ['guestList' (en-guest-list guest-list.invite)]    ::CHANGED to handle unit
           ['locationType' s+(scot %tas location-type.invite)] 
           ['invitePosition' (en-position position.invite)]   
           ['inviteAddress' s+address.invite]           
           ['accessLink' (en-unit-cord access-link.invite)]            ::CHANGED to handle unit
           ['inviteRadius' s+(scot %rs radius.invite)] 
-          ['maxAccepted' (en-unit-decimal max-accepted.invite)]       ::CHANGED to handle unit
-          ['acceptedCount' (en-unit-decimal accepted-count.invite)]   ::CHANGED to handle unit
+          ['rsvpLimit' (en-unit-decimal rsvp-limit.invite)]       ::CHANGED name & to handle unit
+          ['rsvpCount' (en-unit-decimal rsvp-count.invite)]       ::CHANGED name & to handle unit
           ['hostStatus' s+(scot %tas host-status.invite)]
           ['title' (en-unit-cord title.invite)]                       :: ADDITION
           ['date' (en-date date.invite)]                              :: ADDITION
@@ -76,11 +76,11 @@
           ['reminders' (en-reminders reminders.settings)]                    :: ADDITION
           ['notifications' (en-notifications notifications.settings)]        :: ADDITION
       ==
-    ++  en-receive-ships
-      |=  receive-ships=(map @p ship-invite)
+    ++  en-guest-list
+      |=  guest-list=(map @p ship-invite)
       ^-  ^json
       :-  %a
-      %+  turn  ~(tap by receive-ships)
+      %+  turn  ~(tap by guest-list)
       |=  [ship=@p =ship-invite]
       %-  pairs
       :~  ['ship' s+(scot %p ship)]
@@ -90,7 +90,7 @@
       |=  =ship-invite
       ^-  ^json
       ?~  ship-invite  s+'~'
-      =/  d-unit=[?(%accepted %pending) (unit @da)] 
+      =/  d-unit=[?(%rsvpd %pending) (unit @da)] 
         (need ship-invite)
       %-  pairs
       :~  ['inviteeStatus' s+(scot %tas -:d-unit)]
