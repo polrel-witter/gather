@@ -93,7 +93,7 @@
       =/  d-unit=[?(%rsvpd %pending) (unit @da)] 
         (need ship-invite)
       %-  pairs
-      :~  ['inviteeStatus' s+(scot %tas -:d-unit)]
+      :~  ['guestStatus' s+(scot %tas -:d-unit)]
           ['rsvpDate' (en-unit-date +:d-unit)]
       == 
     ++  en-unit-date                                       :: ADDITION

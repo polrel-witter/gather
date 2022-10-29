@@ -35,7 +35,7 @@
      invite-updates=?                             :: NEW includes changes to gathering date, description, location-type, address, access-link, and cancellations
   ==
 ::
-+$  invitee-status                                :: TODO change to guest-status
++$  guest-status                                   :: TODO change to guest-status
   $?  
       %rsvpd                                       :: CHANGED %accepted -> %rsvpd
       %pending
@@ -45,13 +45,14 @@
   $?
      %closed
      %completed
+     %cancelled                                    :: NEW
      %open                                         :: CHANGED %sent -> %open
   ==
 ::
 +$  ship-invite                                    :: Changed to unit
   %-  unit
   $:
-     invitee-status=?(%rsvpd %pending)             :: CHANGED %accepted -> %rsvpd
+     =guest-status                                 :: CHANGED %accepted -> %rsvpd
      rsvp-date=(unit @da)                          :: NEW 
   ==
 ::
@@ -148,6 +149,7 @@
      [%refresh-groups ~]
   ::
   :: Adjust an invite
+     [%del-invite =id]                              :: NEW; deletes an invite locally
      [%cancel =id]
      [%uninvite-ships =id del-ships=(list @p)]  :: CHANGED 
      [%invite-ships =id add-ships=(list @p)]    :: CHANGED

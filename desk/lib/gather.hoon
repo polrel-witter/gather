@@ -124,16 +124,16 @@
   $(export (weld export `(list id)`~[i.ids]), ids t.ids)
 ::
 ::
-:: Removes ships from $guest-list map if invitee-status=%pending 
+:: Removes ships from $guest-list map if guest-status=%pending 
 ++  drop-pending-ships
   |=  rs=(map @p ship-invite)
   ^-  (map @p ship-invite)
   =/  ships=(list @p)  ~(tap in ~(key by rs))
   |-
   ?~  ships  rs
-  =/  =invitee-status  
+  =/  =guest-status  
     -:(need (~(got by rs) i.ships))
-  ?.  ?=(%pending invitee-status)
+  ?.  ?=(%pending guest-status)
     $(ships t.ships)
   $(rs (~(del by rs) i.ships), ships t.ships)
 --

@@ -24,6 +24,7 @@
         del-collection+(ot ~[id+so])
         ::
         edit-invite+de-edit-invite
+        del-invite+(ot ~[id+so])
         cancel+(ot ~[id+so])
         uninvite-ships+(ot ~[id+so del-ships+(ar (se %p))])     
         invite-ships+(ot ~[id+so add-ships+(ar (se %p))])    

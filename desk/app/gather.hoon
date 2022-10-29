@@ -340,6 +340,39 @@
                                   values  t.values
                                   eny  +(eny)
      ==                       ==
+  ::
+       %del-invite
+     ~|  [%failed-to-delete-invite ~]
+     =/  inv=invite  (~(got by invites) id.act)
+     =/  pax=[invite=path rsvp=path]  (forge [id.act host.inv])
+     ?.  =(our.bol host.inv)
+        ?<  =(our.bol host.inv)
+        =/  =path  
+          ?:  -:(~(got by wex.bol) [/(scot %p host.inv)/[%invite]/(scot %uv id.act) host.inv %gather])
+             invite.pax
+          ?:  -:(~(got by wex.bol) [/(scot %p host.inv)/[%rsvp]/(scot %uv id.act) host.inv %gather])
+             rsvp.pax
+          !!
+        =+  which-one=+<:path
+        =/  pok=card  ?.  ?=(%rsvp which-one)
+                        *card
+                      :*  %pass  path 
+                          %agent  [host.inv %gather] 
+                          %poke 
+                          gather-action+!>(`action`[%unrsvp id.act])
+                      ==
+        :_  this(invites (~(del by invites) id.act))
+        :~  pok
+            [%pass path %agent [host.inv %gather] %leave ~]
+            (fact:io gather-update+!>(`update`[%init-all invites settings]) ~[/all]) 
+        ==
+     ?>  =(our.bol host.inv)
+     ?>  ?|  ?=(%cancelled host-status.inv)
+             ?=(%completed host-status.inv)
+         ==
+     :_  this(invites (~(del by invites) id.act))
+     :~  (fact:io gather-update+!>(`update`[%init-all invites settings]) ~[/all]) 
+     ==
   :: 
        %cancel
      ~|  [%failed-cancel ~]
@@ -348,12 +381,12 @@
      ?.  =(our.bol src.bol)
        ?>  =(src.bol host.inv)
        ~&  "{<host.inv>} has revoked an invite"
-       :_  this(invites (~(del by invites) id.act))
+       :_  this
        ^-  (list card)
        :*  (fact:io gather-update+!>(`update`[%init-all invites settings]) ~[/all]) 
            ?.  invite-updates.notifications.settings  ~
            =/  inscript=@t 
-             (crip "has cancelled {<(need title.inv)>}") 
+             (crip "has revoked their invite: {<(need title.inv)>}") 
            ?.  .^(? %gu /(scot %p our.bol)/hark-store/(scot %da now.bol))  ~
            =/  =bin:hark      :*  /[dap.bol] 
                                   q.byk.bol 
@@ -369,38 +402,32 @@
            =/  =cage          [%hark-action !>(action)]
            [%pass /(scot %p our.bol)/hark %agent [our.bol %hark-store] %poke cage]~ 
        ==
-     ?.  =(our.bol host.inv)
-        ?<  =(our.bol host.inv)
-        =/  =path  
-          ?:  -:(~(got by wex.bol) [/(scot %p host.inv)/[%invite]/(scot %uv id.act) host.inv %gather])
-             invite.pax
-          ?:  -:(~(got by wex.bol) [/(scot %p host.inv)/[%rsvp]/(scot %uv id.act) host.inv %gather])
-             rsvp.pax
-          !!
-        :_  this(invites (~(del by invites) id.act))
-        :~  [%pass path %agent [host.inv %gather] %leave ~]
-            (fact:io gather-update+!>(`update`[%init-all invites settings]) ~[/all]) 
-            [%pass path %agent [host.inv %gather] %poke gather-action+!>(`action`[%uninvite-ships id.act [~]])]
-        ==
      ?>  =(our.bol host.inv)
      =/  guest-list=(list @p)  
        ~(tap in ~(key by guest-list.inv))
-     =+  dek=*(list card)
+     =+  poks=*(list card)
      |-
      ?~  guest-list
        ::  ~&  "revoking invite with id {<id.act>}"
-       =.  invites  
-          (~(del by invites) id.act)
-       =+  kik=[%give %kick ~[invite.pax rsvp.pax /all] ~]
-       =+  fak=(fact:io gather-update+!>(`update`[%init-all invites settings]) ~[/all]) 
-       :_  this  
-          (snoc (into dek 0 fak) kik)
-      =/  =path  =/  =invitee-status  -:(need (~(got by guest-list.inv) i.guest-list))
-                 ?:  ?=(%rsvpd invitee-status)
-                   rsvp.pax
-                 invite.pax 
-      %=  $
-        dek  ;:  welp  dek  
+       =.  invites  %+  ~(jab by invites)
+                      id.act
+                    |=(=invite invite(host-status %cancelled))
+       =+  kik=~[[%give %kick ~[invite.pax rsvp.pax /all] ~]]
+       =/  inv=invite  (~(got by invites) id.act)
+       =+  rsv=(veil [%rsvp inv])
+       =+  air=(veil [%invite inv])
+       =/  faks=(list card)
+         :~  (fact:io gather-update+!>(`update`[%update-invite id.act inv]) ~[/all])
+             (fact:io gather-update+!>(`update`[%update-invite id.act rsv]) ~[rsvp.pax])
+             (fact:io gather-update+!>(`update`[%update-invite id.act air]) ~[invite.pax])
+         ==
+       [:(welp poks faks kik) this]
+     =/  =path  =/  =guest-status  -:(need (~(got by guest-list.inv) i.guest-list))
+                ?:  ?=(%rsvpd guest-status)
+                  rsvp.pax
+                invite.pax 
+     %=  $
+        poks  ;:  welp  poks  
                  :~  :*
                        %pass  path
                        %agent  [i.guest-list %gather]
@@ -414,27 +441,7 @@
      ~|  [%failed-to-uninvite-ships ~]
      =/  inv=invite  (~(got by invites) id.act) 
      =/  pax=[invite=path rsvp=path]  (forge [id.act host.inv])
-     ?.  =(our.bol src.bol)
-       ?.  =(src.bol host.inv)
-         =/  =invitee-status  -:(need (~(got by guest-list.inv) src.bol))
-         =:  guest-list.inv   (~(del by guest-list.inv) src.bol)
-             rsvp-count.inv  ?:  =(%rsvpd invitee-status)
-                                    (some (dec (need rsvp-count.inv)))
-                                 rsvp-count.inv
-         ==
-         :_  %=  this
-                invites  (~(jab by invites) id.act |=(=invite inv))
-             ==
-         =+  rsv=(veil [%rsvp inv])
-         =+  air=(veil [%invite inv])
-         :~  (fact:io gather-update+!>(`update`[%update-invite id.act inv]) ~[/all])
-             (fact:io gather-update+!>(`update`[%update-invite id.act rsv]) ~[rsvp.pax])
-             (fact:io gather-update+!>(`update`[%update-invite id.act air]) ~[invite.pax])
-         == 
-       ~&  "you've been uninvited from {<host.inv>}'s invite"
-       :_  this(invites (~(del by invites) id.act))
-       :~  (fact:io gather-update+!>(`update`[%init-all invites settings]) ~[/all])  
-       ==
+     ?>  =(our.bol src.bol)
      ?>  =(our.bol host.inv)
      ~&  "removing {<del-ships.act>} from invite {<id.act>}"    
      =+  dek=*(list card)
@@ -449,18 +456,18 @@
              (fact:io gather-update+!>(`update`[%update-invite id.act air]) ~[invite.pax])
          == 
        [(welp faks dek) this]                           
-     =/  =path  =/  =invitee-status  -:(need (~(got by guest-list.inv) i.del-ships.act))
-                ?:  ?=(%rsvpd invitee-status)
+     =/  =path  =/  =guest-status  -:(need (~(got by guest-list.inv) i.del-ships.act))
+                ?:  ?=(%rsvpd guest-status)
                   rsvp.pax
                 invite.pax 
      %=  $
         invites  %+  ~(jab by invites)
                    id.act
                  |=  =invite
-                 =/  =invitee-status
+                 =/  =guest-status
                    -:(need (~(got by guest-list.invite) i.del-ships.act))
                  %=  invite
-                    rsvp-count  ?:  =(%rsvpd invitee-status)
+                    rsvp-count  ?:  =(%rsvpd guest-status)
                                        (some (dec (need rsvp-count.invite)))
                                     rsvp-count.invite
                                     ::
@@ -472,7 +479,7 @@
                        %pass  path 
                        %agent  [i.del-ships.act %gather]
                        %poke  %gather-action
-                       !>(`action`[%uninvite-ships id.act *(list @p)])
+                       !>(`action`[%cancel id.act])          :: TODO eventually make it change guest-status to something like %uninvited
                      ==
                      :*
                        %give  %kick
@@ -513,8 +520,8 @@
        ?.  (~(has by guest-list.inv) i.add-ships)
          *card
        =/  kik-pax=path   
-         =/  =invitee-status  -:(need (~(got by guest-list.inv) i.add-ships))
-         ?:  ?=(%rsvpd invitee-status)
+         =/  =guest-status  -:(need (~(got by guest-list.inv) i.add-ships))
+         ?:  ?=(%rsvpd guest-status)
             rsvp.pax
          invite.pax
        [%give %kick ~[kik-pax] `i.add-ships]
@@ -543,6 +550,10 @@
      ?>  =(our.bol src.bol)
      =/  inv=invite  (~(got by invites) id.act)
      ?>  =(our.bol host.inv)
+     ?>  ?|  ?=(%open host-status.inv)
+             ?=(%closed host-status.inv)
+         ==
+         ~|  'failed: cannot edit invite when it is either %cancelled or %completed'
      =/  pax=[invite=path rsvp=path]  (forge [id.act host.inv])
      =/  alt=(list wut)  %-  alter-invite 
                            :*  inv                 desc.act
@@ -670,8 +681,8 @@
        ==
      ?>  =(our.bol host.inv)
      ?>  ?=(%open host-status.inv)
-     =/  =invitee-status  -:(need (~(got by guest-list.inv) src.bol))
-     ?<  ?=(%rsvpd invitee-status)
+     =/  =guest-status  -:(need (~(got by guest-list.inv) src.bol))
+     ?<  ?=(%rsvpd guest-status)
      =.  inv
        ?>  ?:  =(rsvp-limit.inv ~)  %.y
            ?.  (gth +((need rsvp-count.inv)) (need rsvp-limit.inv))  %.y
@@ -715,8 +726,8 @@
        ==
      ?>  =(our.bol host.inv)
      ?<  ?=(%completed host-status.inv)    
-     =/  =invitee-status  -:(need (~(got by guest-list.inv) src.bol))
-     ?>  ?=(%rsvpd invitee-status)
+     =/  =guest-status  -:(need (~(got by guest-list.inv) src.bol))
+     ?>  ?=(%rsvpd guest-status)
      =:  rsvp-count.inv  (some (dec (need rsvp-count.inv)))
          guest-list.inv   %+  ~(jab by guest-list.inv)
                                 src.bol
@@ -770,6 +781,8 @@
        =/  inv=invite  (~(got by invites) id.act) 
        =/  pax=[invite=path rsvp=path]  (forge [id.act host.inv])
        ?>  =(src.bol host.inv)
+       ?<  %-  ~(has by wex.bol) 
+             [/(scot %p host.inv)/[%invite]/(scot %uv id.act) host.inv %gather]
        ~&  "%gather: sending invite subscription request for existing invite from {<host.inv>}"
        :_  this
        :~  [%pass invite.pax %agent [host.inv %gather] %watch invite.pax]
@@ -823,7 +836,7 @@
                   ?~  their-ids  levs
                   =/  inv=invite  (~(got by invites) i.their-ids)
                   =/  pax=[invite=path rsvp=path]  (forge [i.their-ids host.inv])
-                  =/  =invitee-status  -:(need (~(got by guest-list.inv) our.bol))
+                  =/  =guest-status  -:(need (~(got by guest-list.inv) our.bol))
                   =/  =path 
                     =/  =wire   /(scot %p host.inv)/[%invite]/(scot %uv i.their-ids)
                     ?:  -:(~(got by wex.bol) [wire host.inv %gather])
@@ -865,12 +878,12 @@
            :(welp fak kiks levs poks faks)  
      ::
      =/  inv=invite  (~(got by invites) i.our-ids)
-     =/  =invitee-status  -:(need (~(got by guest-list.inv) ship.act))
+     =/  =guest-status  -:(need (~(got by guest-list.inv) ship.act))
      =/  pax=[invite=path rsvp=path]  (forge [i.our-ids our.bol])
-     =/  =path  ?:  ?=(%rsvpd invitee-status)
+     =/  =path  ?:  ?=(%rsvpd guest-status)
                   rsvp.pax
                 invite.pax   
-     =:  rsvp-count.inv  ?:  =(%rsvpd invitee-status)
+     =:  rsvp-count.inv  ?:  =(%rsvpd guest-status)
                                (some (dec (need rsvp-count.inv)))
                              rsvp-count.inv
 
@@ -1076,25 +1089,23 @@
     =/  =id  `@uv`(slav %uv i.t.t.path)
     ?>  =(our.bol (slav %p i.path))
     =/  inv=invite  (~(got by invites) id)
-    ?>  =(our.bol host.inv)
     ?>  ?=(%open host-status.inv)  
     ?<  (~(has in banned.settings) src.bol)
     =.  guest-list.inv
-      ?.  (~(has by guest-list.inv) src.bol)
-        ?>  ?=(%public access.inv)
-        %+  ~(put by guest-list.inv)
-          src.bol  `[%pending [~]]
-        ::
+      ?:  ?=(%public access.inv)
+        ?.  (~(has by guest-list.inv) src.bol)
+          %+  ~(put by guest-list.inv)
+            src.bol  `[%pending [~]]
+        =/  =guest-status  -:(need (~(got by guest-list.inv) src.bol))
+        ?>  ?=(%pending guest-status)
+        guest-list.inv
+      ::
       ?>  (~(has by guest-list.inv) src.bol)
-      =/  =invitee-status  -:(need (~(got by guest-list.inv) src.bol))
-      ?>  ?=(%pending invitee-status)
+      =/  =guest-status  -:(need (~(got by guest-list.inv) src.bol))
+      ?>  ?=(%pending guest-status)     
       guest-list.inv
     =/  air=invite  (veil [%invite inv])
-    :_  %=  this
-           invites  %+  ~(jab by invites)
-                      id
-                    |=(=invite inv)
-        ==
+    :_  this(invites (~(jab by invites) id |=(=invite inv)))
     :~  (fact:io gather-update+!>(`update`[%update-invite id air]) ~[path])
     ==
   ::
@@ -1102,32 +1113,13 @@
     =/  =id  `@uv`(slav %uv i.t.t.path)
     ?>  =(our.bol (slav %p i.path))
     =/  inv=invite  (~(got by invites) id)
-    ?>  =(our.bol host.inv)
     ?>  ?=(%open host-status.inv)  
     ?<  (~(has in banned.settings) src.bol)
-    =.  inv
-      ?.  (~(has by guest-list.inv) src.bol)
-        ?>  ?=(%public access.inv)
-        ?>  ?:  =(rsvp-limit.inv ~)  %.y
-            ?.  (gth +((need rsvp-count.inv)) (need rsvp-limit.inv))  %.y
-            ~&  "%gather: max accepted count for {<(need title.inv)>} has been reached"
-            !!
-        %=  inv
-           rsvp-count  (some +((need rsvp-count.inv)))
-           guest-list   %+  ~(put by guest-list.inv)
-                             src.bol  `[%rsvpd `now.bol]
-  
-        ==
-      =/  =invitee-status  -:(need (~(got by guest-list.inv) src.bol))
-      ?.  ?=(%rsvpd invitee-status)
-        !!
-      inv
+    ?>  (~(has by guest-list.inv) src.bol)
+    =/  =guest-status  -:(need (~(got by guest-list.inv) src.bol))
+    ?>  ?=(%rsvpd guest-status)
     =/  rsv=invite  (veil [%rsvp inv])
-    :_  %=  this
-           invites  %+  ~(jab by invites)
-                      id
-                    |=(=invite inv)
-        ==
+    :_  this(invites (~(jab by invites) id |=(=invite inv)))
     :~  (fact:io gather-update+!>(`update`[%update-invite id rsv]) ~[path])
     ==
   ==
