@@ -352,8 +352,10 @@
              invite.pax
           ?:  -:(~(got by wex.bol) [/(scot %p host.inv)/[%rsvp]/(scot %uv id.act) host.inv %gather])
              rsvp.pax
-          !!
+          /(scot %p host.inv)/[%none]/(scot %uv id.act)
         =+  which-one=+<:path
+        ?:  ?=(%none which-one)
+           [~ this(invites (~(del by invites) id.act))]
         =/  pok=card  ?.  ?=(%rsvp which-one)
                         *card
                       :*  %pass  path 
@@ -375,7 +377,6 @@
      ==
   :: 
        %cancel
-     ~|  [%failed-cancel ~]
      =/  inv=invite  (~(got by invites) id.act)
      =/  pax=[invite=path rsvp=path]  (forge [id.act host.inv])
      ?.  =(our.bol src.bol)
