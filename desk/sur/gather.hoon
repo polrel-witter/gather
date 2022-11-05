@@ -38,6 +38,7 @@
 +$  guest-status                                   :: TODO change to guest-status
   $?  
       %rsvpd                                       :: CHANGED %accepted -> %rsvpd
+      %browsing                                    :: NEW indicating whether the invite has been searched; thus not subscribed to
       %pending
   ==
 ::

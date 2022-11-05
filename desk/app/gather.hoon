@@ -289,7 +289,7 @@
      ==
   ::
        %refresh-groups                                      :: TODO change mentions of $resource to group-store $resource
-     ~|  [%bad-groups-pull ~]
+     ~|  [%failed-to-refresh-groups ~]
      ?>  =(our.bol src.bol)
      ~&  "%gather: refreshing groups"
      =|  r=resource:res-sur
@@ -560,7 +560,7 @@
                            :*  inv                 desc.act
                                location-type.act   position.act
                                address.act         access-link.act
-                               rsvp-limit.act    radius.act
+                               rsvp-limit.act      radius.act
                                host-status.act     title.act
                                image.act           date.act
                                earth-link.act      excise-comets.act   
@@ -668,7 +668,23 @@
         sugar.carton  t.sugar.carton
      ==
   ::
-       %find  !!
+       %find
+     ~|  [%find-fail ~]
+     ?>  =(our.bol src.bol)
+     ?<  =(mars-link.act ~) 
+     =/  meat=tape  (trip (need mars-link.act))
+     =/  index=(list @ud)  (fand ['/']~ meat)
+     ?:  (gth 2 (lent index))  !!
+     =/  =ship  %+  slav  %p 
+                   %-  crip 
+                     (swag [0 -:index] meat)
+     ?>  =('gather' (crip (swag [+(-:index) 6] meat)))
+     =/  =id  `@uv`(scan +>:(oust [0 +(+<:index)] meat) viz:ag)     
+     ~&  "[{<ship>} {<id>}]"
+     [~ this]
+
+:: send the scry
+     
   ::
        %rsvp        
      ~|  [%failed-to-rsvp ~]
@@ -1311,14 +1327,14 @@
   =/  c=catalog  catalog.i
   :*  host.i        
       desc.i
-      (rs-check [guest-list.i +<:c +>+>+>:c pax]) 
+      (gl-check [guest-list.i +<:c +>+>+>:c pax access.i]) 
       location-type.i
       position.i         
       address.i
       (al-check [access-link.i +>-:c pax])        
       radius.i
-      (ma-check [rsvp-limit.i +>+<:c])       
-      (ac-check [rsvp-count.i +>+>-:c]) 
+      (rl-check [rsvp-limit.i +>+<:c])       
+      (rc-check [rsvp-count.i +>+>-:c]) 
       host-status.i      
       title.i
       image.i            
@@ -1346,14 +1362,14 @@
        %invite  ~
        %rsvp    chat
     ==
-  ++  rs-pax-check-1
+  ++  gl-pax-check-1
     |=  [guest-list=(map @p ship-invite) pax=?(%rsvp %invite)]
     ^-  (map @p ship-invite)
     ?-    pax
         %invite  *(map @p ship-invite)
         %rsvp    (drop-pending-ships guest-list)
     ==
-  ++  rs-pax-check-2
+  ++  gl-pax-check-2
     |=  [guest-list=(map @p ship-invite) pax=?(%rsvp %invite)]
     ^-  (map @p ship-invite)
     ?-    pax
@@ -1364,59 +1380,70 @@
       ^-  ~
       ~
     ==
-  ++  ma-check
-    |=  [rsvp-limit=(unit @ud) ma=veils]
+  ++  gl-access-check
+    |=  [guest-list=(map @p ship-invite) =access]
+    ^-  (map @p ship-invite)
+    ?-   access
+        %private  guest-list
+        %public   (drop-pending-ships guest-list)
+    ==
+  ++  rl-check
+    |=  [rsvp-limit=(unit @ud) =veils]
     ^-  (unit @ud)
-    ?-    ma
+    ?-    veils
         %host-only  ~
         %anyone     rsvp-limit
         %rsvp-only   ~|("invalid veil for rsvp-limit.catalog" !!)   
     ==
-  ++  ac-check
-    |=  [rsvp-count=(unit @ud) ac=veils]
+  ++  rc-check
+    |=  [rsvp-count=(unit @ud) =veils]
     ^-  (unit @ud)
-    ?-    ac 
+    ?-    veils 
         %host-only  ~
         %anyone     rsvp-count
         %rsvp-only  ~|("invalid veil for rsvp-count.catalog" !!) 
     ==
   ++  al-check
-    |=  [=access-link al=veils pax=?(%rsvp %invite)]
+    |=  [=access-link =veils pax=?(%rsvp %invite)]
     ^-  (unit @t)
-    ?-    al  
+    ?-    veils
         %anyone     access-link
         %rsvp-only  (al-pax-check [access-link pax])
         %host-only  ~|("invalid veil for access-link.catalog" !!) 
     ==   
   ++  ch-check
-    |=  [chat=(unit msgs) ch=veils pax=?(%rsvp %invite)]
+    |=  [chat=(unit msgs) =veils pax=?(%rsvp %invite)]
     ^-  (unit msgs)
-    ?-    ch                       
+    ?-    veils                       
         %anyone     chat  
         %rsvp-only  (ch-pax-check [chat pax]) 
         %host-only  ~|("invalid veil for chat.catalog" !!) 
     ==
-  ++  rs-check
+  ++  gl-check
     |=  $:  guest-list=(map @p ship-invite) 
-            inv=veils 
+            gst=veils 
             rsv=veils
             pax=?(%rsvp %invite)
+            =access
         ==
     ^-  (map @p ship-invite)
-    ?-    inv                                
+    ?-    gst                                
         %rsvp-only    ~|("invalid veil for guest-list.catalog" !!) 
       ::
         %host-only
       ?-    rsv
           %host-only  *(map @p ship-invite)
           %anyone     (drop-pending-ships guest-list) 
-          %rsvp-only  (rs-pax-check-1 [guest-list pax])
+          %rsvp-only  (gl-pax-check-1 [guest-list pax])
       ==
       :: 
         %anyone
       ?-    rsv
-          %anyone     guest-list
-          %rsvp-only  (rs-pax-check-2 [guest-list pax])
+          %anyone     (gl-access-check [guest-list access])
+          %rsvp-only  
+        %-  gl-pax-check-2 
+          :_  pax
+              (gl-access-check [guest-list access])
           %host-only 
         %-  ~(run by guest-list)
         |=  =ship-invite
