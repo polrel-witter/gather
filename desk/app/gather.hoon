@@ -116,7 +116,7 @@
          position.i                     address.i
          `access-link.i                 radius.i
          `max-accepted.i                `accepted-count.i
-         (coerce-h host-status.i)       [~] 
+         (coerce-hs host-status.i)      [~] 
          *image                         *date
          [~]                            %private           
          *mars-link                     *earth-link
@@ -144,7 +144,7 @@
       ^-  ?(%rsvpd %pending) 
       ?.  =(%accepted old)  %pending 
       %rsvpd
-    ++  coerce-h  
+    ++  coerce-hs  
       |=  old=?(%closed %completed %sent)
       ^-  host-status
       ?:  =(%closed old)  %closed
@@ -1178,6 +1178,7 @@
   ?+  path  (on-peek:def path)
     ::
        [%x %collection %ship @ @ ~]               :: TODO change to group-store $resource
+     ?>  =(our.bol src.bol)
      =/  rid=(unit resource:res-sur)
         (de-path-soft:res-lib t.t.path)
      ?~  rid   ~
