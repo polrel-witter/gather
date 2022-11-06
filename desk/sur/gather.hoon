@@ -38,7 +38,6 @@
 +$  guest-status                                   :: TODO change to guest-status
   $?  
       %rsvpd                                       :: CHANGED %accepted -> %rsvpd
-      %browsing                                    :: NEW indicating whether the invite has been searched; thus not subscribed to
       %pending
   ==
 ::
@@ -194,7 +193,7 @@
      [%rsvp =id]                                        :: CHANGED name
      [%unrsvp =id]                                      :: CHANGED
      [%sub-rsvp =id]                                    :: NEW
-     [%sub-invite =id ship=(unit @p)]                   :: CHANGED & ADDED ship for public invite rsvping
+     [%sub-invite =id]                                  :: ADJUSTED 11/6; removed ship since %find will perform the search function
   ::
   :: Banning
      [%ban =ship]

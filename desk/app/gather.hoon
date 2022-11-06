@@ -348,9 +348,9 @@
      ?.  =(our.bol host.inv)
         ?<  =(our.bol host.inv)
         =/  =path  
-          ?:  -:(~(got by wex.bol) [/(scot %p host.inv)/[%invite]/(scot %uv id.act) host.inv %gather])
+          ?.  =(~ (~(get by wex.bol) [/(scot %p host.inv)/[%invite]/(scot %uv id.act) host.inv %gather]))
              invite.pax
-          ?:  -:(~(got by wex.bol) [/(scot %p host.inv)/[%rsvp]/(scot %uv id.act) host.inv %gather])
+          ?.  =(~ (~(get by wex.bol) [/(scot %p host.inv)/[%rsvp]/(scot %uv id.act) host.inv %gather]))
              rsvp.pax
           /(scot %p host.inv)/[%none]/(scot %uv id.act)
         =+  which-one=+<:path
@@ -540,7 +540,7 @@
                        %pass  invite.pax 
                        %agent  [i.add-ships %gather]
                        %poke  %gather-action
-                       !>(`action`[%sub-invite id.act [~]])
+                       !>(`action`[%sub-invite id.act])
              ==  ==  ==
         kiks  :(welp kiks ~[kik])
         add-ships  t.add-ships
@@ -613,7 +613,8 @@
        %new-invite
      ~|  [%failed-to-create-new-invite ~]
      ?>  =(our.bol src.bol)
-     =/  =id  (scot %uv eny.bol)
+     =/  =id  (crip (swag [0 10] (scow %uv eny.bol)))
+     ~&  id
      =/  =path  /(scot %p our.bol)/[%invite]/id
      =/  =mars-link
        ?.  ?=(%public access.act)
@@ -639,7 +640,7 @@
            juice.carton       location-type.act
            position.act       address.act
            access-link.act    radius.act
-           rsvp-limit.act   `0
+           rsvp-limit.act     `0
            %open              title.act
            image.act          date.act
            `now.bol           access.act
@@ -663,7 +664,7 @@
                        %pass  path
                        %agent  [i.sugar.carton %gather]
                        %poke  %gather-action
-                       !>(`action`[%sub-invite id [~]])
+                       !>(`action`[%sub-invite id])
              ==  ==  ==
         sugar.carton  t.sugar.carton
      ==
@@ -680,11 +681,30 @@
                      (swag [0 -:index] meat)
      ?>  =('gather' (crip (swag [+(-:index) 6] meat)))
      =/  =id  `@uv`(scan +>:(oust [0 +(+<:index)] meat) viz:ag)     
-     ~&  "[{<ship>} {<id>}]"
-     [~ this]
-
-:: send the scry
-     
+     ?<  (~(has in banned.settings) ship)
+     =/  =path  /(scot %p ship)/[%invite]/(scot %uv id)
+     ~&  "%gather: sending invite subscription request to {<ship>}"
+     :_  this
+     :~  [%pass path %agent [ship %gather] %watch path]
+     ==
+:: TODO when remote scries are supported:
+::     =/  found=(unit invite)    
+::       .^  (unit invite)  %gx 
+::                        ;:  welp  
+::                           (path /(scot %p ship)/gather/(scot %da now.bol))
+::                           /invite
+::                           /(scot %uv id)
+::                           /noun
+::                        ==
+::       ==
+::     ?~  found  !! 
+::     =+  inv=(need found)
+::     =.  guest-list.inv  %+  ~(put by guest-list.inv)
+::                             our.bol
+::                           `[%browsing [~]]              :: %browsing indicates we've received the invite details via scry (i.e. no sub) 
+::     :_  this(invites (~(put by invites) id inv))
+::     :~  (fact:io gather-update+!>(`update`[%init-all invites settings]) ~[/all])
+::     ==    
   ::
        %rsvp        
      ~|  [%failed-to-rsvp ~]
@@ -763,7 +783,7 @@
            %pass  invite.pax
            %agent  [src.bol %gather]
            %poke  %gather-action
-           !>(`action`[%sub-invite id.act [~]])
+           !>(`action`[%sub-invite id.act])
          ==
         [%give %kick ~[rsvp.pax] `src.bol]
         (fact:io gather-update+!>(`update`[%update-invite id.act inv]) ~[/all])
@@ -785,15 +805,7 @@
   ::
        %sub-invite   
      ~|  [%failed-subscribe-to-invite ~]
-     ?:  =(our.bol src.bol)
-       ?<  =(ship.act ~)      
-       =/  =ship  (need ship.act)
-       ?<  (~(has in banned.settings) ship)
-       =/  =path  /(scot %p ship)/[%invite]/(scot %uv id.act)
-       ~&  "%gather: sending invite subscription request to {<ship>}"
-       :_  this
-       :~  [%pass path %agent [ship %gather] %watch path]
-       == 
+     ?<  =(our.bol src.bol)
      ?:  (~(has by invites) id.act) 
        =/  inv=invite  (~(got by invites) id.act) 
        =/  pax=[invite=path rsvp=path]  (forge [id.act host.inv])
@@ -1192,6 +1204,14 @@
   |=  =path
   ^-  (unit (unit cage))
   ?+  path  (on-peek:def path)
+       [%x %invite @ ~]                          :: TODO used with %find; for when remote scries are supported
+     ?<  =(our.bol src.bol)
+     =/  =id  (need (slaw %uv i.t.t.path))
+     ~&  id
+     =/  inv=(unit invite)  (~(get by invites) id)
+     ?~  inv  ~
+     ?>  ?=(%public access.u.inv)
+     ``noun+!>(`(unit invite)``(veil [%invite u.inv]))  
     ::
        [%x %collection %ship @ @ ~]               :: TODO change to group-store $resource
      ?>  =(our.bol src.bol)

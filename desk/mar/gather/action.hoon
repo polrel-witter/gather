@@ -34,7 +34,7 @@
         rsvp+(ot ~[id+so])                    
         unrsvp+(ot ~[id+so])
         sub-rsvp+(ot ~[id+so])
-        sub-invite+(ot ~[id+so ship+(su ;~(pfix sig fed:ag)):dejs-soft:format])       
+        sub-invite+(ot ~[id+so])       
         :: 
         ban+(ot ~[ship+(se %p)])
         unban+(ot ~[ship+(se %p)])
