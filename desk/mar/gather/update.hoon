@@ -51,7 +51,7 @@
           ['exciseComets' (en-unit-bool excise-comets.invite)]        :: ADDITION
           ['chat' (en-chat chat.invite)]                              :: ADDITION
           ['catalog' (en-catalog catalog.invite)]                     :: ADDITION
-          ['enableChat' b+enable-chat.invite]                         :: ADDITION
+          ['enableChat' b+(scot %tas enable-chat.invite)]             :: ADDITION
       ==
     ++  en-invites
       |=  =invites
@@ -122,7 +122,7 @@
       ^-  ^json
       ?~  a  s+'~'
       =/  d-unit=?  (need a)
-      b+d-unit
+      b+(scot %tas d-unit)
       :: 
     ++  en-date                                            :: ADDITION
       |=  =date
@@ -142,8 +142,8 @@
       |=  =notifications
       ^-  ^json
       %-  pairs
-      :~  ['newInvites' b+new-invites.notifications]
-          ['inviteUpdates' b+invite-updates.notifications]
+      :~  ['newInvites' b+(scot %tas new-invites.notifications)]
+          ['inviteUpdates' b+(scot %tas invite-updates.notifications)]
       ==
     ++  en-reminders
       |=  =reminders
