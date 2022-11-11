@@ -79,6 +79,7 @@
       :~  invite-list+so
           access-link+so
           rsvp-limit+so
+          rsvp-count+so
           chat+so
           rsvp-list+so
       ==
