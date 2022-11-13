@@ -182,8 +182,7 @@
      ?~  alt
         ~&  "%gather: settings have been updated"
         :_  this
-        :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])
-        ==
+            (beam:hc [%update-settings settings])
      %=  $
         settings  ^-  _settings
                   ?-    i.alt
@@ -232,19 +231,15 @@
        =/  title=@t  (crip (weld (scow %p -:r) (runt [1 '/'] name))) 
        =.  collections.settings
          %+  ~(put by collections.settings)
-            (scot %uv eny.bol)
+            (crip (swag [0 10] (scow %uv eny.bol)))
             :* 
                 title 
                 gang
                 %.y
                 `r
             ==
-       ::  ~&  "creating collection called {<`@t`+:r>}"
-      :: =/  upd=collections.settings  (~(del by collections.settings) old)
-       :_  this(collections.settings (~(del by collections.settings) old))
-       :~ :: (~(poke pass:io /(scot %p our.bol)/[%settings]) [our.bol %gather] gather-action+!>(`action`[%del-collection old]))   
-           (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])  
-       == 
+       :-  (beam:hc [%update-settings settings])
+           this(collections.settings (~(del by collections.settings) old))
      =/  gang=members  (silt (remove-our [our.bol (remove-banned [(remove-dupes members.act) banned.settings])]))
      =.  collections.settings   
        %+  ~(put by collections.settings)
@@ -257,8 +252,7 @@
           ==
      ::  ~&  "creating collection called {<title.act>}"
      :_  this
-     :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])  
-     ==  
+         (beam:hc [%update-settings settings])
   ::
        %edit-collection
      ~|  [%unexpected-collection-request %edit-collection-title ~]
@@ -276,8 +270,7 @@
        ==
      ::  ~&  "updated collection {<title.act>}"
      :_  this
-     :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])  
-     ==
+         (beam:hc [%update-settings settings])
   ::
        %del-collection
      ~|  [%unexpected-collection-request %del-collection ~]
@@ -285,8 +278,7 @@
      =.  collections.settings  (~(del by collections.settings) id.act)
      ::  ~&  "deleting collection"
      :_  this
-     :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])  
-     ==
+         (beam:hc [%update-settings settings])
   ::
        %refresh-groups                                      :: TODO change mentions of $resource to group-store $resource
      ~|  [%failed-to-refresh-groups ~]
@@ -325,8 +317,9 @@
        == 
      =+  eny=eny.bol
      =/  values=(list collection)   (make-collection-values groups)
-     :-  :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])
-             [%pass /timers/refresh-groups %arvo %b %wait (add now.bol `@dr`~h24)]
+     =/  fak=(list card)  (beam:hc [%update-settings settings])
+     :-  ;:  welp  fak
+             ~[[%pass /timers/refresh-groups %arvo %b %wait (add now.bol `@dr`~h24)]]
          ==
      %=  this
         collections.settings  |-  
@@ -334,7 +327,7 @@
                               %=  $
                                  collections.settings   
                                      %+  ~(put by collections.settings) 
-                                        (scot %uv eny) 
+                                        (crip (swag [0 10] (scow %uv eny.bol)))
                                         i.values
                                :: 
                                   values  t.values
@@ -347,16 +340,11 @@
      =/  pax=[invite=path rsvp=path]  (forge [id.act host.inv])
      ?.  =(our.bol host.inv)
         ?<  =(our.bol host.inv)
-        =/  =path  
-          ?.  =(~ (~(get by wex.bol) [/(scot %p host.inv)/[%invite]/(scot %uv id.act) host.inv %gather]))
-             invite.pax
-          ?.  =(~ (~(get by wex.bol) [/(scot %p host.inv)/[%rsvp]/(scot %uv id.act) host.inv %gather]))
-             rsvp.pax
-          /(scot %p host.inv)/[%none]/(scot %uv id.act)
-        =+  which-one=+<:path
-        ?:  ?=(%none which-one)
+        =/  =path  (which-path:hc [id.act host.inv]) 
+        =+  on=+<:path
+        ?:  ?=(%none on)
            [~ this(invites (~(del by invites) id.act))]
-        =/  pok=card  ?.  ?=(%rsvp which-one)
+        =/  pok=card  ?.  ?=(%rsvp on)
                         *card
                       :*  %pass  path 
                           %agent  [host.inv %gather] 
@@ -364,17 +352,18 @@
                           gather-action+!>(`action`[%unrsvp id.act])
                       ==
         :_  this(invites (~(del by invites) id.act))
-        :~  pok
-            [%pass path %agent [host.inv %gather] %leave ~]
-            (fact:io gather-update+!>(`update`[%init-all invites settings]) ~[/all]) 
+        =/  faks=(list card)  (beam:hc [%init-all invites settings])
+        ;:  welp  faks  
+          :~  pok
+              [%pass path %agent [host.inv %gather] %leave ~]
+          ==
         ==
      ?>  =(our.bol host.inv)
      ?>  ?|  ?=(%cancelled host-status.inv)
              ?=(%completed host-status.inv)
          ==
-     :_  this(invites (~(del by invites) id.act))
-     :~  (fact:io gather-update+!>(`update`[%init-all invites settings]) ~[/all]) 
-     ==
+     :-  (beam:hc [%init-all invites settings])
+         this(invites (~(del by invites) id.act))
   :: 
        %cancel
      =/  inv=invite  (~(got by invites) id.act)
@@ -415,14 +404,9 @@
                     |=(=invite invite(host-status %cancelled))
        =+  kik=~[[%give %kick ~[invite.pax rsvp.pax /all] ~]]
        =/  inv=invite  (~(got by invites) id.act)
-       =+  rsv=(veil [%rsvp inv])
-       =+  air=(veil [%invite inv])
-       =/  faks=(list card)
-         :~  (fact:io gather-update+!>(`update`[%update-invite id.act inv]) ~[/all])
-             (fact:io gather-update+!>(`update`[%update-invite id.act rsv]) ~[rsvp.pax])
-             (fact:io gather-update+!>(`update`[%update-invite id.act air]) ~[invite.pax])
-         ==
-       [:(welp poks faks kik) this]
+       =/  faks=(list card)  (beam:hc [%update-invite id.act inv])
+       :_  this
+           :(welp poks faks kik)
      =/  =path  =/  =guest-status  -:(need (~(got by guest-list.inv) i.guest-list))
                 ?:  ?=(%rsvpd guest-status)
                   rsvp.pax
@@ -448,15 +432,10 @@
      =+  dek=*(list card)
      |-
      ?~  del-ships.act
-       =+  upd=(~(got by invites) id.act)
-       =+  rsv=(veil [%rsvp upd])
-       =+  air=(veil [%invite upd])
-       =/  faks=(list card)
-         :~  (fact:io gather-update+!>(`update`[%update-invite id.act upd]) ~[/all])
-             (fact:io gather-update+!>(`update`[%update-invite id.act rsv]) ~[rsvp.pax])
-             (fact:io gather-update+!>(`update`[%update-invite id.act air]) ~[invite.pax])
-         == 
-       [(welp faks dek) this]                           
+       =+  inv=(~(got by invites) id.act)
+       =/  faks=(list card)  (beam:hc [%update-invite id.act inv])
+       :_  this
+           (welp faks dek)                           
      =/  =path  =/  =guest-status  -:(need (~(got by guest-list.inv) i.del-ships.act))
                 ?:  ?=(%rsvpd guest-status)
                   rsvp.pax
@@ -509,14 +488,9 @@
      |-
      ?~  add-ships
        =+  inv=(~(got by invites) id.act)
-       =+  rsv=(veil [%rsvp inv])
-       =+  air=(veil [%invite inv])
-       =/  faks=(list card)
-         :~  (fact:io gather-update+!>(`update`[%update-invite id.act inv]) ~[/all])
-             (fact:io gather-update+!>(`update`[%update-invite id.act rsv]) ~[rsvp.pax])
-             (fact:io gather-update+!>(`update`[%update-invite id.act air]) ~[invite.pax])
-         ==
-       [:(welp faks kiks poks) this]
+       =/  faks=(list card)  (beam:hc [%update-invite id.act inv])
+       :_  this 
+           :(welp faks kiks poks)
      =/  kik=card 
        ?.  (~(has by guest-list.inv) i.add-ships)
          *card
@@ -572,14 +546,8 @@
                        id.act
                      |=(=invite invite(last-updated `now.bol))
         =/  inv=invite  (~(got by invites) id.act)
-        =+  rsv=(veil [%rsvp inv])
-        =+  air=(veil [%invite inv])
-        ~&  "{<(need title.inv)>} has been updated"
         :_  this
-        :~  (fact:io gather-update+!>(`update`[%update-invite id.act inv]) ~[/all])
-            (fact:io gather-update+!>(`update`[%update-invite id.act rsv]) ~[rsvp.pax])
-            (fact:io gather-update+!>(`update`[%update-invite id.act air]) ~[invite.pax])
-        ==
+            (beam:hc [%update-invite id.act inv]) 
      %=  $
         invites  %+  ~(jab by invites)
                    id.act
@@ -613,8 +581,8 @@
        %new-invite
      ~|  [%failed-to-create-new-invite ~]
      ?>  =(our.bol src.bol)
+     ?<  =(~ title.act)
      =/  =id  (crip (swag [0 10] (scow %uv eny.bol)))
-     ~&  id
      =/  =path  /(scot %p our.bol)/[%invite]/id
      =/  =mars-link
        ?.  ?=(%public access.act)
@@ -702,8 +670,8 @@
 ::     =.  guest-list.inv  %+  ~(put by guest-list.inv)
 ::                             our.bol
 ::                           `[%browsing [~]]              :: %browsing indicates we've received the invite details via scry (i.e. no sub) 
-::     :_  this(invites (~(put by invites) id inv))
-::     :~  (fact:io gather-update+!>(`update`[%init-all invites settings]) ~[/all])
+::     :-  (beam:hc [%init-all invites settings])
+::         this(invites (~(put by invites) id inv))
 ::     ==    
   ::
        %rsvp        
@@ -733,24 +701,21 @@
                           ^-  _ship-invite
                           `[%rsvpd `now.bol]
        ==
-     =+  rsv=(veil [%rsvp inv])
-     =+  air=(veil [%invite inv])
      :_  %=  this
             invites  %+  ~(jab by invites)
                        id.act
                      |=(=invite inv)
          ==
-     :~  :*
-            %pass  rsvp.pax
-            %agent  [src.bol %gather]
-            %poke  %gather-action
-            !>(`action`[%sub-rsvp id.act])
-         ==
-         [%give %kick ~[invite.pax] `src.bol]
-         (fact:io gather-update+!>(`update`[%update-invite id.act inv]) ~[/all])
-         (fact:io gather-update+!>(`update`[%update-invite id.act rsv]) ~[rsvp.pax])
-         (fact:io gather-update+!>(`update`[%update-invite id.act air]) ~[invite.pax])
-     ==
+     =/  faks=(list card)  (beam:hc [%update-invite id.act inv])
+     ;:  welp  faks 
+         :~   :*
+                 %pass  rsvp.pax
+                 %agent  [src.bol %gather]
+                 %poke  %gather-action
+                 !>(`action`[%sub-rsvp id.act])
+               ==
+              [%give %kick ~[invite.pax] `src.bol]
+     ==  ==
   ::
        %unrsvp
      ~|  [%failed-to-unrsvp ~]
@@ -772,24 +737,21 @@
                              ^-  _ship-invite
                              `[%pending [~]]
      ==
-     =+  rsv=(veil [%rsvp inv])
-     =+  air=(veil [%invite inv])
      :_  %=  this
             invites  %+  ~(jab by invites)
                        id.act
                      |=(=invite inv)
          ==
-     :~  :*
-           %pass  invite.pax
-           %agent  [src.bol %gather]
-           %poke  %gather-action
-           !>(`action`[%sub-invite id.act])
-         ==
-        [%give %kick ~[rsvp.pax] `src.bol]
-        (fact:io gather-update+!>(`update`[%update-invite id.act inv]) ~[/all])
-        (fact:io gather-update+!>(`update`[%update-invite id.act rsv]) ~[rsvp.pax])
-        (fact:io gather-update+!>(`update`[%update-invite id.act air]) ~[invite.pax])
-     ==
+     =/  faks=(list card)  (beam:hc [%update-invite id.act inv])
+     ;:  welp  faks
+         :~   :*
+                 %pass  invite.pax
+                 %agent  [src.bol %gather]
+                 %poke  %gather-action
+                 !>(`action`[%sub-invite id.act])
+              ==
+             [%give %kick ~[rsvp.pax] `src.bol]
+     ==  ==
   ::
 
        %sub-rsvp    
@@ -838,6 +800,63 @@
          [%pass /(scot %p our.bol)/hark %agent [our.bol %hark-store] %poke cage]~ 
      ==
   ::
+       %post
+     ~|  [%post-fail ~]
+     =/  inv=invite  (~(got by invites) id.act)   
+     ?.  enable-chat.inv
+       ~|("%gather: chat is not enabled on invite, {<(need title.inv)>}" !!)
+     ?:  =(our.bol src.bol)
+       ?.  =(our.bol host.inv)
+         =/  =path  (which-path:hc [id.act host.inv]) 
+         =+  on=+<:path
+         ?:  ?=(%none on)
+           ~|("%gather: not subscribed to {<(need title.inv)>}; cannot poast" !!)
+         :_  this
+         :~  :*  %pass   path
+                 %agent  [host.inv %gather]
+                 %poke   %gather-action
+                 !>(`action`[%post id.act note.act])
+         ==  ==
+       =.  chat.inv  
+         %-  some  
+           %-  pin:hc 
+             [(need chat.inv) src.bol note.act]
+       :-  (beam:hc [%update-invite id.act inv]) 
+       %=  this
+          invites  %+  ~(jab by invites) 
+                     id.act 
+                   |=(=invite inv)
+       ==
+     ?>  =(our.bol host.inv)
+     =/  =msgs  
+       ?~  chat.inv  *msgs  
+       (need chat.inv)  
+     =+  chat-access=+>+>+<:catalog.inv
+     ?.  ?=(%rsvp-only chat-access)
+       =.  chat.inv  
+         %-  some  
+           %-  pin:hc 
+             [msgs src.bol note.act]
+       :-  (beam:hc [%update-invite id.act inv]) 
+       %=  this
+          invites  %+  ~(jab by invites) 
+                     id.act 
+                   |=(=invite inv)
+       ==
+     =/  =guest-status  
+       -:(need (~(got by guest-list.inv) src.bol))
+     ?>  ?=(%rsvpd guest-status)
+     =.  chat.inv
+       %-  some  
+         %-  pin:hc
+           [msgs src.bol note.act]
+     :-  (beam:hc [%update-invite id.act inv]) 
+     %=  this
+        invites  %+  ~(jab by invites) 
+                   id.act 
+                 |=(=invite inv)
+     ==
+  ::
        %ban
      ~|  [%failed-ban ~]
      ?>  =(our.bol src.bol)
@@ -864,14 +883,9 @@
            levs   |-
                   ?~  their-ids  levs
                   =/  inv=invite  (~(got by invites) i.their-ids)
-                  =/  pax=[invite=path rsvp=path]  (forge [i.their-ids host.inv])
                   =/  =guest-status  -:(need (~(got by guest-list.inv) our.bol))
-                  =/  =path 
-                    =/  =wire   /(scot %p host.inv)/[%invite]/(scot %uv i.their-ids)
-                    ?:  -:(~(got by wex.bol) [wire host.inv %gather])
-                       invite.pax
-                    rsvp.pax
-                 %=  $
+                  =/  =path  (which-path:hc [i.their-ids host.inv]) 
+                  %=  $
                     levs  ;:  welp  levs
                              :~  :*
                                    %pass
@@ -880,7 +894,7 @@
                                    %leave  ~
                          ==  ==  ==
                     their-ids  t.their-ids
-                 ==
+                  ==
          ::
            invites  |- 
                     ?~  their-ids  invites
@@ -902,7 +916,7 @@
                           ==  ==  ==
                      rsvpd-ids  t.rsvpd-ids
        ==          ==
-       =+  fak=~[(fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])]  
+       =+  fak=(beam:hc [%update-settings settings])  
        :_  this
            :(welp fak kiks levs poks faks)  
      ::
@@ -968,8 +982,7 @@
        =.  banned.settings
           (~(del in banned.settings) ship.act)
        :_  this
-       :~  (fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])  
-       ==
+           (beam:hc [%update-settings settings])
      `this
     ==   
   -- 
@@ -1109,9 +1122,7 @@
   ?:  ?=([%all ~] path)
     ?>  =(our.bol src.bol)
     :_  this
-    :~  %-  fact-init:io
-        gather-update+!>(`update`[%init-all invites settings])
-    ==
+        (beam:hc [%init-all invites settings])
   ?>  ?=([@ @ @ ~] path)
   ?+   i.t.path  (on-watch:def path)
       %invite                                                 
@@ -1224,6 +1235,11 @@
 ++  on-leave  on-leave:def 
 ++  on-fail   on-fail:def
 --
+::
+::
+::  helper core 
+::
+::
 |_  bol=bowl:gall
 +*  io    ~(. agentio bol)
 ::
@@ -1238,10 +1254,52 @@
 ::
 :: Creates invite & rsvp paths
 ++  forge
-  |=  [=id host=@p]
+  |=  [=id =host]
   ^-  [path path]
   :_  /(scot %p host)/[%rsvp]/(scot %uv id)
       /(scot %p host)/[%invite]/(scot %uv id)
+::
+::
+:: Post a message 
+++  pin
+  |=  [=msgs =ship note=@t]
+  ^-  _msgs
+  ~&  [msgs ship note] 
+  (into msgs 0 [ship note now.bol])
+::
+::
+:: Check the path to which we're subscribed
+++  which-path
+  |=  [=id =host]
+  ^-  path
+  =/  pax=[invite=path rsvp=path]  (forge [id host])
+  ?.  =(~ (~(get by wex.bol) [/(scot %p host)/[%invite]/(scot %uv id) host %gather]))
+    invite.pax
+  ?.  =(~ (~(get by wex.bol) [/(scot %p host)/[%rsvp]/(scot %uv id) host %gather]))
+    rsvp.pax      
+  /(scot %p host)/[%none]/(scot %uv id)
+::
+::
+:: Slings facts to subs
+++  beam 
+  |=  upd=update
+  ^-  (list card) 
+  ?-    -.upd
+       %init-all  
+     ~[(fact:io gather-update+!>(`update`[%init-all invites settings]) ~[/all])] 
+  ::
+       %update-settings  
+     ~[(fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])]  
+  ::
+       %update-invite 
+     =/  pax=[invite=path rsvp=path]  (forge [id.upd host.invite.upd])
+     =+  rsv=(veil [%rsvp invite.upd])
+     =+  air=(veil [%invite invite.upd])
+     :~  (fact:io gather-update+!>(`update`[%update-invite id.upd rsv]) ~[rsvp.pax])
+         (fact:io gather-update+!>(`update`[%update-invite id.upd air]) ~[invite.pax])
+         (fact:io gather-update+!>(`update`[%update-invite id.upd invite.upd]) ~[/all])
+     ==
+  ==
 ::
 ::
 :: Builds list of what has changed in settings
@@ -1437,7 +1495,7 @@
     ?-    veils                       
         %anyone     chat  
         %rsvp-only  (ch-pax-check [chat pax]) 
-        %host-only  ~|("invalid veil for chat.catalog" !!) 
+        %host-only  ~|("invalid veil for chat-access.catalog" !!) 
     ==
   ++  gl-check
     |=  $:  guest-list=(map @p ship-invite) 

@@ -80,7 +80,7 @@
           access-link+so
           rsvp-limit+so
           rsvp-count+so
-          chat+so
+          chat-access+so
           rsvp-list+so
       ==
     ++  de-edit-settings

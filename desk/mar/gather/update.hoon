@@ -51,7 +51,7 @@
           ['exciseComets' (en-unit-bool excise-comets.invite)]        :: ADDITION
           ['chat' (en-chat chat.invite)]                              :: ADDITION
           ['catalog' (en-catalog catalog.invite)]                     :: ADDITION
-          ['enableChat' b+(scot %tas enable-chat.invite)]             :: ADDITION
+          ['enableChat' b+enable-chat.invite]                         :: ADDITION
       ==
     ++  en-invites
       |=  =invites
@@ -122,7 +122,7 @@
       ^-  ^json
       ?~  a  s+'~'
       =/  d-unit=?  (need a)
-      b+(scot %tas d-unit)
+      b+d-unit
       :: 
     ++  en-date                                            :: ADDITION
       |=  =date
@@ -142,8 +142,8 @@
       |=  =notifications
       ^-  ^json
       %-  pairs
-      :~  ['newInvites' b+(scot %tas new-invites.notifications)]
-          ['inviteUpdates' b+(scot %tas invite-updates.notifications)]
+      :~  ['newInvites' b+new-invites.notifications]
+          ['inviteUpdates' b+invite-updates.notifications]
       ==
     ++  en-reminders
       |=  =reminders
@@ -172,7 +172,7 @@
           ['accessLink' s+(scot %tas +<:c)]
           ['rsvpLimit' s+(scot %tas +>-:c)]
           ['rsvpCount' s+(scot %tas +>+<:c)]
-          ['chat' s+(scot %tas +>+>-:c)]
+          ['chatAccess' s+(scot %tas +>+>-:c)]
           ['rsvpList' s+(scot %tas +>+>+:c)]
       ==
     ++  en-collections
@@ -215,7 +215,7 @@
     ++  en-msg                                                      :: ADDITION
       |=  =msg
       ^-  ^json
-      (pairs ~[['who' s+(scot %p who.msg)] ['what' s+what.msg]])
+      (pairs ~[['who' s+(scot %p who.msg)] ['wat' s+wat.msg] ['wen' (sect wen.msg)]])
     ++  en-banned
       |=  =banned
       ^-  ^json

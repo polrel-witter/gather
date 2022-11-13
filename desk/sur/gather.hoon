@@ -7,13 +7,13 @@
 +$  radius          @rs 
 +$  selected        ?
 +$  address         @t
-+$  access-link     (unit @t)                         :: Changed to unit
++$  access-link     (unit @t)                         :: CHANGED to unit
 +$  mars-link       (unit @t)                         :: NEW
 +$  earth-link      (unit @t)                         :: NEW
 +$  image           (unit @t)                         :: NEW
 +$  banned          (set @p)
 +$  members         (set @p)
-+$  msg             [who=@p what=@t]                  :: NEW
++$  msg             [who=@p wat=@t wen=@da]           :: NEW; added wen
 +$  msgs            (list msg)                        :: NEW
 +$  position        [lat=@rs lon=@rs]
 +$  date            [begin=(unit @da) end=(unit @da)] :: NEW
@@ -63,7 +63,7 @@
      access-link=veils     
      rsvp-limit=veils           
      rsvp-count=veils
-     chat=veils            
+     chat-access=veils            
      rsvp-list=veils    
   == 
 ::
@@ -172,7 +172,7 @@
       ==    
   ::
   :: Invite communication 
-     $:  %new-invite                                   :: ChANGED       
+     $:  %new-invite                                   :: CHANGED       
          send-to=(list @p)
          =location-type
          =position
@@ -194,6 +194,7 @@
      [%unrsvp =id]                                      :: CHANGED
      [%sub-rsvp =id]                                    :: NEW
      [%sub-invite =id]                                  :: ADJUSTED 11/6; removed ship since %find will perform the search function
+     [%post =id note=@t]                                :: NEW
   ::
   :: Banning
      [%ban =ship]
