@@ -17,7 +17,7 @@
       %-  of
       :~  
         edit-settings+de-edit-settings
-        gathering-reminder+(ot ~[id+so alarm+da:dejs-soft:format]) 
+        gathering-reminder+(ot ~[id+so alarm+du]) 
         ::
         create-collection+de-create-collection
         edit-collection+de-collection                
@@ -44,10 +44,10 @@
       (ot ship+(su ;~(pfix sig fed:ag)) name+so ~)
       ::
     ++  de-position
-      %-  ot
-      :~  lat+(se %rs)
+      %-  ot 
+      :~  lat+(se %rs) 
           lon+(se %rs)
-      ==
+      == 
     ++  de-date
       %-  ot
       :~  begin+da:dejs-soft:format
@@ -86,8 +86,8 @@
     ++  de-edit-settings
       %-  ot
       :~  address+so
-          position+de-position
-          radius+(se %rs)
+          position+(mu de-position)
+          radius+(se %rs)                              :: unit: (mu (se %rs))
           receive-invite+(se %tas) 
           notifications+de-notifications
           excise-comets+bo:dejs-soft:format
@@ -98,10 +98,10 @@
       %-  ot
       :~  send-to+(ar (se %p))
           location-type+(se %tas) 
-          position+de-position    
+          position+(mu de-position)    
           address+so              
           access-link+so:dejs-soft:format    
-          radius+(se %rs)         
+          radius+(se %rs)        
           rsvp-limit+ni:dejs-soft:format
           desc+so
           title+so:dejs-soft:format
@@ -117,7 +117,7 @@
       :~  id+so 
           desc+so
           location-type+(se %tas)
-          position+de-position
+          position+(mu de-position)
           address+so
           access-link+so:dejs-soft:format
           rsvp-limit+ni:dejs-soft:format

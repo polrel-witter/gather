@@ -72,7 +72,7 @@
       ==
   %=  this
     settings  :*
-                 [.500 .500] 
+                 *position 
                  *radius
                  *address
                  *(map id collection)
@@ -113,12 +113,12 @@
       :*
          init-ship.i                    desc.i
          guest-list                     location-type.i
-         position.i                     address.i
+         `position.i                    address.i
          `access-link.i                 radius.i
          `max-accepted.i                `accepted-count.i
          (coerce-hs host-status.i)      [~] 
          *image                         *date
-         [~]                            %private           
+         now.bol                        %private           
          *mars-link                     *earth-link
          `%.n                           [~] 
          `[%anyone %anyone %anyone %anyone %anyone %anyone]
@@ -126,7 +126,7 @@
       == 
     =/  new-settings=_settings 
       :* 
-         position.old-settings 
+         `position.old-settings 
          radius.old-settings
          address.old-settings
          collections.old-settings
@@ -167,7 +167,7 @@
        %edit-settings
      ~|  [%failed-to-edit-settings ~]
      ?>  =(our.bol src.bol)
-     =/  alt=(list wht)  %-  alter-settings 
+     =/  alt=(list wht)  %-  settings-change 
                            :*  settings
                                address.act
                                position.act
@@ -201,13 +201,11 @@
        %gathering-reminder 
      ~|  [%failed-to-set-gathering-reminder ~]
      ?>  =(our.bol src.bol)
-     ?<  =(alarm ~)
      =.  reminders.settings  %+  ~(put by gatherings.reminders.settings)
                                id.act
                              alarm.act
-     =/  moment=@da  (need alarm.act)
      :_  this
-     :~  [%pass /timers/gathering/(scot %uv id.act) %arvo %b %wait moment]
+     :~  [%pass /timers/gathering/(scot %uv id.act) %arvo %b %wait alarm.act]
      == 
   ::
        %create-collection                                               :: TODO change mentions of $resource to group-store $resource
@@ -426,8 +424,7 @@
      ~|  [%failed-to-uninvite-ships ~]
      =/  inv=invite  (~(got by invites) id.act) 
      =/  pax=[invite=path rsvp=path]  (forge [id.act host.inv])
-     ?>  =(our.bol src.bol)
-     ?>  =(our.bol host.inv)
+     ?>  &(=(our.bol src.bol) =(our.bol host.inv))
      ~&  "removing {<del-ships.act>} from invite {<id.act>}"    
      =+  dek=*(list card)
      |-
@@ -530,7 +527,7 @@
          ==
          ~|  'failed: cannot edit invite when it is either %cancelled or %completed'
      =/  pax=[invite=path rsvp=path]  (forge [id.act host.inv])
-     =/  alt=(list wut)  %-  alter-invite 
+     =/  alt=(list wut)  %-  invite-change                           :: determine what has been altered
                            :*  inv                 desc.act
                                location-type.act   position.act
                                address.act         access-link.act
@@ -544,7 +541,7 @@
      ?~  alt
         =.  invites  %+  ~(jab by invites)
                        id.act
-                     |=(=invite invite(last-updated `now.bol))
+                     |=(=invite invite(last-updated now.bol))
         =/  inv=invite  (~(got by invites) id.act)
         :_  this
             (beam:hc [%update-invite id.act inv]) 
@@ -611,7 +608,7 @@
            rsvp-limit.act     `0
            %open              title.act
            image.act          date.act
-           `now.bol           access.act
+           now.bol            access.act
            mars-link          earth-link.act
            excise-comets.act  ~
            catalog.settings   enable-chat.act 
@@ -1236,9 +1233,9 @@
 ++  on-fail   on-fail:def
 --
 ::
-::
+::::::
 ::  helper core 
-::
+::::
 ::
 |_  bol=bowl:gall
 +*  io    ~(. agentio bol)
@@ -1268,7 +1265,7 @@
   (into msgs 0 [ship note now.bol])
 ::
 ::
-:: Check the path to which we're subscribed
+:: Check the path on which we're subscribed
 ++  which-path
   |=  [=id =host]
   ^-  path
@@ -1280,7 +1277,7 @@
   /(scot %p host)/[%none]/(scot %uv id)
 ::
 ::
-:: Slings facts to subs
+:: Slings facts to subscribers
 ++  beam 
   |=  upd=update
   ^-  (list card) 
@@ -1303,7 +1300,7 @@
 ::
 ::
 :: Builds list of what has changed in settings
-++  alter-settings                       
+++  settings-change                       
   |=  $:  set=_settings 
           =address
           =position
@@ -1345,7 +1342,7 @@
 ::
 ::
 :: Builds list of what has been changed by host in an invite
-++  alter-invite
+++  invite-change
   |=  $:  inv=invite 
           desc=@t
           =location-type

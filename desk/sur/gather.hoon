@@ -4,7 +4,7 @@
 +$  ship            @p
 +$  host            @p                               :: CHANGED name
 +$  id              @
-+$  radius          @rs 
++$  radius          @rs                                                    
 +$  selected        ?
 +$  address         @t
 +$  access-link     (unit @t)                         :: CHANGED to unit
@@ -15,7 +15,7 @@
 +$  members         (set @p)
 +$  msg             [who=@p wat=@t wen=@da]           :: NEW; added wen
 +$  msgs            (list msg)                        :: NEW
-+$  position        [lat=@rs lon=@rs]
++$  position        (unit [lat=@rs lon=@rs])          :: CHANGED to unit
 +$  date            [begin=(unit @da) end=(unit @da)] :: NEW
 +$  access          ?(%public %private)               :: NEW
 +$  location-type   ?(%virtual %meatspace) 
@@ -23,8 +23,8 @@
 +$  receive-invite  ?(%only-in-radius %anyone)   
 +$  collection      [title=@t =members =selected =resource]
 +$  veils           ?(%anyone %rsvp-only %host-only)  :: NEW
-+$  alarm           (unit @da)                        :: NEW
-+$  reminders                                         :: NEW
++$  alarm           @da                               :: NEW
++$  reminders                                         :: NEW; CHANGED remoted unit
   $:
      gatherings=(map id alarm)
   ==
@@ -85,7 +85,7 @@
      title=(unit @t)                     :: NEW
      =image                              :: NEW
      =date                               :: NEW
-     last-updated=(unit @da)             :: NEW
+     last-updated=@da                    :: NEW
      =access                             :: NEW
      =mars-link                          :: NEW
      =earth-link                         :: NEW
@@ -212,8 +212,6 @@
 ++  zero
   |%
   ::
-  +$  access-link  @t
-  ::
   +$  host-status
     $?
        %closed
@@ -231,10 +229,10 @@
        desc=@t
        receive-ships=(map @p ship-invite)
        =location-type
-       =position     
+       position=[lat=@rs lon=@rs]     
        =address      
-       =access-link  
-       =radius       
+       access-link=@t  
+       radius=@rs       
        max-accepted=@ud
        accepted-count=@ud      
        =host-status
@@ -242,8 +240,8 @@
   +$  invites  (map id invite)
   +$  settings
     $: 
-       =position
-       =radius
+       position=[lat=@rs lon=@rs]
+       radius=@rs
        =address
        collections=(map id collection)
        =banned                        

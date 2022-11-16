@@ -33,19 +33,19 @@
       %-  pairs
       :~  ['initShip' s+(scot %p host.invite)]
           ['desc' s+desc.invite]
-          ['guestList' (en-guest-list guest-list.invite)]    ::CHANGED to handle unit
+          ['guestList' (en-guest-list guest-list.invite)]             ::CHANGED to handle unit
           ['locationType' s+(scot %tas location-type.invite)] 
           ['invitePosition' (en-position position.invite)]   
           ['inviteAddress' s+address.invite]           
           ['accessLink' (en-unit-cord access-link.invite)]            ::CHANGED to handle unit
           ['inviteRadius' s+(scot %rs radius.invite)] 
-          ['rsvpLimit' (en-unit-decimal rsvp-limit.invite)]       ::CHANGED name & to handle unit
-          ['rsvpCount' (en-unit-decimal rsvp-count.invite)]       ::CHANGED name & to handle unit
+          ['rsvpLimit' (en-unit-decimal rsvp-limit.invite)]           ::CHANGED name & to handle unit
+          ['rsvpCount' (en-unit-decimal rsvp-count.invite)]           ::CHANGED name & to handle unit
           ['hostStatus' s+(scot %tas host-status.invite)]
-          ['title' (en-unit-cord title.invite)]                       :: ADDITION
-          ['date' (en-date date.invite)]                              :: ADDITION
-          ['lastUpdated' (en-unit-date last-updated.invite)]          :: ADDITION
-          ['access' s+(scot %tas access.invite)]                      :: ADDITION
+          ['title' (en-unit-cord title.invite)]                               :: ADDITION
+          ['date' (en-date date.invite)]                                      :: ADDITION
+          ['lastUpdated' (sect last-updated.invite)]    :: ADDITION
+          ['access' s+(scot %tas access.invite)]                              :: ADDITION
           ['marsLink' (en-unit-cord mars-link.invite)]                :: ADDITION
           ['earthLink' (en-unit-cord earth-link.invite)]              :: ADDITION
           ['exciseComets' (en-unit-bool excise-comets.invite)]        :: ADDITION
@@ -75,6 +75,9 @@
           ['receiveInvite' s+(scot %tas receive-invite.settings)]
           ['reminders' (en-reminders reminders.settings)]                    :: ADDITION
           ['notifications' (en-notifications notifications.settings)]        :: ADDITION
+          ['exciseComets' (en-unit-bool excise-comets.settings)]             :: ADDITION
+          ['catalog' (en-catalog catalog.settings)]                          :: ADDITION
+          ['enableChat' b+enable-chat.settings]                             :: ADDITION
       ==
     ++  en-guest-list
       |=  guest-list=(map @p ship-invite)
@@ -90,39 +93,46 @@
       |=  =ship-invite
       ^-  ^json
       ?~  ship-invite  s+'~'
-      =/  d-unit=[?(%rsvpd %pending) (unit @da)] 
+      =/  d=[?(%rsvpd %pending) (unit @da)] 
         (need ship-invite)
       %-  pairs
-      :~  ['guestStatus' s+(scot %tas -:d-unit)]
-          ['rsvpDate' (en-unit-date +:d-unit)]
+      :~  ['guestStatus' s+(scot %tas -:d)]
+          ['rsvpDate' (en-unit-date +:d)]
       == 
     ++  en-unit-date                                       :: ADDITION
       |=  a=(unit @da)
       ^-  ^json
       ?~  a  s+'~'
-      =/  d-unit=@da  (need a)
-      (sect d-unit)
+      =/  d=@da  (need a)
+      (sect d)
       ::
     ++  en-unit-cord                                       :: ADDITION
       |=  a=(unit @t)
       ^-  ^json
       ?~  a  s+'~'
-      =/  d-unit=@t  (need a)
-      s+d-unit 
+      =/  d=@t  (need a)
+      s+d 
       ::
     ++  en-unit-decimal                                    :: ADDITION
       |=  a=(unit @ud)
       ^-  ^json
       ?~  a  s+'~'
-      =/  d-unit=@ud  (need a)
-      (numb d-unit) 
+      =/  d=@ud  (need a)
+      (numb d) 
       ::
+    ++  en-unit-rs
+      |=  a=(unit @rs)
+      ^-  ^json
+      ?~  a  s+'~'
+      =/  d=@rs  (need a)
+      s+(scot %rs d)
+      :: 
     ++  en-unit-bool                                       :: ADDITION
       |=  a=(unit ?)
       ^-  ^json
       ?~  a  s+'~'
-      =/  d-unit=?  (need a)
-      b+d-unit
+      =/  d=?  (need a)
+      b+d
       :: 
     ++  en-date                                            :: ADDITION
       |=  =date
@@ -134,9 +144,11 @@
     ++  en-position
       |=  =position
       ^-  ^json
+      ?~  position  s+'~'
+      =/  d=[@rs @rs]  (need position)
       %-  pairs
-      :~  ['lat' s+(scot %rs lat.position)]
-          ['lon' s+(scot %rs lon.position)]
+      :~  ['lat' s+(scot %rs -:d)]
+          ['lon' s+(scot %rs +:d)]
       ==
     ++  en-notifications                                :: ADDITION
       |=  =notifications
@@ -160,7 +172,7 @@
       ^-  ^json
       %-  pairs
       :~  ['id' (tape (trip id))]
-          ['alarm' (en-unit-date alarm)]
+          ['alarm' (sect alarm)]
       ==
     ++  en-catalog                                      :: ADDITION
       |=  =catalog
@@ -215,7 +227,11 @@
     ++  en-msg                                                      :: ADDITION
       |=  =msg
       ^-  ^json
-      (pairs ~[['who' s+(scot %p who.msg)] ['wat' s+wat.msg] ['wen' (sect wen.msg)]])
+      %-  pairs
+      :~  ['who' s+(scot %p who.msg)] 
+          ['wat' s+wat.msg] 
+          ['wen' (sect wen.msg)]
+      ==
     ++  en-banned
       |=  =banned
       ^-  ^json

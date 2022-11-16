@@ -81,7 +81,8 @@
   $(group-ids (weld group-ids `(list id)`~[i.ids]), ids t.ids)
 ::
 ::
-:: Constructs the $guest-list map for invites :: TODO probably can be faster using combo of ++turn and somehow pinning the [%pending] as value
+:: Constructs the $guest-list map for invites 
+:: TODO probably can be faster using combo of ++turn and somehow pinning the [%pending] as value
 ++  blend 
   |=  send-to=(list @p)
   ^-  (map @p =ship-invite)
@@ -92,7 +93,7 @@
   $(guest-list (~(put by guest-list) i.send-to si), send-to t.send-to)
 ::
 ::
-:: Get a list of ids we've rsvpd
+:: Get a list of ids to which we've rsvpd
 ++  get-rsvpd-ids
   |=  [our=@p invites=invites ids=(list id)]
   =|  rsvpd-ids=(list id)
@@ -126,15 +127,15 @@
 ::
 :: Removes ships from $guest-list map if guest-status=%pending 
 ++  drop-pending-ships
-  |=  rs=(map @p ship-invite)
+  |=  guests=(map @p ship-invite)
   ^-  (map @p ship-invite)
-  =/  ships=(list @p)  ~(tap in ~(key by rs))
+  =/  ships=(list @p)  ~(tap in ~(key by guests))
   |-
-  ?~  ships  rs
+  ?~  ships  guests
   =/  =guest-status  
-    -:(need (~(got by rs) i.ships))
+    -:(need (~(got by guests) i.ships))
   ?.  ?=(%pending guest-status)
     $(ships t.ships)
-  $(rs (~(del by rs) i.ships), ships t.ships)
+  $(guests (~(del by guests) i.ships), ships t.ships)
 --
 
