@@ -114,7 +114,7 @@
          init-ship.i                    desc.i
          guest-list                     location-type.i
          `position.i                    address.i
-         `access-link.i                 radius.i
+         `access-link.i                 `radius.i
          `max-accepted.i                `accepted-count.i
          (coerce-hs host-status.i)      [~] 
          *image                         *date
@@ -127,7 +127,7 @@
     =/  new-settings=_settings 
       :* 
          `position.old-settings 
-         radius.old-settings
+         `radius.old-settings
          address.old-settings
          collections.old-settings
          banned.old-settings

@@ -2,28 +2,28 @@
 ::
 :: Basic types
 +$  ship            @p
-+$  host            @p                               :: CHANGED name
++$  host            @p                                :: CHANGED name
 +$  id              @
-+$  radius          @rs                                                    
 +$  selected        ?
 +$  address         @t
++$  radius          (unit @rs)                        :: CHANGED to unit                                                   
 +$  access-link     (unit @t)                         :: CHANGED to unit
 +$  mars-link       (unit @t)                         :: NEW
 +$  earth-link      (unit @t)                         :: NEW
 +$  image           (unit @t)                         :: NEW
 +$  banned          (set @p)
 +$  members         (set @p)
-+$  msg             [who=@p wat=@t wen=@da]           :: NEW; added wen
-+$  msgs            (list msg)                        :: NEW
-+$  position        (unit [lat=@rs lon=@rs])          :: CHANGED to unit
-+$  date            [begin=(unit @da) end=(unit @da)] :: NEW
 +$  access          ?(%public %private)               :: NEW
++$  msgs            (list msg)                        :: NEW
++$  msg             [who=@p wat=@t wen=@da]           :: NEW; added wen
++$  position        (unit [lat=@rs lon=@rs])          :: CHANGED to unit
 +$  location-type   ?(%virtual %meatspace) 
-+$  resource        (unit [ship=@p name=@tas])                :: Simplified version of $resource from /landscape/sur
 +$  receive-invite  ?(%only-in-radius %anyone)   
++$  resource        (unit [ship=@p name=@tas])                :: Simplified version of $resource from /landscape/sur
 +$  collection      [title=@t =members =selected =resource]
 +$  veils           ?(%anyone %rsvp-only %host-only)  :: NEW
 +$  alarm           @da                               :: NEW
++$  date            [begin=(unit @da) end=(unit @da)] :: NEW
 +$  reminders                                         :: NEW; CHANGED remoted unit
   $:
      gatherings=(map id alarm)

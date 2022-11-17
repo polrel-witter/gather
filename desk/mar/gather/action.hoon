@@ -87,7 +87,7 @@
       %-  ot
       :~  address+so
           position+(mu de-position)
-          radius+(se %rs)                              :: unit: (mu (se %rs))
+          radius+(mu (se %rs))
           receive-invite+(se %tas) 
           notifications+de-notifications
           excise-comets+bo:dejs-soft:format
@@ -101,7 +101,7 @@
           position+(mu de-position)    
           address+so              
           access-link+so:dejs-soft:format    
-          radius+(se %rs)        
+          radius+(mu (se %rs))        
           rsvp-limit+ni:dejs-soft:format
           desc+so
           title+so:dejs-soft:format
@@ -121,7 +121,7 @@
           address+so
           access-link+so:dejs-soft:format
           rsvp-limit+ni:dejs-soft:format
-          radius+(se %rs)
+          radius+(mu (se %rs))
           host-status+(se %tas) 
           title+so:dejs-soft:format
           image+so:dejs-soft:format

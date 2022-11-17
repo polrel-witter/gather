@@ -38,7 +38,7 @@
           ['invitePosition' (en-position position.invite)]   
           ['inviteAddress' s+address.invite]           
           ['accessLink' (en-unit-cord access-link.invite)]            ::CHANGED to handle unit
-          ['inviteRadius' s+(scot %rs radius.invite)] 
+          ['inviteRadius' (en-unit-rs radius.invite)] 
           ['rsvpLimit' (en-unit-decimal rsvp-limit.invite)]           ::CHANGED name & to handle unit
           ['rsvpCount' (en-unit-decimal rsvp-count.invite)]           ::CHANGED name & to handle unit
           ['hostStatus' s+(scot %tas host-status.invite)]
@@ -68,7 +68,7 @@
       ^-  ^json
       %-  pairs
       :~  ['position' (en-position position.settings)] 
-          ['radius' s+(scot %rs radius.settings)]
+          ['radius' (en-unit-rs radius.settings)]
           ['address' s+address.settings]
           ['collections' (en-collections collections.settings)]
           ['banned' (en-banned banned.settings)] 
