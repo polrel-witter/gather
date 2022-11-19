@@ -29,7 +29,7 @@
 ::
 ::
 :: Alterable settings
-+$  wht
++$  setting-changes
   $?
     %address
     %position
@@ -43,15 +43,15 @@
 ::
 ::
 :: Invite pieces alterable by host 
-+$  wut
++$  invite-changes
   $?
     %description    %location-type
     %position       %address
     %access-link    %radius
-    %rsvp-limit     %host-status
-    %title          %image
-    %date           %earth-link     
-    %excise-comets  %enable-chat
+    %rsvp-limit     %title
+    %image          %date
+    %earth-link     %excise-comets
+    %enable-chat
   ==
 ::
 --
@@ -167,7 +167,7 @@
        %edit-settings
      ~|  [%failed-to-edit-settings ~]
      ?>  =(our.bol src.bol)
-     =/  alt=(list wht)  %-  settings-change 
+     =/  alt=(list setting-changes)  %-  morph-settings 
                            :*  settings
                                address.act
                                position.act
@@ -248,7 +248,6 @@
              selected.act
              resource.act
           ==
-     ::  ~&  "creating collection called {<title.act>}"
      :_  this
          (beam:hc [%update-settings settings])
   ::
@@ -266,7 +265,6 @@
           selected  selected.act  
           resource  resource.act
        ==
-     ::  ~&  "updated collection {<title.act>}"
      :_  this
          (beam:hc [%update-settings settings])
   ::
@@ -363,62 +361,89 @@
      :-  (beam:hc [%init-all invites settings])
          this(invites (~(del by invites) id.act))
   :: 
-       %cancel
+       %alt-host-status
      =/  inv=invite  (~(got by invites) id.act)
      =/  pax=[invite=path rsvp=path]  (forge [id.act host.inv])
-     ?.  =(our.bol src.bol)
-       ?>  =(src.bol host.inv)
-       ~&  "{<host.inv>} has revoked an invite"
-       :_  this
-       ^-  (list card)
-       :*  (fact:io gather-update+!>(`update`[%init-all invites settings]) ~[/all]) 
-           ?.  invite-updates.notifications.settings  ~
-           =/  inscript=@t 
-             (crip "has revoked their invite: {<(need title.inv)>}") 
-           ?.  .^(? %gu /(scot %p our.bol)/hark-store/(scot %da now.bol))  ~
-           =/  =bin:hark      :*  /[dap.bol] 
-                                  q.byk.bol 
-                                  /(scot %p src.bol)/[%invite] 
-                              ==
-           =/  =body:hark     :*  ~[ship+src.bol text+inscript]
-                                  ~
-                                  now.bol
-                                  /
-                                  /gather
-                              == 
-           =/  =action:hark   [%add-note bin body]
-           =/  =cage          [%hark-action !>(action)]
-           [%pass /(scot %p our.bol)/hark %agent [our.bol %hark-store] %poke cage]~ 
-       ==
-     ?>  =(our.bol host.inv)
-     =/  guest-list=(list @p)  
-       ~(tap in ~(key by guest-list.inv))
-     =+  poks=*(list card)
-     |-
-     ?~  guest-list
-       ::  ~&  "revoking invite with id {<id.act>}"
-       =.  invites  %+  ~(jab by invites)
-                      id.act
-                    |=(=invite invite(host-status %cancelled))
-       =+  kik=~[[%give %kick ~[invite.pax rsvp.pax /all] ~]]
-       =/  inv=invite  (~(got by invites) id.act)
-       =/  faks=(list card)  (beam:hc [%update-invite id.act inv])
-       :_  this
-           :(welp poks faks kik)
-     =/  =path  =/  =guest-status  -:(need (~(got by guest-list.inv) i.guest-list))
-                ?:  ?=(%rsvpd guest-status)
-                  rsvp.pax
-                invite.pax 
-     %=  $
-        poks  ;:  welp  poks  
-                 :~  :*
-                       %pass  path
-                       %agent  [i.guest-list %gather]
-                       %poke  %gather-action
-                       !>(`action`[%cancel id.act])
-             ==  ==  ==
-        guest-list  t.guest-list
+     |^
+     ?-    host-status.act
+         %open        (just-swap [id.act inv host-status.act])
+         %closed      (just-swap [id.act inv host-status.act])
+         %completed   (just-swap [id.act inv host-status.act])
+         %cancelled   (cancel [id.act inv])
      ==
+     ++  just-swap
+       |=  [=id inv=invite new=host-status]
+       ^-  (quip card _this)
+       ?>  ?&  =(our.bol src.bol) 
+               =(our.bol host.inv)
+           ==
+       ~|  "%gather: cannot change host-status because {<(need title.inv)>} has been {<host-status.inv>}"
+       ?>  ?|  ?=(%open host-status.inv)
+               ?=(%closed host-status.inv)
+           ==
+       =.  host-status.inv  new 
+       :-  (beam:hc [%update-invite id inv]) 
+       %=  this 
+          invites  %+  ~(jab by invites) 
+                     id 
+                  |=(=invite inv)
+       ==
+     ++  cancel
+       |=  [=id inv=invite]
+       ^-  (quip card _this)
+       ?.  =(our.bol src.bol)
+         ?>  =(src.bol host.inv)
+         ~&  "{<host.inv>} has revoked their invite, {<(need title.inv)>}"
+         :_  this
+         ^-  (list card)
+         :*  (fact:io gather-update+!>(`update`[%init-all invites settings]) ~[/all]) 
+             ?.  invite-updates.notifications.settings  ~
+             =/  inscript=@t 
+               (crip "has revoked their invite: {<(need title.inv)>}") 
+             ?.  .^(? %gu /(scot %p our.bol)/hark-store/(scot %da now.bol))  ~
+             =/  =bin:hark      :*  /[dap.bol] 
+                                    q.byk.bol 
+                                    /(scot %p src.bol)/[%invite] 
+                                ==
+             =/  =body:hark     :*  ~[ship+src.bol text+inscript]
+                                    ~
+                                    now.bol
+                                    /
+                                    /gather
+                                == 
+             =/  =action:hark   [%add-note bin body]
+             =/  =cage          [%hark-action !>(action)]
+             [%pass /(scot %p our.bol)/hark %agent [our.bol %hark-store] %poke cage]~ 
+         ==
+       ?>  =(our.bol host.inv)
+       =/  guest-list=(list @p)  
+         ~(tap in ~(key by guest-list.inv))
+       =+  poks=*(list card)
+       |-
+       ?~  guest-list
+         =.  invites  %+  ~(jab by invites)
+                        id
+                      |=(=invite invite(host-status %cancelled))
+         =+  kik=~[[%give %kick ~[invite.pax rsvp.pax /all] ~]]
+         =/  inv=invite  (~(got by invites) id)
+         =/  faks=(list card)  (beam:hc [%update-invite id inv])
+         :_  this
+             :(welp poks faks kik)
+       =/  =path  =/  =guest-status  -:(need (~(got by guest-list.inv) i.guest-list))
+                  ?:  ?=(%rsvpd guest-status)
+                    rsvp.pax
+                  invite.pax 
+       %=  $
+          poks  ;:  welp  poks  
+                   :~  :*
+                         %pass  path
+                         %agent  [i.guest-list %gather]
+                         %poke  %gather-action
+                         !>(`action`[%alt-host-status id %cancelled])
+               ==  ==  ==
+          guest-list  t.guest-list
+       ==
+     --
   ::  
        %uninvite-ships
      ~|  [%failed-to-uninvite-ships ~]
@@ -456,7 +481,7 @@
                        %pass  path 
                        %agent  [i.del-ships.act %gather]
                        %poke  %gather-action
-                       !>(`action`[%cancel id.act])          :: TODO eventually make it change guest-status to something like %uninvited
+                       !>(`action`[%alt-host-status id.act %cancelled])          :: TODO eventually make it change guest-status to something like %uninvited
                      ==
                      :*
                        %give  %kick
@@ -522,20 +547,19 @@
      ?>  =(our.bol src.bol)
      =/  inv=invite  (~(got by invites) id.act)
      ?>  =(our.bol host.inv)
-     ?>  ?|  ?=(%open host-status.inv)
-             ?=(%closed host-status.inv)
+     ~|  "%gather: cannot edit invite because host-status is {<host-status.inv>}"
+     ?<  ?|  ?=(%cancelled host-status.inv)
+             ?=(%completed host-status.inv)
          ==
-         ~|  'failed: cannot edit invite when it is either %cancelled or %completed'
      =/  pax=[invite=path rsvp=path]  (forge [id.act host.inv])
-     =/  alt=(list wut)  %-  invite-change                           :: determine what has been altered
+     =/  alt=(list invite-changes)  %-  morph-invite                           :: determine what has been altered
                            :*  inv                 desc.act
                                location-type.act   position.act
                                address.act         access-link.act
                                rsvp-limit.act      radius.act
-                               host-status.act     title.act
-                               image.act           date.act
-                               earth-link.act      excise-comets.act   
-                               enable-chat.act
+                               title.act           image.act           
+                               date.act            earth-link.act
+                               excise-comets.act   enable-chat.act
                            == 
      |-
      ?~  alt
@@ -557,7 +581,6 @@
                     %address         inv(address address.act)
                     %access-link     inv(access-link access-link.act)
                     %radius          inv(radius radius.act)
-                    %host-status     inv(host-status host-status.act)
                     %title           inv(title title.act)
                     %image           inv(image image.act)
                     %date            inv(date date.act)
@@ -938,7 +961,7 @@
                        %pass   path
                        %agent  [ship.act %gather]
                        %poke  %gather-action
-                       !>(`action`[%cancel i.our-ids])
+                       !>(`action`[%alt-host-status i.our-ids %cancelled])
               ==  ==  ==
         kiks  ;:  welp  kiks  
                  :~  :* 
@@ -1300,7 +1323,7 @@
 ::
 ::
 :: Builds list of what has changed in settings
-++  settings-change                       
+++  morph-settings                       
   |=  $:  set=_settings 
           =address
           =position
@@ -1311,8 +1334,8 @@
           =catalog
           enable-chat=?
       ==
-  =|  chg=(list wht)
-  =/  chk=(list wht)  
+  =|  chg=(list setting-changes)
+  =/  chk=(list setting-changes)  
     :~  %address
         %position
         %radius
@@ -1322,19 +1345,19 @@
         %catalog
         %enable-chat
     ==
-  |-  ^-  (list wht)
+  |-  ^-  (list setting-changes)
   ?~  chk  chg
   %=  $
-     chg  ^-  (list wht) 
+     chg  ^-  (list setting-changes) 
           ?-    i.chk
-              %address          ?:(=(address.set address) chg (weld chg `(list wht)`~[i.chk]))  
-              %position         ?:(=(position.set position) chg (weld chg `(list wht)`~[i.chk]))
-              %radius           ?:(=(radius.set radius) chg (weld chg `(list wht)`~[i.chk]))
-              %receive-invite   ?:(=(receive-invite.set receive-invite) chg (weld chg `(list wht)`~[i.chk])) 
-              %excise-comets    ?:(=(excise-comets.set excise-comets) chg (weld chg `(list wht)`~[i.chk]))
-              %notifications    ?:(=(notifications.set notifications) chg (weld chg `(list wht)`~[i.chk]))
-              %catalog          ?:(=(catalog.set catalog) chg (weld chg `(list wht)`~[i.chk])) 
-              %enable-chat      ?:(=(enable-chat.set enable-chat) chg (weld chg `(list wht)`~[i.chk])) 
+              %address          ?:(=(address.set address) chg (weld chg `(list setting-changes)`~[i.chk]))  
+              %position         ?:(=(position.set position) chg (weld chg `(list setting-changes)`~[i.chk]))
+              %radius           ?:(=(radius.set radius) chg (weld chg `(list setting-changes)`~[i.chk]))
+              %receive-invite   ?:(=(receive-invite.set receive-invite) chg (weld chg `(list setting-changes)`~[i.chk])) 
+              %excise-comets    ?:(=(excise-comets.set excise-comets) chg (weld chg `(list setting-changes)`~[i.chk]))
+              %notifications    ?:(=(notifications.set notifications) chg (weld chg `(list setting-changes)`~[i.chk]))
+              %catalog          ?:(=(catalog.set catalog) chg (weld chg `(list setting-changes)`~[i.chk])) 
+              %enable-chat      ?:(=(enable-chat.set enable-chat) chg (weld chg `(list setting-changes)`~[i.chk])) 
           ==
      chk  
      t.chk 
@@ -1342,7 +1365,7 @@
 ::
 ::
 :: Builds list of what has been changed by host in an invite
-++  invite-change
+++  morph-invite 
   |=  $:  inv=invite 
           desc=@t
           =location-type
@@ -1351,7 +1374,6 @@
           =access-link
           rsvp-limit=(unit @ud)
           =radius
-          =host-status
           title=(unit @t)
           =image
           =date
@@ -1359,36 +1381,35 @@
           excise-comets=(unit ?)
           enable-chat=?
       ==    
-  =|  chg=(list wut)
-  =/  chk=(list wut)  
+  =|  chg=(list invite-changes)
+  =/  chk=(list invite-changes)  
     :~ 
        %description    %location-type
        %position       %address
        %access-link    %radius
-       %rsvp-limit     %host-status
-       %title          %image
-       %date           %earth-link     
-       %excise-comets  %enable-chat
+       %rsvp-limit     %title
+       %image          %date
+       %earth-link     %excise-comets
+       %enable-chat
     ==
-  |-  ^-  (list wut)
+  |-  ^-  (list invite-changes)
   ?~  chk  chg
   %=  $
-     chg  ^-  (list wut) 
+     chg  ^-  (list invite-changes) 
           ?-    i.chk
-              %description      ?:(=(desc.inv desc) chg (weld chg `(list wut)`~[i.chk]))  
-              %location-type    ?:(=(location-type.inv location-type) chg (weld chg `(list wut)`~[i.chk]))
-              %position         ?:(=(position.inv position) chg (weld chg `(list wut)`~[i.chk]))
-              %address          ?:(=(address.inv address) chg (weld chg `(list wut)`~[i.chk])) 
-              %access-link      ?:(=(access-link.inv access-link) chg (weld chg `(list wut)`~[i.chk]))
-              %radius           ?:(=(radius.inv radius) chg (weld chg `(list wut)`~[i.chk]))
-              %rsvp-limit       ?:(=(rsvp-limit.inv rsvp-limit) chg (weld chg `(list wut)`~[i.chk])) 
-              %host-status      ?:(=(host-status.inv host-status) chg (weld chg `(list wut)`~[i.chk])) 
-              %title            ?:(=(title.inv title) chg (weld chg `(list wut)`~[i.chk])) 
-              %image            ?:(=(image.inv image) chg (weld chg `(list wut)`~[i.chk])) 
-              %date             ?:(=(date.inv date) chg (weld chg `(list wut)`~[i.chk])) 
-              %earth-link       ?:(=(earth-link.inv earth-link) chg (weld chg `(list wut)`~[i.chk])) 
-              %excise-comets    ?:(=(excise-comets.inv excise-comets) chg (weld chg `(list wut)`~[i.chk])) 
-              %enable-chat      ?:(=(enable-chat.inv enable-chat) chg (weld chg `(list wut)`~[i.chk])) 
+              %description      ?:(=(desc.inv desc) chg (weld chg `(list invite-changes)`~[i.chk]))  
+              %location-type    ?:(=(location-type.inv location-type) chg (weld chg `(list invite-changes)`~[i.chk]))
+              %position         ?:(=(position.inv position) chg (weld chg `(list invite-changes)`~[i.chk]))
+              %address          ?:(=(address.inv address) chg (weld chg `(list invite-changes)`~[i.chk])) 
+              %access-link      ?:(=(access-link.inv access-link) chg (weld chg `(list invite-changes)`~[i.chk]))
+              %radius           ?:(=(radius.inv radius) chg (weld chg `(list invite-changes)`~[i.chk]))
+              %rsvp-limit       ?:(=(rsvp-limit.inv rsvp-limit) chg (weld chg `(list invite-changes)`~[i.chk])) 
+              %title            ?:(=(title.inv title) chg (weld chg `(list invite-changes)`~[i.chk])) 
+              %image            ?:(=(image.inv image) chg (weld chg `(list invite-changes)`~[i.chk])) 
+              %date             ?:(=(date.inv date) chg (weld chg `(list invite-changes)`~[i.chk])) 
+              %earth-link       ?:(=(earth-link.inv earth-link) chg (weld chg `(list invite-changes)`~[i.chk])) 
+              %excise-comets    ?:(=(excise-comets.inv excise-comets) chg (weld chg `(list invite-changes)`~[i.chk])) 
+              %enable-chat      ?:(=(enable-chat.inv enable-chat) chg (weld chg `(list invite-changes)`~[i.chk])) 
          ==
      chk  
      t.chk 

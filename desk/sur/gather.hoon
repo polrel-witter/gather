@@ -35,7 +35,7 @@
      invite-updates=?                             :: NEW includes changes to gathering date, description, location-type, address, access-link, and cancellations
   ==
 ::
-+$  guest-status                                   :: TODO change to guest-status
++$  guest-status                                   :: CHANGED invitee-status ->  guest-status
   $?  
       %rsvpd                                       :: CHANGED %accepted -> %rsvpd
       %pending
@@ -97,7 +97,7 @@
 ::
 ::
 :: Latest state structure
-+$  invites  (map id invite)   
++$  invites  (map id [guest-status invite])   
 +$  settings                             :: User settings
   $: 
      =position
@@ -149,11 +149,11 @@
      [%refresh-groups ~]
   ::
   :: Adjust an invite
-     [%del-invite =id]                              :: NEW; deletes an invite locally
-     [%cancel =id]
+     [%del-invite =id]                          :: NEW; deletes an invite locally
+     [%alt-host-status =id =host-status]        :: CHANGED
      [%uninvite-ships =id del-ships=(list @p)]  :: CHANGED 
      [%invite-ships =id add-ships=(list @p)]    :: CHANGED
-     $:  %edit-invite                        :: NEW; combined with all other previous edit options       
+     $:  %edit-invite                           :: NEW; combined with all other previous edit options       
          =id
          desc=@t
          =location-type
@@ -162,7 +162,6 @@
          =access-link
          rsvp-limit=(unit @ud)
          =radius
-         =host-status
          title=(unit @t)
          =image
          =date
