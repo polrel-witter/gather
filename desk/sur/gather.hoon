@@ -36,6 +36,7 @@
   ==
 ::
 +$  guest-status                                   :: CHANGED invitee-status ->  guest-status
+  %-  unit
   $?  
       %rsvpd                                       :: CHANGED %accepted -> %rsvpd
       %pending

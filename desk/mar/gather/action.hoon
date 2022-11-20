@@ -25,7 +25,7 @@
         ::
         edit-invite+de-edit-invite
         del-invite+(ot ~[id+so])
-        cancel+(ot ~[id+so])
+        alt-host-status+(ot ~[id+so host-status+(se %tas)])
         uninvite-ships+(ot ~[id+so del-ships+(ar (se %p))])     
         invite-ships+(ot ~[id+so add-ships+(ar (se %p))])    
         ::
@@ -35,6 +35,7 @@
         unrsvp+(ot ~[id+so])
         sub-rsvp+(ot ~[id+so])
         sub-invite+(ot ~[id+so])       
+        post+(ot ~[id+so note+so])
         :: 
         ban+(ot ~[ship+(se %p)])
         unban+(ot ~[ship+(se %p)])
@@ -122,7 +123,6 @@
           access-link+so:dejs-soft:format
           rsvp-limit+ni:dejs-soft:format
           radius+(mu (se %rs))
-          host-status+(se %tas) 
           title+so:dejs-soft:format
           image+so:dejs-soft:format
           date+de-date

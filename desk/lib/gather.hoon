@@ -86,7 +86,7 @@
 ++  blend 
   |=  send-to=(list @p)
   ^-  (map @p =ship-invite)
-  =/  si=ship-invite  `[%pending [~]]
+  =/  si=ship-invite  `[`%pending [~]]
   =|  guest-list=(map @p =ship-invite)
   |-
   ?~  send-to  guest-list
@@ -99,12 +99,12 @@
   =|  rsvpd-ids=(list id)
   |-  ^-  (list id)
   ?~  ids  rsvpd-ids
-  =+  inv=(need (~(get by invites) i.ids)) 
-  ?.  =(%rsvpd -:(need (~(get by guest-list.inv) our)))
+  =/  inv=invite  +:(need (~(get by invites) i.ids)) 
+  ?.  =(%rsvpd +:(need (~(got by guest-list.inv) our)))
      $(ids t.ids)  
   %=  $ 
     rsvpd-ids  (weld rsvpd-ids ~[i.ids])
-    ids           t.ids
+    ids  t.ids
   ==
 ::
 ::
@@ -112,12 +112,12 @@
 :: host and the ship in question is in the corresponding
 :: $guest-list map.
 ++  id-comb
-  |=  [init=@p menace=@p invites=invites]
+  |=  [init=@p menace=@p =invites]
   =/  ids=(list id)  ~(tap in ~(key by invites))
   =|  export=(list id)
   |-  ^-  (list id)
   ?~  ids  export
-  =+  detail=(need (~(get by invites) i.ids))
+  =/  detail=invite  +:(need (~(get by invites) i.ids))
   ?.  ?&  =(init host:detail)
           (~(has by guest-list.detail) menace) 
       ==
@@ -127,15 +127,15 @@
 ::
 :: Removes ships from $guest-list map if guest-status=%pending 
 ++  drop-pending-ships
-  |=  guests=(map @p ship-invite)
+  |=  guest-list=(map @p ship-invite)
   ^-  (map @p ship-invite)
-  =/  ships=(list @p)  ~(tap in ~(key by guests))
+  =/  ships=(list @p)  ~(tap in ~(key by guest-list))
   |-
-  ?~  ships  guests
-  =/  =guest-status  
-    -:(need (~(got by guests) i.ships))
-  ?.  ?=(%pending guest-status)
+  ?~  ships  guest-list
+  =/  gs=guest-status  
+    -:(need (~(got by guest-list) i.ships))
+  ?.  ?=(%pending (need gs))
     $(ships t.ships)
-  $(guests (~(del by guests) i.ships), ships t.ships)
+  $(guest-list (~(del by guest-list) i.ships), ships t.ships)
 --
 

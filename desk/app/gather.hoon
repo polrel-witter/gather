@@ -103,13 +103,14 @@
     =/  new-invites=_invites 
       %-  ~(run by old-invites)
       |=  i=invite-0
-      ^-  invite
+      ^-  [guest-status invite]
       =/  guest-list=(map @p ship-invite)          
         %-  ~(run by receive-ships.i)
         |=  a=ship-invite-0
         ^-  =ship-invite
         =/  b=?(%rsvpd %pending)  (coerce-si a)
-        `[b [~]]
+        `[`b [~]]
+      :-  (get-guest-status [init-ship.i guest-list]) 
       :*
          init-ship.i                    desc.i
          guest-list                     location-type.i
@@ -150,6 +151,12 @@
       ?:  =(%closed old)  %closed
       ?:  =(%sent old)  %open
       %completed
+    ++  get-guest-status
+      |=  [=host guest-list=(map @p ship-invite)]
+      ^-  guest-status
+      ?:  =(our.bol host)
+         [~]
+      (some +<+:(~(got by guest-list) our.bol))
   --
 ::
 ++  on-poke
@@ -167,7 +174,8 @@
        %edit-settings
      ~|  [%failed-to-edit-settings ~]
      ?>  =(our.bol src.bol)
-     =/  alt=(list setting-changes)  %-  morph-settings 
+     =/  alt=(list setting-changes)  
+                         %-  morph-settings:hc 
                            :*  settings
                                address.act
                                position.act
@@ -332,8 +340,8 @@
   ::
        %del-invite
      ~|  [%failed-to-delete-invite ~]
-     =/  inv=invite  (~(got by invites) id.act)
-     =/  pax=[invite=path rsvp=path]  (forge [id.act host.inv])
+     =/  inv=invite  +:(~(got by invites) id.act)
+     =/  pax=[invite=path rsvp=path]  (forge:hc [id.act host.inv])
      ?.  =(our.bol host.inv)
         ?<  =(our.bol host.inv)
         =/  =path  (which-path:hc [id.act host.inv]) 
@@ -362,16 +370,16 @@
          this(invites (~(del by invites) id.act))
   :: 
        %alt-host-status
-     =/  inv=invite  (~(got by invites) id.act)
-     =/  pax=[invite=path rsvp=path]  (forge [id.act host.inv])
+     =/  inv=invite  +:(~(got by invites) id.act)
+     =/  pax=[invite=path rsvp=path]  (forge:hc [id.act host.inv])
      |^
      ?-    host-status.act
-         %open        (just-swap [id.act inv host-status.act])
-         %closed      (just-swap [id.act inv host-status.act])
-         %completed   (just-swap [id.act inv host-status.act])
          %cancelled   (cancel [id.act inv])
+         %completed   (swap [id.act inv host-status.act])
+         %closed      (swap [id.act inv host-status.act])
+         %open        (swap [id.act inv host-status.act])
      ==
-     ++  just-swap
+     ++  swap
        |=  [=id inv=invite new=host-status]
        ^-  (quip card _this)
        ?>  ?&  =(our.bol src.bol) 
@@ -386,7 +394,8 @@
        %=  this 
           invites  %+  ~(jab by invites) 
                      id 
-                  |=(=invite inv)
+                  |=  [=guest-status =invite]
+                  [[~] inv]
        ==
      ++  cancel
        |=  [=id inv=invite]
@@ -423,14 +432,17 @@
        ?~  guest-list
          =.  invites  %+  ~(jab by invites)
                         id
-                      |=(=invite invite(host-status %cancelled))
+                      |=  [=guest-status =invite] 
+                      =.  host-status.invite  %cancelled
+                      [[~] invite]
+         ::
          =+  kik=~[[%give %kick ~[invite.pax rsvp.pax /all] ~]]
-         =/  inv=invite  (~(got by invites) id)
+         =/  inv=invite  +:(~(got by invites) id)
          =/  faks=(list card)  (beam:hc [%update-invite id inv])
          :_  this
              :(welp poks faks kik)
-       =/  =path  =/  =guest-status  -:(need (~(got by guest-list.inv) i.guest-list))
-                  ?:  ?=(%rsvpd guest-status)
+       =/  =path  =/  gs=guest-status  -:(need (~(got by guest-list.inv) i.guest-list))
+                  ?:  ?=(%rsvpd (need gs))
                     rsvp.pax
                   invite.pax 
        %=  $
@@ -447,29 +459,31 @@
   ::  
        %uninvite-ships
      ~|  [%failed-to-uninvite-ships ~]
-     =/  inv=invite  (~(got by invites) id.act) 
-     =/  pax=[invite=path rsvp=path]  (forge [id.act host.inv])
+     =/  inv=invite  +:(~(got by invites) id.act) 
+     =/  pax=[invite=path rsvp=path]  (forge:hc [id.act host.inv])
      ?>  &(=(our.bol src.bol) =(our.bol host.inv))
-     ~&  "removing {<del-ships.act>} from invite {<id.act>}"    
+     ~&  "removing {<del-ships.act>} from invite: {<(need title.inv)>}"    
      =+  dek=*(list card)
      |-
      ?~  del-ships.act
-       =+  inv=(~(got by invites) id.act)
+       =/  inv=invite  +:(~(got by invites) id.act)
        =/  faks=(list card)  (beam:hc [%update-invite id.act inv])
        :_  this
            (welp faks dek)                           
-     =/  =path  =/  =guest-status  -:(need (~(got by guest-list.inv) i.del-ships.act))
-                ?:  ?=(%rsvpd guest-status)
+     =/  =path  =/  gs=guest-status  
+                  -:(need (~(got by guest-list.inv) i.del-ships.act))
+                ?:  ?=(%rsvpd (need gs))
                   rsvp.pax
                 invite.pax 
      %=  $
         invites  %+  ~(jab by invites)
                    id.act
-                 |=  =invite
-                 =/  =guest-status
+                 |=  [our=guest-status =invite]
+                 =/  gs=guest-status
                    -:(need (~(got by guest-list.invite) i.del-ships.act))
+                 :-  [~]
                  %=  invite
-                    rsvp-count  ?:  =(%rsvpd guest-status)
+                    rsvp-count  ?:  =(%rsvpd (need gs))
                                        (some (dec (need rsvp-count.invite)))
                                     rsvp-count.invite
                                     ::
@@ -494,10 +508,10 @@
        %invite-ships
      ~|  [%failed-invite-ships ~]
      ?>  =(our.bol src.bol)
-     =/  inv=invite  (~(got by invites) id.act) 
+     =/  inv=invite  +:(~(got by invites) id.act) 
      ?>  =(our.bol host.inv)
      ?>  ?=(%private access.inv)
-     =/  pax=[invite=path rsvp=path]  (forge [id.act host.inv])
+     =/  pax=[invite=path rsvp=path]  (forge:hc [id.act host.inv])
      =/  add-ships=(list @p)
        %+  remove-our  our.bol
          %-  remove-banned  
@@ -509,7 +523,7 @@
      =+  poks=*(list card)
      |-
      ?~  add-ships
-       =+  inv=(~(got by invites) id.act)
+       =/  inv=invite  +:(~(got by invites) id.act)
        =/  faks=(list card)  (beam:hc [%update-invite id.act inv])
        :_  this 
            :(welp faks kiks poks)
@@ -517,19 +531,20 @@
        ?.  (~(has by guest-list.inv) i.add-ships)
          *card
        =/  kik-pax=path   
-         =/  =guest-status  -:(need (~(got by guest-list.inv) i.add-ships))
-         ?:  ?=(%rsvpd guest-status)
+         =/  gs=guest-status  
+           -:(need (~(got by guest-list.inv) i.add-ships))
+         ?:  ?=(%rsvpd (need gs))
             rsvp.pax
          invite.pax
        [%give %kick ~[kik-pax] `i.add-ships]
-     ~&  kik
      %=  $
         invites  %+  ~(jab by invites)
                    id.act
-                 |=  =invite
+                 |=  [=guest-status =invite]
+                 :-  [~]
                  %=  invite
                     guest-list   %+  ~(put by guest-list.invite) 
-                                   i.add-ships  `[%pending [~]] 
+                                   i.add-ships  `[`%pending [~]] 
                  ==
         poks  ;:  welp  poks  
                  :~  :*
@@ -545,14 +560,15 @@
        %edit-invite
      ~|  [%failed-to-edit-invite ~]
      ?>  =(our.bol src.bol)
-     =/  inv=invite  (~(got by invites) id.act)
+     =/  inv=invite  +:(~(got by invites) id.act)
      ?>  =(our.bol host.inv)
      ~|  "%gather: cannot edit invite because host-status is {<host-status.inv>}"
      ?<  ?|  ?=(%cancelled host-status.inv)
              ?=(%completed host-status.inv)
          ==
-     =/  pax=[invite=path rsvp=path]  (forge [id.act host.inv])
-     =/  alt=(list invite-changes)  %-  morph-invite                           :: determine what has been altered
+     =/  pax=[invite=path rsvp=path]  (forge:hc [id.act host.inv])
+     =/  alt=(list invite-changes)  
+                          %-  morph-invite:hc                           :: determine what has been altered
                            :*  inv                 desc.act
                                location-type.act   position.act
                                address.act         access-link.act
@@ -565,29 +581,34 @@
      ?~  alt
         =.  invites  %+  ~(jab by invites)
                        id.act
-                     |=(=invite invite(last-updated now.bol))
-        =/  inv=invite  (~(got by invites) id.act)
+                     |=  [=guest-status =invite]
+                     :-  [~]
+                     %=   invite
+                        last-updated  now.bol
+                     ==
+        =/  inv=invite  +:(~(got by invites) id.act)
         :_  this
             (beam:hc [%update-invite id.act inv]) 
      %=  $
         invites  %+  ~(jab by invites)
                    id.act
-                 |=  inv=invite
-                 ^-  =invite
+                 |=  [our=guest-status inv=invite]
+                 ^-  [=guest-status =invite]
                  ?-    i.alt
-                    %description     inv(desc desc.act)
-                    %location-type   inv(location-type location-type.act)
-                    %position        inv(position position.act)
-                    %address         inv(address address.act)
-                    %access-link     inv(access-link access-link.act)
-                    %radius          inv(radius radius.act)
-                    %title           inv(title title.act)
-                    %image           inv(image image.act)
-                    %date            inv(date date.act)
-                    %earth-link      inv(earth-link earth-link.act)
-                    %excise-comets   inv(excise-comets excise-comets.act)
-                    %enable-chat     inv(enable-chat enable-chat.act)
-                    %rsvp-limit    %=  inv
+                    %description     [[~] inv(desc desc.act)]
+                    %location-type   [[~] inv(location-type location-type.act)]
+                    %position        [[~] inv(position position.act)]
+                    %address         [[~] inv(address address.act)]
+                    %access-link     [[~] inv(access-link access-link.act)]
+                    %radius          [[~] inv(radius radius.act)]
+                    %title           [[~] inv(title title.act)]
+                    %image           [[~] inv(image image.act)]
+                    %date            [[~] inv(date date.act)]
+                    %earth-link      [[~] inv(earth-link earth-link.act)]
+                    %excise-comets   [[~] inv(excise-comets excise-comets.act)]
+                    %enable-chat     [[~] inv(enable-chat enable-chat.act)]
+                    %rsvp-limit     :-  [~]
+                                    %=  inv
                                        rsvp-limit  ?.  (lte (need rsvp-count.inv) (need rsvp-limit.act))
                                                        ?.  =(0 (need rsvp-limit.act))
                                                          ~&  "%gather... fail: new RSVP limit is below the number of existing RSVPs"
@@ -636,7 +657,7 @@
            excise-comets.act  ~
            catalog.settings   enable-chat.act 
        ==
-     =.  invites  (~(put by invites) id new)
+     =.  invites  (~(put by invites) id [[~] new])
      ?.  ?=(%private access.new)
        ~&  "%gather: created new public invite"
        `this 
@@ -696,8 +717,8 @@
   ::
        %rsvp        
      ~|  [%failed-to-rsvp ~]
-     =/  inv=invite  (~(got by invites) id.act)
-     =/  pax=[invite=path rsvp=path]  (forge [id.act host.inv])
+     =/  inv=invite  +:(~(got by invites) id.act)
+     =/  pax=[invite=path rsvp=path]  (forge:hc [id.act host.inv])
      ?:  =(our.bol src.bol)
        ?<  =(our.bol host.inv)
        ~&  "%gather: sending rsvp subscription request to {<host.inv>}"
@@ -706,8 +727,8 @@
        ==
      ?>  =(our.bol host.inv)
      ?>  ?=(%open host-status.inv)
-     =/  =guest-status  -:(need (~(got by guest-list.inv) src.bol))
-     ?<  ?=(%rsvpd guest-status)
+     =/  gs=guest-status  -:(need (~(got by guest-list.inv) src.bol))
+     ?<  ?=(%rsvpd (need gs))
      =.  inv
        ?>  ?:  =(rsvp-limit.inv ~)  %.y
            ?.  (gth +((need rsvp-count.inv)) (need rsvp-limit.inv))  %.y
@@ -719,12 +740,13 @@
                               src.bol
                           |=  =ship-invite
                           ^-  _ship-invite
-                          `[%rsvpd `now.bol]
+                          `[`%rsvpd `now.bol]
        ==
      :_  %=  this
             invites  %+  ~(jab by invites)
                        id.act
-                     |=(=invite inv)
+                     |=  [=guest-status =invite]
+                     [[~] inv]
          ==
      =/  faks=(list card)  (beam:hc [%update-invite id.act inv])
      ;:  welp  faks 
@@ -739,8 +761,8 @@
   ::
        %unrsvp
      ~|  [%failed-to-unrsvp ~]
-     =/  inv=invite  (~(got by invites) id.act) 
-     =/  pax=[invite=path rsvp=path]  (forge [id.act host.inv])
+     =/  inv=invite  +:(~(got by invites) id.act) 
+     =/  pax=[invite=path rsvp=path]  (forge:hc [id.act host.inv])
      ?:  =(our.bol src.bol)
        ?<  =(our.bol host.inv)
        :_  this
@@ -748,19 +770,20 @@
        ==
      ?>  =(our.bol host.inv)
      ?<  ?=(%completed host-status.inv)    
-     =/  =guest-status  -:(need (~(got by guest-list.inv) src.bol))
-     ?>  ?=(%rsvpd guest-status)
+     =/  gs=guest-status  -:(need (~(got by guest-list.inv) src.bol))
+     ?>  ?=(%rsvpd (need gs))
      =:  rsvp-count.inv  (some (dec (need rsvp-count.inv)))
          guest-list.inv   %+  ~(jab by guest-list.inv)
                                 src.bol
                              |=  =ship-invite 
                              ^-  _ship-invite
-                             `[%pending [~]]
+                             `[`%pending [~]]
      ==
      :_  %=  this
             invites  %+  ~(jab by invites)
                        id.act
-                     |=(=invite inv)
+                     |=  [=guest-status =invite]
+                     [[~] inv]
          ==
      =/  faks=(list card)  (beam:hc [%update-invite id.act inv])
      ;:  welp  faks
@@ -778,9 +801,9 @@
      ~|  [%failed-subscribe-to-rsvp ~]
      ?<  =(our.bol src.bol)
      ?<  (~(has in banned.settings) src.bol)
-     =/  inv=invite  (~(got by invites) id.act) 
+     =/  inv=invite  +:(~(got by invites) id.act) 
      ?>  =(src.bol host.inv)
-     =/  pax=[invite=path rsvp=path]  (forge [id.act host.inv])
+     =/  pax=[invite=path rsvp=path]  (forge:hc [id.act host.inv])
      :_  this
      :~  [%pass rsvp.pax %agent [src.bol %gather] %watch rsvp.pax]
      == 
@@ -789,8 +812,8 @@
      ~|  [%failed-subscribe-to-invite ~]
      ?<  =(our.bol src.bol)
      ?:  (~(has by invites) id.act) 
-       =/  inv=invite  (~(got by invites) id.act) 
-       =/  pax=[invite=path rsvp=path]  (forge [id.act host.inv])
+       =/  inv=invite  +:(~(got by invites) id.act) 
+       =/  pax=[invite=path rsvp=path]  (forge:hc [id.act host.inv])
        ?>  =(src.bol host.inv)
        ?<  %-  ~(has by wex.bol) 
              [/(scot %p host.inv)/[%invite]/(scot %uv id.act) host.inv %gather]
@@ -822,7 +845,7 @@
   ::
        %post
      ~|  [%post-fail ~]
-     =/  inv=invite  (~(got by invites) id.act)   
+     =/  inv=invite  +:(~(got by invites) id.act)   
      ?.  enable-chat.inv
        ~|("%gather: chat is not enabled on invite, {<(need title.inv)>}" !!)
      ?:  =(our.bol src.bol)
@@ -832,20 +855,24 @@
          ?:  ?=(%none on)
            ~|("%gather: not subscribed to {<(need title.inv)>}; cannot poast" !!)
          :_  this
-         :~  :*  %pass   path
-                 %agent  [host.inv %gather]
-                 %poke   %gather-action
-                 !>(`action`[%post id.act note.act])
+         :~  :*  %pass   path                               
+                 %agent  [host.inv %gather]           
+                 %poke   %gather-action                  
+                 !>(`action`[%post id.act note.act])          
          ==  ==
+       =/  =msgs
+         ?~  chat.inv  *msgs
+         (need chat.inv)
        =.  chat.inv  
          %-  some  
            %-  pin:hc 
-             [(need chat.inv) src.bol note.act]
+             [msgs our.bol note.act]
        :-  (beam:hc [%update-invite id.act inv]) 
        %=  this
           invites  %+  ~(jab by invites) 
                      id.act 
-                   |=(=invite inv)
+                   |=  [=guest-status =invite]
+                   [[~] inv]
        ==
      ?>  =(our.bol host.inv)
      =/  =msgs  
@@ -861,11 +888,12 @@
        %=  this
           invites  %+  ~(jab by invites) 
                      id.act 
-                   |=(=invite inv)
+                   |=  [=guest-status =invite]
+                   [[~] inv]
        ==
-     =/  =guest-status  
+     =/  gs=guest-status  
        -:(need (~(got by guest-list.inv) src.bol))
-     ?>  ?=(%rsvpd guest-status)
+     ?>  ?=(%rsvpd (need gs))
      =.  chat.inv
        %-  some  
          %-  pin:hc
@@ -874,7 +902,8 @@
      %=  this
         invites  %+  ~(jab by invites) 
                    id.act 
-                 |=(=invite inv)
+                 |=  [=guest-status =invite]
+                 [[~] inv]
      ==
   ::
        %ban
@@ -902,8 +931,7 @@
          ::
            levs   |-
                   ?~  their-ids  levs
-                  =/  inv=invite  (~(got by invites) i.their-ids)
-                  =/  =guest-status  -:(need (~(got by guest-list.inv) our.bol))
+                  =/  inv=invite  +:(~(got by invites) i.their-ids)
                   =/  =path  (which-path:hc [i.their-ids host.inv]) 
                   %=  $
                     levs  ;:  welp  levs
@@ -919,7 +947,7 @@
            invites  |- 
                     ?~  their-ids  invites
                     %=  $
-                      invites       (~(del by invites) i.their-ids)
+                      invites    (~(del by invites) i.their-ids)
                       their-ids  t.their-ids  
                     ==
          ::
@@ -940,21 +968,21 @@
        :_  this
            :(welp fak kiks levs poks faks)  
      ::
-     =/  inv=invite  (~(got by invites) i.our-ids)
-     =/  =guest-status  -:(need (~(got by guest-list.inv) ship.act))
-     =/  pax=[invite=path rsvp=path]  (forge [i.our-ids our.bol])
-     =/  =path  ?:  ?=(%rsvpd guest-status)
+     =/  inv=invite  +:(~(got by invites) i.our-ids)
+     =/  gs=guest-status  -:(need (~(got by guest-list.inv) ship.act))
+     =/  pax=[invite=path rsvp=path]  (forge:hc [i.our-ids our.bol])
+     =/  =path  ?:  ?=(%rsvpd (need gs))
                   rsvp.pax
                 invite.pax   
-     =:  rsvp-count.inv  ?:  =(%rsvpd guest-status)
+     =:  rsvp-count.inv  ?:  =(%rsvpd (need gs))
                                (some (dec (need rsvp-count.inv)))
                              rsvp-count.inv
-
-         guest-list.inv   %-  ~(del by guest-list.inv) 
-                               ship.act
-                             ==
-     =+  rsv=(veil [%rsvp inv])
-     =+  air=(veil [%invite inv])
+                         ::
+         guest-list.inv  %-  ~(del by guest-list.inv) 
+                            ship.act
+     ==
+     =+  rsv=(veil:hc [%rsvp inv])
+     =+  air=(veil:hc [%invite inv])
      %=  $
         poks  ;:  welp  poks
                  :~  :*
@@ -971,7 +999,9 @@
              ==  ==  ==
         invites  %+  ~(jab by invites)
                    i.our-ids
-                 |=(=invite inv)
+                 |=  [=guest-status =invite]
+                 [[~] inv]
+                 ::
         faks  ;:  welp  faks  
                  :~  :*
                        %give
@@ -1047,16 +1077,21 @@
         =+  upd=update
         ?.  (~(has by invites) id.upd)
           ~&  "%gather: adding new invite from {<src.bol>}"
-          :_  this(invites (~(put by invites) id.upd invite.upd))
-          :~  (fact:io cage.sign ~[/all])
+          :-  :~  (fact:io cage.sign ~[/all])
+              ==
+          %=  this
+             invites  %+  ~(put by invites) 
+                        id.upd 
+                      [`%pending invite.upd]
           ==
-        ::  ~&  "{<src.bol>} has updated their invite (id {<id.upd>})"
-        =/  inv=invite  (~(got by invites) id.upd)
+        ::  ~&  "%gather: {<src.bol>} has updated their invite (id {<id.upd>})"
+        =/  inv=invite  +:(~(got by invites) id.upd)
         ?>  =(src.bol host.inv)
         :_  %=  this
               invites  %+  ~(jab by invites)
                          id.upd
-                       |=(=invite invite.upd)
+                       |=  [=guest-status =invite] 
+                       [`%pending invite.upd] 
             ==
         ^-  (list card)
         :*  (fact:io cage.sign ~[/all])
@@ -1101,16 +1136,21 @@
         =+  upd=update
         ?.  (~(has by invites) id.upd)
           ~&  "%gather: adding rsvp details from {<src.bol>}"
-          :_  this(invites (~(put by invites) id.upd invite.upd))
-          :~  (fact:io cage.sign ~[/all])
+          :-  :~  (fact:io cage.sign ~[/all])
+              ==
+          %=  this
+             invites  %+  ~(put by invites) 
+                        id.upd  
+                      [`%rsvpd invite.upd]
           ==
-        ~&  "{<src.bol>} has updated their rsvp details"
-        =/  inv=invite  (~(got by invites) id.upd)
+        :: ~&  "%gather: {<src.bol>} has updated their rsvp details"
+        =/  inv=invite  +:(~(got by invites) id.upd)
         ?>  =(src.bol host.inv)
         :_  %=  this
               invites  %+  ~(jab by invites)
                          id.upd
-                      |=(=invite invite.upd)
+                       |=  [=guest-status =invite] 
+                       [`%rsvpd invite.upd]
             ==
         ^-  (list card)
         :*  (fact:io cage.sign ~[/all])
@@ -1148,39 +1188,61 @@
       %invite                                                 
     =/  =id  `@uv`(slav %uv i.t.t.path)
     ?>  =(our.bol (slav %p i.path))
-    =/  inv=invite  (~(got by invites) id)
+    =/  inv=invite  +:(~(got by invites) id)
     ?>  ?=(%open host-status.inv)  
     ?<  (~(has in banned.settings) src.bol)
     =.  guest-list.inv
       ?:  ?=(%public access.inv)
         ?.  (~(has by guest-list.inv) src.bol)
           %+  ~(put by guest-list.inv)
-            src.bol  `[%pending [~]]
-        =/  =guest-status  -:(need (~(got by guest-list.inv) src.bol))
-        ?>  ?=(%pending guest-status)
+            src.bol  `[`%pending [~]]
+        =/  gs=guest-status 
+          -:(need (~(got by guest-list.inv) src.bol))
+        ?>  ?=(%pending (need gs))
         guest-list.inv
-      ::
+    ::
       ?>  (~(has by guest-list.inv) src.bol)
-      =/  =guest-status  -:(need (~(got by guest-list.inv) src.bol))
-      ?>  ?=(%pending guest-status)     
+      =/  gs=guest-status  
+        -:(need (~(got by guest-list.inv) src.bol))
+      ?>  ?=(%pending (need gs))     
       guest-list.inv
-    =/  air=invite  (veil [%invite inv])
-    :_  this(invites (~(jab by invites) id |=(=invite inv)))
-    :~  (fact:io gather-update+!>(`update`[%update-invite id air]) ~[path])
+    ::
+    =/  air=invite  (veil:hc [%invite inv])
+    :-  :~  :* 
+               %give
+               %fact 
+               ~[path]
+               gather-update+!>(`update`[%update-invite id air])
+        ==  ==
+    %=  this
+       invites  %+  ~(jab by invites) 
+                  id 
+                |=  [=guest-status =invite]
+                [[~] inv]
     ==
   ::
       %rsvp  
     =/  =id  `@uv`(slav %uv i.t.t.path)
     ?>  =(our.bol (slav %p i.path))
-    =/  inv=invite  (~(got by invites) id)
+    =/  inv=invite  +:(~(got by invites) id)
     ?>  ?=(%open host-status.inv)  
     ?<  (~(has in banned.settings) src.bol)
     ?>  (~(has by guest-list.inv) src.bol)
-    =/  =guest-status  -:(need (~(got by guest-list.inv) src.bol))
-    ?>  ?=(%rsvpd guest-status)
-    =/  rsv=invite  (veil [%rsvp inv])
-    :_  this(invites (~(jab by invites) id |=(=invite inv)))
-    :~  (fact:io gather-update+!>(`update`[%update-invite id rsv]) ~[path])
+    =/  gs=guest-status  
+      -:(need (~(got by guest-list.inv) src.bol))
+    ?>  ?=(%rsvpd (need gs))
+    =/  rsv=invite  (veil:hc [%rsvp inv])
+    :-  :~  :*  
+               %give
+               %fact
+               ~[path] 
+               gather-update+!>(`update`[%update-invite id rsv])
+        ==  ==
+    %=  this
+       invites  %+  ~(jab by invites) 
+                  id 
+                |=  [=guest-status =invite]
+                [[~] inv]
     ==
   ==
 ::
@@ -1239,10 +1301,11 @@
      ?<  =(our.bol src.bol)
      =/  =id  (need (slaw %uv i.t.t.path))
      ~&  id
-     =/  inv=(unit invite)  (~(get by invites) id)
-     ?~  inv  ~
-     ?>  ?=(%public access.u.inv)
-     ``noun+!>(`(unit invite)``(veil [%invite u.inv]))  
+     =/  is-nul=(unit [guest-status invite])  (~(get by invites) id)
+     ?~  is-nul  ~
+     =/  inv=invite  +:(need is-nul)
+     ?>  ?=(%public access.inv)
+     ``noun+!>(`(unit invite)``(veil:hc [%invite inv]))  
     ::
        [%x %collection %ship @ @ ~]               :: TODO change to group-store $resource
      ?>  =(our.bol src.bol)
@@ -1250,16 +1313,15 @@
         (de-path-soft:res-lib t.t.path)
      ?~  rid   ~
      =/  r=[@p @tas]  (need rid)
-     ``noun+!>(`(unit collection)`(peek-collection `r))
+     ``noun+!>(`(unit collection)`(peek-collection:hc `r))
   == 
 ++  on-leave  on-leave:def 
 ++  on-fail   on-fail:def
---
-::
-::::::
-::  helper core 
-::::
-::
+--                 ::::::
+::                 ::
+:::: helper core :::: 
+::                 ::
+::                 ::::::
 |_  bol=bowl:gall
 +*  io    ~(. agentio bol)
 ::
@@ -1293,14 +1355,18 @@
   |=  [=id =host]
   ^-  path
   =/  pax=[invite=path rsvp=path]  (forge [id host])
-  ?.  =(~ (~(get by wex.bol) [/(scot %p host)/[%invite]/(scot %uv id) host %gather]))
+  ?.  .=  ~ 
+        %-  ~(get by wex.bol) 
+          [/(scot %p host)/[%invite]/(scot %uv id) host %gather]
     invite.pax
-  ?.  =(~ (~(get by wex.bol) [/(scot %p host)/[%rsvp]/(scot %uv id) host %gather]))
+  ?.  .=  ~ 
+         %-  ~(get by wex.bol) 
+           [/(scot %p host)/[%rsvp]/(scot %uv id) host %gather]
     rsvp.pax      
   /(scot %p host)/[%none]/(scot %uv id)
 ::
 ::
-:: Slings facts to subscribers
+:: Facts to subscribers
 ++  beam 
   |=  upd=update
   ^-  (list card) 

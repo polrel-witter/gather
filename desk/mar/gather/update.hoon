@@ -31,7 +31,7 @@
       |=  =invite
       ^-  ^json
       %-  pairs
-      :~  ['initShip' s+(scot %p host.invite)]
+      :~  ['initShip' s+(scot %p host.invite)]                        :: TODO change to host
           ['desc' s+desc.invite]
           ['guestList' (en-guest-list guest-list.invite)]             ::CHANGED to handle unit
           ['locationType' s+(scot %tas location-type.invite)] 
@@ -44,7 +44,7 @@
           ['hostStatus' s+(scot %tas host-status.invite)]
           ['title' (en-unit-cord title.invite)]                               :: ADDITION
           ['date' (en-date date.invite)]                                      :: ADDITION
-          ['lastUpdated' (sect last-updated.invite)]    :: ADDITION
+          ['lastUpdated' (sect last-updated.invite)]                  :: ADDITION
           ['access' s+(scot %tas access.invite)]                              :: ADDITION
           ['marsLink' (en-unit-cord mars-link.invite)]                :: ADDITION
           ['earthLink' (en-unit-cord earth-link.invite)]              :: ADDITION
@@ -58,9 +58,10 @@
       ^-  ^json
       :-  %a
       %+  turn  ~(tap by invites)
-      |=  [=id =invite]
+      |=  [=id =guest-status =invite]
       %-  pairs
       :~  ['id' (tape (trip id))]
+          ['guestStatus' (en-guest-status guest-status)]
           ['invite' (en-invite invite)]
       == 
     ++  en-settings
@@ -93,10 +94,10 @@
       |=  =ship-invite
       ^-  ^json
       ?~  ship-invite  s+'~'
-      =/  d=[?(%rsvpd %pending) (unit @da)] 
+      =/  d=[guest-status (unit @da)] 
         (need ship-invite)
       %-  pairs
-      :~  ['guestStatus' s+(scot %tas -:d)]
+      :~  ['guestStatus' (en-guest-status -:d)]
           ['rsvpDate' (en-unit-date +:d)]
       == 
     ++  en-unit-date                                       :: ADDITION
@@ -133,6 +134,14 @@
       ?~  a  s+'~'
       =/  d=?  (need a)
       b+d
+      ::
+    ++  en-guest-status
+      |=  a=guest-status
+      ^-  ^json
+      ?~  a  s+'~'
+      =/  d=?(%rsvpd %pending)
+        (need a)
+      s+(scot %tas d)
       :: 
     ++  en-date                                            :: ADDITION
       |=  =date
@@ -180,7 +189,7 @@
       ?~  catalog  s+'~'
       =+  c=(need catalog)
       %-  pairs
-      :~  ['inviteList' s+(scot %tas -:c)]
+      :~  ['inviteList' s+(scot %tas -:c)]                    :: TODO change to guestList
           ['accessLink' s+(scot %tas +<:c)]
           ['rsvpLimit' s+(scot %tas +>-:c)]
           ['rsvpCount' s+(scot %tas +>+<:c)]
