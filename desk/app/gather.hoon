@@ -1,7 +1,8 @@
 ::
-::  Gather: host and attend subterranean gatherings. Official distro moon:
-::  ~pontus-fadpun-polrel-witter
+::  Gather: host and attend subterranean gatherings. 
+::  Official distro moon: ~pontus-fadpun-polrel-witter
 :: 
+::
 /-  *gather, group, res-sur=resource, hark=hark-store
 /+  *gather, res-lib=resource, default-agent, dbug, agentio
 |%
@@ -11,10 +12,8 @@
       state-0
   ==
 ::
-::
 :: Latest state structure
 +$  state-1  [%1 =invites =settings]
-::
 ::
 :: Old state structures
 +$  state-0        [%0 =invites-0 =settings-0]
@@ -23,12 +22,18 @@
 +$  invites-0      invites:zero
 +$  settings-0     settings:zero
 ::
-::
 :: Random aliases 
 +$  card  card:agent:gall
++$  hark-type  
+  $?
+    %new-invite
+    %cancelled
+    %address
+    %access-link
+    %location-type
+  ==
 ::
-::
-:: Alterable settings
+:: Settings tags to determine frontend edits
 +$  setting-changes
   $?
     %address
@@ -41,8 +46,7 @@
     %enable-chat
   ==
 ::
-::
-:: Invite pieces alterable by host 
+:: Invite tags to determine frontend edits
 +$  invite-changes
   $?
     %description    %location-type
@@ -79,7 +83,7 @@
                  *banned
                  %anyone
                  *reminders
-                 *notifications
+                 [%.y %.n]
                  `%.n
                  `[%host-only %rsvp-only %host-only %host-only %rsvp-only %host-only]
                  %.y
@@ -134,7 +138,7 @@
          banned.old-settings
          receive-invite.old-settings
          *reminders
-         *notifications
+         [%.y %.n]
          `%.n
          `[%host-only %rsvp-only %host-only %host-only %rsvp-only %host-only]
          %.y
@@ -175,7 +179,7 @@
      ~|  [%failed-to-edit-settings ~]
      ?>  =(our.bol src.bol)
      =/  alt=(list setting-changes)  
-                         %-  morph-settings:hc 
+                         %-  inspect-settings:hc 
                            :*  settings
                                address.act
                                position.act
@@ -209,11 +213,12 @@
        %gathering-reminder 
      ~|  [%failed-to-set-gathering-reminder ~]
      ?>  =(our.bol src.bol)
+     ?>  (~(has by invites) id.act)
      =.  reminders.settings  %+  ~(put by gatherings.reminders.settings)
                                id.act
                              alarm.act
      :_  this
-     :~  [%pass /timers/gathering/(scot %uv id.act) %arvo %b %wait alarm.act]
+     :~  [%pass /timers/gatherings/(scot %uv id.act) %arvo %b %wait alarm.act]
      == 
   ::
        %create-collection                                               :: TODO change mentions of $resource to group-store $resource
@@ -402,28 +407,13 @@
        ^-  (quip card _this)
        ?.  =(our.bol src.bol)
          ?>  =(src.bol host.inv)
-         ~&  "{<host.inv>} has revoked their invite, {<(need title.inv)>}"
+         ~&  "{<(need title.inv)>} has been revoked"
          :_  this
          ^-  (list card)
-         :*  (fact:io gather-update+!>(`update`[%init-all invites settings]) ~[/all]) 
-             ?.  invite-updates.notifications.settings  ~
-             =/  inscript=@t 
-               (crip "has revoked their invite: {<(need title.inv)>}") 
-             ?.  .^(? %gu /(scot %p our.bol)/hark-store/(scot %da now.bol))  ~
-             =/  =bin:hark      :*  /[dap.bol] 
-                                    q.byk.bol 
-                                    /(scot %p src.bol)/[%invite] 
-                                ==
-             =/  =body:hark     :*  ~[ship+src.bol text+inscript]
-                                    ~
-                                    now.bol
-                                    /
-                                    /gather
-                                == 
-             =/  =action:hark   [%add-note bin body]
-             =/  =cage          [%hark-action !>(action)]
-             [%pass /(scot %p our.bol)/hark %agent [our.bol %hark-store] %poke cage]~ 
-         ==
+         :*  ?.  invite-updates.notifications.settings  ~
+             ;:  welp  (beam:hc [%init-all invites settings])
+                       (harken:hc [(some host.inv) %cancelled (need title.inv)]) 
+         ==  ==
        ?>  =(our.bol host.inv)
        =/  guest-list=(list @p)  
          ~(tap in ~(key by guest-list.inv))
@@ -566,9 +556,10 @@
      ?<  ?|  ?=(%cancelled host-status.inv)
              ?=(%completed host-status.inv)
          ==
+     =+  hrk=*(list card)
      =/  pax=[invite=path rsvp=path]  (forge:hc [id.act host.inv])
      =/  alt=(list invite-changes)  
-                          %-  morph-invite:hc                           :: determine what has been altered
+                          %-  inspect-invite:hc                           :: determine what has been altered
                            :*  inv                 desc.act
                                location-type.act   position.act
                                address.act         access-link.act
@@ -588,7 +579,9 @@
                      ==
         =/  inv=invite  +:(~(got by invites) id.act)
         :_  this
-            (beam:hc [%update-invite id.act inv]) 
+            ;:  welp  (beam:hc [%update-invite id.act inv])
+                      (beam:hc [%init-all invites settings])
+            ==  
      %=  $
         invites  %+  ~(jab by invites)
                    id.act
@@ -607,15 +600,16 @@
                     %earth-link      [[~] inv(earth-link earth-link.act)]
                     %excise-comets   [[~] inv(excise-comets excise-comets.act)]
                     %enable-chat     [[~] inv(enable-chat enable-chat.act)]
-                    %rsvp-limit     :-  [~]
-                                    %=  inv
-                                       rsvp-limit  ?.  (lte (need rsvp-count.inv) (need rsvp-limit.act))
-                                                       ?.  =(0 (need rsvp-limit.act))
-                                                         ~&  "%gather... fail: new RSVP limit is below the number of existing RSVPs"
-                                                         !!
-                                                       rsvp-limit.act
-                                                     rsvp-limit.act
-           ==                        == 
+                    %rsvp-limit     
+                  :-  [~]
+                  %=  inv
+                     rsvp-limit  ?.  (lte (need rsvp-count.inv) (need rsvp-limit.act))
+                                   ?.  =(0 (need rsvp-limit.act))
+                                     ~&  "%gather... fail: new RSVP limit is below the number of existing RSVPs"
+                                     !!
+                                   rsvp-limit.act
+                                 rsvp-limit.act
+           ==     == 
         alt  t.alt
      ==
   :: 
@@ -825,23 +819,11 @@
      ~&  "%gather: received new invite from {<src.bol>}, subscribing..."
      :_  this
      ^-  (list card)
-     :*  [%pass path %agent [src.bol %gather] %watch path]
-         ?.  new-invites.notifications.settings  ~
-         ?.  .^(? %gu /(scot %p our.bol)/hark-store/(scot %da now.bol))  ~
-         =/  =bin:hark      :*  /[dap.bol] 
-                                q.byk.bol 
-                                /(scot %p src.bol)/[%invite] 
-                            ==
-         =/  =body:hark     :*  ~[text+'An invite has arrived from ' ship+src.bol]
-                                ~
-                                now.bol
-                                /
-                                /gather
-                            == 
-         =/  =action:hark   [%add-note bin body]
-         =/  =cage          [%hark-action !>(action)]
-         [%pass /(scot %p our.bol)/hark %agent [our.bol %hark-store] %poke cage]~ 
-     ==
+     :*  ?.  new-invites.notifications.settings  
+           ~
+         ;:  welp  (harken:hc [(some src.bol) %new-invite *@t])
+                   [%pass path %agent [src.bol %gather] %watch path]~
+     ==  ==
   ::
        %post
      ~|  [%post-fail ~]
@@ -1040,6 +1022,7 @@
 ++  on-agent
   |=  [=wire =sign:agent:gall]
   ^-  (quip card _this)
+  |^
   ?.  ?=([@ @ @ ~] wire)
     ?+   `@tas`(slav %tas +<:wire)  ~&([dap.bol %strange-wire wire] [~ this])
         %hark      
@@ -1096,23 +1079,8 @@
         ^-  (list card)
         :*  (fact:io cage.sign ~[/all])
             ?.  invite-updates.notifications.settings  ~
-            =/  inscript=@t 
-              (crip "has made a change to {<(need title.inv)>}") 
-            ?.  .^(? %gu /(scot %p our.bol)/hark-store/(scot %da now.bol))  ~
-            =/  =bin:hark      :*  /[dap.bol] 
-                                   q.byk.bol 
-                                   /(scot %p src.bol)/[%invite] 
-                               ==
-            =/  =body:hark     :*  ~[ship+src.bol text+inscript]
-                                   ~
-                                   now.bol
-                                   /
-                                   /gather
-                               == 
-            =/  =action:hark   [%add-note bin body]
-            =/  =cage          [%hark-action !>(action)]
-            [%pass /(scot %p our.bol)/hark %agent [our.bol %hark-store] %poke cage]~
-        ==
+            (harken-appraisal [inv invite.upd])
+          ==
       ==
     ==
   ::
@@ -1155,26 +1123,52 @@
         ^-  (list card)
         :*  (fact:io cage.sign ~[/all])
             ?.  invite-updates.notifications.settings  ~
-            =/  inscript=@t 
-              (crip "has made a change to {<(need title.inv)>}") 
-            ?.  .^(? %gu /(scot %p our.bol)/hark-store/(scot %da now.bol))  ~
-            =/  =bin:hark      :*  /[dap.bol] 
-                                   q.byk.bol 
-                                   /(scot %p src.bol)/[%invite] 
-                               ==
-            =/  =body:hark     :*  ~[ship+src.bol text+inscript]
-                                   ~
-                                   now.bol
-                                   /
-                                   /gather
-                               == 
-            =/  =action:hark   [%add-note bin body]
-            =/  =cage          [%hark-action !>(action)]
-            [%pass /(scot %p our.bol)/hark %agent [our.bol %hark-store] %poke cage]~
+            (harken-appraisal [inv invite.upd])
         ==
       ==
     ==
   ==
+  ::
+  :: Are notifications warranted? 
+  :: If so, build a list of hark cards
+  ++  fill
+    |=  alt=invite-changes
+    ^-  hark-type
+    ?:  ?=(%address alt)  %address       
+    ?:  ?=(%access-link alt)  %access-link
+    ?:  ?=(%location-type alt)  %location-type
+    %new-invite
+  :: 
+  ++  harken-appraisal
+    |=  [old=invite new=invite]
+    ^-  (list card)
+    =/  alt=(list invite-changes) 
+      %-  inspect-invite
+        :*  old                 desc.new
+            location-type.new   position.new
+            address.new         access-link.new
+            rsvp-limit.new      radius.new
+            title.new           image.new          
+            date.new            earth-link.new
+            excise-comets.new   enable-chat.new
+        ==
+    =+  hrk=*(list card) 
+    |- 
+    ?~  alt  hrk
+    =/  =hark-type  (fill i.alt)
+    ?.  ?|  ?=(%address hark-type)
+            ?=(%access-link hark-type)
+            ?=(%location-type hark-type)
+        ==
+      $(alt t.alt)
+    %=  $
+       hrk   ;:  welp  hrk 
+                (harken:hc [`src.bol hark-type (need title.new)])
+             ==
+       alt  
+       t.alt
+    == 
+  --
 ::
 ++  on-watch
   |=  =path
@@ -1259,19 +1253,19 @@
         ==
       (on-arvo:def wire sign-arvo)
     ==
-      [%timers %gathering @ ~]
+      [%timers %gatherings @ ~]
     ?+    sign-arvo  (on-arvo:def wire sign-arvo)
          [%behn %wake *]
        ?~  error.sign-arvo
          =/  =id  `@uv`(slav %uv +>-:wire)
          ?>  %-  ~(has by gatherings.reminders.settings) 
                id
-         =/  title=@t   
-            +>+>+>+>+>+<:(~(get by gatherings.reminders.settings) id) 
-         =/  inscript=@t  (crip "Reminder to check on {<title>}") 
+         =/  inv=invite  +:(~(got by invites) id)
+         =/  inscript=@t  (crip "Reminder: check on {<(need title.inv)>}") 
          :_  %=  this
-                gatherings.reminders.settings  %-  ~(del by gatherings.reminders.settings)
-                                                 id
+                gatherings.reminders.settings  
+              %-  ~(del by gatherings.reminders.settings)
+                id
              ==
          ^-  (list card)
          :*
@@ -1366,7 +1360,7 @@
   /(scot %p host)/[%none]/(scot %uv id)
 ::
 ::
-:: Facts to subscribers
+:: Send facts to subscribers
 ++  beam 
   |=  upd=update
   ^-  (list card) 
@@ -1388,8 +1382,41 @@
   ==
 ::
 ::
+:: Notification handler
+++  harken
+  |=  [talker=(unit @p) =hark-type title=@t]
+  ^-  (list card)
+  ?.  .^(? %gu /(scot %p our.bol)/hark-store/(scot %da now.bol))  ~
+  |^ 
+  ?-    hark-type
+       %new-invite      (ha-seal [talker ' has sent you an invite']) 
+       %cancelled       (ha-seal [[~] (crip "{<title>} has been revoked")])
+       %address         (ha-seal [[~] (crip "{<title>}'s address has changed")])
+       %access-link     (ha-seal [[~] (crip "{<title>}'s access-link has changed")])
+       %location-type   (ha-seal [[~] (crip "{<title>}'s location-type has changed")])
+  ==
+  ++  ha-seal
+    |=  [talker=(unit @p) letter=@t]
+    ^-  (list card)
+    =/  =bin:hark      :*  /[dap.bol] 
+                           q.byk.bol 
+                           /(scot %p src.bol)/[%invite]          :: TODO may need to change src.bol
+                       ==
+    =/  =body:hark     :*  ?~  talker  ~[text+letter]    
+                           ~[ship+(need talker) text+letter]
+                           ~
+                           now.bol
+                           /
+                           /gather
+                       == 
+    =/  =action:hark   [%add-note bin body]
+    =/  =cage          [%hark-action !>(action)]
+    [%pass /(scot %p our.bol)/hark %agent [our.bol %hark-store] %poke cage]~ 
+  --
+::
+::
 :: Builds list of what has changed in settings
-++  morph-settings                       
+++  inspect-settings                       
   |=  $:  set=_settings 
           =address
           =position
@@ -1431,8 +1458,8 @@
 ::
 ::
 :: Builds list of what has been changed by host in an invite
-++  morph-invite 
-  |=  $:  inv=invite 
+++  inspect-invite 
+  |=  $:  old=invite 
           desc=@t
           =location-type
           =position
@@ -1463,19 +1490,19 @@
   %=  $
      chg  ^-  (list invite-changes) 
           ?-    i.chk
-              %description      ?:(=(desc.inv desc) chg (weld chg `(list invite-changes)`~[i.chk]))  
-              %location-type    ?:(=(location-type.inv location-type) chg (weld chg `(list invite-changes)`~[i.chk]))
-              %position         ?:(=(position.inv position) chg (weld chg `(list invite-changes)`~[i.chk]))
-              %address          ?:(=(address.inv address) chg (weld chg `(list invite-changes)`~[i.chk])) 
-              %access-link      ?:(=(access-link.inv access-link) chg (weld chg `(list invite-changes)`~[i.chk]))
-              %radius           ?:(=(radius.inv radius) chg (weld chg `(list invite-changes)`~[i.chk]))
-              %rsvp-limit       ?:(=(rsvp-limit.inv rsvp-limit) chg (weld chg `(list invite-changes)`~[i.chk])) 
-              %title            ?:(=(title.inv title) chg (weld chg `(list invite-changes)`~[i.chk])) 
-              %image            ?:(=(image.inv image) chg (weld chg `(list invite-changes)`~[i.chk])) 
-              %date             ?:(=(date.inv date) chg (weld chg `(list invite-changes)`~[i.chk])) 
-              %earth-link       ?:(=(earth-link.inv earth-link) chg (weld chg `(list invite-changes)`~[i.chk])) 
-              %excise-comets    ?:(=(excise-comets.inv excise-comets) chg (weld chg `(list invite-changes)`~[i.chk])) 
-              %enable-chat      ?:(=(enable-chat.inv enable-chat) chg (weld chg `(list invite-changes)`~[i.chk])) 
+              %description      ?:(=(desc.old desc) chg (weld chg `(list invite-changes)`~[i.chk]))  
+              %location-type    ?:(=(location-type.old location-type) chg (weld chg `(list invite-changes)`~[i.chk]))
+              %position         ?:(=(position.old position) chg (weld chg `(list invite-changes)`~[i.chk]))
+              %address          ?:(=(address.old address) chg (weld chg `(list invite-changes)`~[i.chk])) 
+              %access-link      ?:(=(access-link.old access-link) chg (weld chg `(list invite-changes)`~[i.chk]))
+              %radius           ?:(=(radius.old radius) chg (weld chg `(list invite-changes)`~[i.chk]))
+              %rsvp-limit       ?:(=(rsvp-limit.old rsvp-limit) chg (weld chg `(list invite-changes)`~[i.chk])) 
+              %title            ?:(=(title.old title) chg (weld chg `(list invite-changes)`~[i.chk])) 
+              %image            ?:(=(image.old image) chg (weld chg `(list invite-changes)`~[i.chk])) 
+              %date             ?:(=(date.old date) chg (weld chg `(list invite-changes)`~[i.chk])) 
+              %earth-link       ?:(=(earth-link.old earth-link) chg (weld chg `(list invite-changes)`~[i.chk])) 
+              %excise-comets    ?:(=(excise-comets.old excise-comets) chg (weld chg `(list invite-changes)`~[i.chk])) 
+              %enable-chat      ?:(=(enable-chat.old enable-chat) chg (weld chg `(list invite-changes)`~[i.chk])) 
          ==
      chk  
      t.chk 
