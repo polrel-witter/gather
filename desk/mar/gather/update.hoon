@@ -38,11 +38,12 @@
           ['invitePosition' (en-position position.invite)]   
           ['inviteAddress' s+address.invite]           
           ['accessLink' (en-unit-cord access-link.invite)]            ::CHANGED to handle unit
-          ['inviteRadius' (en-unit-rs radius.invite)] 
+          ['radius' (en-unit-rs radius.invite)] 
           ['rsvpLimit' (en-unit-decimal rsvp-limit.invite)]           ::CHANGED name & to handle unit
           ['rsvpCount' (en-unit-decimal rsvp-count.invite)]           ::CHANGED name & to handle unit
           ['hostStatus' s+(scot %tas host-status.invite)]
-          ['title' (en-unit-cord title.invite)]                               :: ADDITION
+          ['title' s+title.invite]                                    :: ADDITION
+          ['image' (en-unit-cord image.invite)]                       
           ['date' (en-date date.invite)]                                      :: ADDITION
           ['lastUpdated' (sect last-updated.invite)]                  :: ADDITION
           ['access' s+(scot %tas access.invite)]                              :: ADDITION

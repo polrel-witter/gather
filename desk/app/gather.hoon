@@ -121,13 +121,20 @@
          `position.i                    address.i
          `access-link.i                 `radius.i
          `max-accepted.i                `accepted-count.i
-         (coerce-hs host-status.i)      [~] 
+         (coerce-hs host-status.i)      *@t 
          *image                         *date
          now.bol                        %private           
          *mars-link                     *earth-link
          `%.n                           [~] 
-         `[%anyone %anyone %anyone %anyone %anyone %anyone]
-         %.n
+         %-  some
+           :*  %anyone 
+               %anyone 
+               %anyone 
+               %anyone 
+               %anyone 
+               %anyone
+           ==
+         %.n                           
       == 
     =/  new-settings=_settings 
       :* 
@@ -140,7 +147,14 @@
          *reminders
          [%.y %.n]
          `%.n
-         `[%host-only %rsvp-only %host-only %host-only %rsvp-only %host-only]
+         %-  some
+           :*  %host-only 
+               %rsvp-only 
+               %host-only 
+               %host-only 
+               %rsvp-only 
+               %host-only
+           ==
          %.y
       ==       
     [%1 new-invites new-settings]
@@ -374,6 +388,8 @@
      :-  (beam:hc [%init-all invites settings])
          this(invites (~(del by invites) id.act))
   :: 
+       %archive-invite  !!
+  :: 
        %alt-host-status
      =/  inv=invite  +:(~(got by invites) id.act)
      =/  pax=[invite=path rsvp=path]  (forge:hc [id.act host.inv])
@@ -390,7 +406,7 @@
        ?>  ?&  =(our.bol src.bol) 
                =(our.bol host.inv)
            ==
-       ~|  "%gather: cannot change host-status because {<(need title.inv)>} has been {<host-status.inv>}"
+       ~|  "%gather: cannot change host-status because {<title.inv>} has been {<host-status.inv>}"
        ?>  ?|  ?=(%open host-status.inv)
                ?=(%closed host-status.inv)
            ==
@@ -407,12 +423,12 @@
        ^-  (quip card _this)
        ?.  =(our.bol src.bol)
          ?>  =(src.bol host.inv)
-         ~&  "{<(need title.inv)>} has been revoked"
+         ~&  "{<title.inv>} has been revoked"
          :_  this
          ^-  (list card)
          :*  ?.  invite-updates.notifications.settings  ~
              ;:  welp  (beam:hc [%init-all invites settings])
-                       (harken:hc [(some host.inv) %cancelled (need title.inv)]) 
+                       (harken:hc [(some host.inv) %cancelled title.inv]) 
          ==  ==
        ?>  =(our.bol host.inv)
        =/  guest-list=(list @p)  
@@ -452,7 +468,7 @@
      =/  inv=invite  +:(~(got by invites) id.act) 
      =/  pax=[invite=path rsvp=path]  (forge:hc [id.act host.inv])
      ?>  &(=(our.bol src.bol) =(our.bol host.inv))
-     ~&  "removing {<del-ships.act>} from invite: {<(need title.inv)>}"    
+     ~&  "removing {<del-ships.act>} from invite: {<title.inv>}"    
      =+  dek=*(list card)
      |-
      ?~  del-ships.act
@@ -616,7 +632,7 @@
        %new-invite
      ~|  [%failed-to-create-new-invite ~]
      ?>  =(our.bol src.bol)
-     ?<  =(~ title.act)
+     ?<  =('' title.act)
      =/  =id  (crip (swag [0 10] (scow %uv eny.bol)))
      =/  =path  /(scot %p our.bol)/[%invite]/id
      =/  =mars-link
@@ -649,7 +665,7 @@
            now.bol            access.act
            mars-link          earth-link.act
            excise-comets.act  ~
-           catalog.settings   enable-chat.act 
+           catalog.settings   enable-chat.act
        ==
      =.  invites  (~(put by invites) id [[~] new])
      ?.  ?=(%private access.new)
@@ -672,8 +688,8 @@
         sugar.carton  t.sugar.carton
      ==
   ::
-       %find
-     ~|  [%find-fail ~]
+       %add
+     ~|  [%add-fail ~]
      ?>  =(our.bol src.bol)
      ?<  =(mars-link.act ~) 
      =/  meat=tape  (trip (need mars-link.act))
@@ -726,7 +742,7 @@
      =.  inv
        ?>  ?:  =(rsvp-limit.inv ~)  %.y
            ?.  (gth +((need rsvp-count.inv)) (need rsvp-limit.inv))  %.y
-           ~&  "%gather: max accepted count for {<(need title.inv)>} has been reached"
+           ~&  "%gather: max accepted count for {<title.inv>} has been reached"
            !!
        %=  inv
           rsvp-count  (some +((need rsvp-count.inv)))
@@ -829,13 +845,13 @@
      ~|  [%post-fail ~]
      =/  inv=invite  +:(~(got by invites) id.act)   
      ?.  enable-chat.inv
-       ~|("%gather: chat is not enabled on invite, {<(need title.inv)>}" !!)
+       ~|("%gather: chat is not enabled on invite, {<title.inv>}" !!)
      ?:  =(our.bol src.bol)
        ?.  =(our.bol host.inv)
          =/  =path  (which-path:hc [id.act host.inv]) 
          =+  on=+<:path
          ?:  ?=(%none on)
-           ~|("%gather: not subscribed to {<(need title.inv)>}; cannot poast" !!)
+           ~|("%gather: not subscribed to {<title.inv>}; cannot poast" !!)
          :_  this
          :~  :*  %pass   path                               
                  %agent  [host.inv %gather]           
@@ -1129,8 +1145,8 @@
     ==
   ==
   ::
-  :: Are notifications warranted? 
-  :: If so, build a list of hark cards
+  :: should we notify? 
+  :: if so, build a list of hark cards
   ++  fill
     |=  alt=invite-changes
     ^-  hark-type
@@ -1163,7 +1179,7 @@
       $(alt t.alt)
     %=  $
        hrk   ;:  welp  hrk 
-                (harken:hc [`src.bol hark-type (need title.new)])
+                (harken:hc [`src.bol hark-type title.new])
              ==
        alt  
        t.alt
@@ -1261,7 +1277,7 @@
          ?>  %-  ~(has by gatherings.reminders.settings) 
                id
          =/  inv=invite  +:(~(got by invites) id)
-         =/  inscript=@t  (crip "Reminder: check on {<(need title.inv)>}") 
+         =/  inscript=@t  (crip "Reminder: check on {<title.inv>}") 
          :_  %=  this
                 gatherings.reminders.settings  
               %-  ~(del by gatherings.reminders.settings)
@@ -1389,13 +1405,13 @@
   ?.  .^(? %gu /(scot %p our.bol)/hark-store/(scot %da now.bol))  ~
   |^ 
   ?-    hark-type
-       %new-invite      (ha-seal [talker ' has sent you an invite']) 
-       %cancelled       (ha-seal [[~] (crip "{<title>} has been revoked")])
-       %address         (ha-seal [[~] (crip "{<title>}'s address has changed")])
-       %access-link     (ha-seal [[~] (crip "{<title>}'s access-link has changed")])
-       %location-type   (ha-seal [[~] (crip "{<title>}'s location-type has changed")])
+       %new-invite      (seal [talker ' has sent you an invite']) 
+       %cancelled       (seal [[~] (crip "{<title>} has been revoked")])
+       %address         (seal [[~] (crip "{<title>}'s address has changed")])
+       %access-link     (seal [[~] (crip "{<title>}'s access-link has changed")])
+       %location-type   (seal [[~] (crip "{<title>}'s location-type has changed")])
   ==
-  ++  ha-seal
+  ++  seal
     |=  [talker=(unit @p) letter=@t]
     ^-  (list card)
     =/  =bin:hark      :*  /[dap.bol] 
@@ -1467,7 +1483,7 @@
           =access-link
           rsvp-limit=(unit @ud)
           =radius
-          title=(unit @t)
+          title=@t
           =image
           =date
           =earth-link
@@ -1497,12 +1513,14 @@
               %access-link      ?:(=(access-link.old access-link) chg (weld chg `(list invite-changes)`~[i.chk]))
               %radius           ?:(=(radius.old radius) chg (weld chg `(list invite-changes)`~[i.chk]))
               %rsvp-limit       ?:(=(rsvp-limit.old rsvp-limit) chg (weld chg `(list invite-changes)`~[i.chk])) 
-              %title            ?:(=(title.old title) chg (weld chg `(list invite-changes)`~[i.chk])) 
               %image            ?:(=(image.old image) chg (weld chg `(list invite-changes)`~[i.chk])) 
               %date             ?:(=(date.old date) chg (weld chg `(list invite-changes)`~[i.chk])) 
               %earth-link       ?:(=(earth-link.old earth-link) chg (weld chg `(list invite-changes)`~[i.chk])) 
               %excise-comets    ?:(=(excise-comets.old excise-comets) chg (weld chg `(list invite-changes)`~[i.chk])) 
               %enable-chat      ?:(=(enable-chat.old enable-chat) chg (weld chg `(list invite-changes)`~[i.chk])) 
+              %title            ?:  =(title.old title)  chg
+                                ?:  =('' title)  chg
+                                (weld chg `(list invite-changes)`~[i.chk]) 
          ==
      chk  
      t.chk 

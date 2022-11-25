@@ -83,7 +83,7 @@
      rsvp-limit=(unit @ud)               :: Changed name & to unit
      rsvp-count=(unit @ud)               :: Changed name & to unit
      =host-status
-     title=(unit @t)                     :: NEW
+     title=@t                            :: NEW
      =image                              :: NEW
      =date                               :: NEW
      last-updated=@da                    :: NEW
@@ -151,6 +151,7 @@
   ::
   :: Adjust an invite
      [%del-invite =id]                          :: NEW; deletes an invite locally
+     [%archive-invite =id]                      :: NEW
      [%alt-host-status =id =host-status]        :: CHANGED
      [%uninvite-ships =id del-ships=(list @p)]  :: CHANGED 
      [%invite-ships =id add-ships=(list @p)]    :: CHANGED
@@ -163,10 +164,10 @@
          =access-link
          rsvp-limit=(unit @ud)
          =radius
-         title=(unit @t)
+         title=@t
          =image
          =date
-         =earth-link                     :: remove?
+         =earth-link
          excise-comets=(unit ?)
          enable-chat=?
       ==    
@@ -181,15 +182,15 @@
          =radius 
          rsvp-limit=(unit @ud)
          desc=@t
-         title=(unit @t)                                :: NEW
+         title=@t                                       :: NEW
          =image                                         :: NEW
          =date                                          :: NEW
          =access                                        :: NEW
-         =earth-link                                    :: remove?
+         =earth-link                      
          excise-comets=(unit ?)                         :: NEW
          enable-chat=?                                  :: NEW
      ==
-     [%find =mars-link]                                 :: NEW; use for searching mars link
+     [%add =mars-link]                                  :: NEW
      [%rsvp =id]                                        :: CHANGED name
      [%unrsvp =id]                                      :: CHANGED
      [%sub-rsvp =id]                                    :: NEW

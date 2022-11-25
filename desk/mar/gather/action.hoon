@@ -30,7 +30,7 @@
         invite-ships+(ot ~[id+so add-ships+(ar (se %p))])    
         ::
         new-invite+de-new-invite
-        find+(ot ~[mars-link+so:dejs-soft:format])
+        add+(ot ~[mars-link+so:dejs-soft:format])
         rsvp+(ot ~[id+so])                    
         unrsvp+(ot ~[id+so])
         sub-rsvp+(ot ~[id+so])
@@ -105,7 +105,7 @@
           radius+(mu (se %rs))        
           rsvp-limit+ni:dejs-soft:format
           desc+so
-          title+so:dejs-soft:format
+          title+so
           image+so:dejs-soft:format
           date+de-date
           access+(se %tas)
@@ -123,7 +123,7 @@
           access-link+so:dejs-soft:format
           rsvp-limit+ni:dejs-soft:format
           radius+(mu (se %rs))
-          title+so:dejs-soft:format
+          title+so
           image+so:dejs-soft:format
           date+de-date
           earth-link+so:dejs-soft:format
