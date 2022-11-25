@@ -1,9 +1,14 @@
 import haversine from 'haversine-distance';
+import bigInt, { BigInteger } from 'big-integer';
 
 const myShip = "pontus-fadpun";
 export const fetchMyInvites = (invites) => {
 	// return invites.filter(x => x.initShip === window.urbit.ship)[0];
 	return invites.filter(x => x.invite.initShip === window.urbit.ship);
+}
+
+export const getInviteById = (id, invites) => {
+	return invites.filter(x => x.id === id)[0];
 }
 
 export const properPosition = (position) => {
@@ -13,41 +18,47 @@ export const properPosition = (position) => {
 }
 
 export const filterDistantInvites = (invites, settings) => {
-	console.log('============')
 	return invites.filter( invite => {
-		console.log(haversine(
-		{ latitude: invite.invite.position.lat, longitude: invite.invite.position.lon },
-		{ latitude: settings.position.lat, longitude: settings.position.lon }
-		));
-		console.log(settings.radius * 1000);
-		if(invite.invite.locationType === 'virtual')
+		if( invite.invite.locationType === 'virtual' ||
+				settings.receiveInvite === 'anyone'      ||
+			  invite.invite.initShip === '~' + window.urbit.ship
+		)
 			return true;
-		if(settings.receiveInvite === 'anyone')
+
+		if ( invite.invite.position.lon === '500' ||
+				 settings.position.lon === '500' )
 			return true;
-		// console.log('=======');
-		if(settings.position.lon === '500' || settings.radius === 0)
-			return true;
-		if(invite.invite.position.lon === '500' || invite.invite.radius === 0)
-			return true;
-		const inviteNA = (invite.invite.radius === 0 || invite.invite.position.lon === '500');
-		const inviteeNA = (settings.radius === 0 || settings.position.lon === '500');
-		const insideInvite = haversine(
-		{ latitude: invite.invite.position.lat, longitude: invite.invite.position.lon },
-		{ latitude: settings.position.lat, longitude: settings.position.lon }
-		) <= settings.radius * 1000;
-		const insideInvitee = haversine(
+
+		const inviteNA = (invite.invite.radius === '0' || invite.invite.position.lon === '500');
+		const inviteeNA = (settings.radius === '0' || settings.position.lon === '500');
+		const isInviteInside = haversine(
+			{ latitude: invite.invite.position.lat, longitude: invite.invite.position.lon },
+			{ latitude: settings.position.lat, longitude: settings.position.lon }
+			) <= settings.radius * 1000;
+		const isInviteeInside = haversine(
 							{ latitude: invite.invite.position.lat, longitude: invite.invite.position.lon },
 							{ latitude: settings.position.lat, longitude: settings.position.lon }
 		) <= invite.invite.radius * 1000;
-		console.log('--------------')
-		console.log(insideInvite)
-		console.log(inviteNA)
-		console.log(insideInvitee)
-		console.log(inviteeNA)
-		console.log('--------------')
-		if((insideInvite || inviteNA) && (insideInvitee || inviteeNA))
-			return true;
-		return false;
+
+
+		// console.log(invite.invite.desc);
+		// console.log(haversine(
+		// { latitude: invite.invite.position.lat, longitude: invite.invite.position.lon },
+		// { latitude: settings.position.lat, longitude: settings.position.lon }
+		// ));
+		// console.log(settings.radius * 1000);
+		// console.log(isInviteInside)
+		// console.log(inviteNA)
+		// console.log(isInviteeInside)
+		// console.log(inviteeNA)
+		// console.log(settings.position.lon);
+		// console.log(settings.radius);
+		// console.log('--------------')
+
+		if ((!isInviteInside && settings.radius !== '0') || 
+			  (!isInviteeInside && invite.invite.radius !== '0')) 
+			return false;
+		return true;
 	})
 }
 
@@ -56,8 +67,6 @@ export const fetchReceivedShips = (invites) => {
 };
 
 export const fetchMyReceivedShip = (invite) => {
-	console.log(window.urbit.ship);
-	console.log(invite.receiveShips.filter(x => x.ship === ('~' + window.urbit.ship))[0]);
 	return invite.receiveShips.filter(x => x.ship === ('~' + window.urbit.ship))[0];
 };
 
@@ -65,7 +74,6 @@ export const fetchMyReceivedShip = (invite) => {
 export const fetchPendingInvites = (invites) => {
 	return invites.filter(x => {
 		const myInviteInReceivedShips = x.receivedShips.filter(y => y._ship === myShip)[0];
-		console.log(myInviteInReceivedShips);
 		if(myInviteInReceivedShips !== undefined &&
 			 myInviteInReceivedShips.inviteStatus === 'pending')
 			return true;
@@ -76,7 +84,6 @@ export const fetchPendingInvites = (invites) => {
 export const fetchAcceptedInvites = (invites) => {
 	return invites.filter(x => {
 		const myInviteInReceivedShips = x.receivedShips.filter(y => y._ship === myShip)[0];
-		console.log(myInviteInReceivedShips);
 		if(myInviteInReceivedShips !== undefined &&
 			 myInviteInReceivedShips.inviteStatus === 'accepted')
 			return true;
@@ -92,15 +99,14 @@ export const fetchForeignShips = (ships) => {
 	return ships.filter(x => (x.ourGang === false && x.theirGang === true));
 };
 
-export const doPoke = (jon, succ, err) => {
+export const doPoke = (jon) => {
 	console.log(jon);
-	console.log(succ);
     window.urbit.poke({
       app: "gather",
       mark: "gather-action",
       json: jon,
-      onSuccess: succ,
-      onError: err,
+			onSuccess: () => {},
+			onError: () => {}
     })
 }
 
@@ -127,21 +133,19 @@ export const isGroup = (str) => {
 	return true;
 }
 
-export const createGroup = (str, collections) => {
+export const createGroup = (type, str, collections) => {
 
-	if(str[0] === '~' && patpValidate(str) && (collections.filter(collection => collection.collection.members[0] === str).length === 0) && str !== '~' + window.urbit.ship) {
+	if(type === 'ship') {
 		return ({title: str, members: [str], selected: true, resource: ''});
 	}
-	else if(isGroup(str)) {
+	else if(type === 'group') {
 		const result = scryGroup(str);
 		return ({title: str, members: [], selected: true, resource: {ship: str.split('/')[0], name: str.split('/')[1]}});
 	}
-	else if(str !== '' && collections.filter(x => x.collection.selected).length !== 0) {
+	else if(type === 'collection') {
 		return ({title: str, members: collections.filter(x => x.collection.selected).reduce((prev, curr) => prev.concat(curr.collection.members), []), 
 			selected: true, resource: ''});
 	}
-	else
-		return null;
 }
 
 export const toggleSelect = (id, groups) => {
@@ -264,7 +268,83 @@ export const scryGroup = (str) => {
 			// path: '/groups/ship/~hiddev-dannut/new-hooniverse',
 			// path: '/groups/ship/~hiddev-dannut/new-hooniverse/noun'
     })
-	console.log('scryGroup-----');
-	console.log(result);
 	return result;
+}
+
+export const sortSelected = (a,b) => {
+	if ( a.collection.selected === true  && b.collection.selected === true)
+		return 0;
+	if ( a.collection.selected === true  && b.collection.selected === false)
+		return -1;
+	if ( a.collection.selected === false && b.collection.selected === true)
+		return 1;
+	if ( a.collection.selected === false && b.collection.selected === false)
+		return 0;
+}
+
+export const filterInvites = (mode, invites) => {
+	switch(mode) {
+		case 'hosting-open':
+			return invites.filter(x => x.invite.initShip === '~' + window.urbit.ship && x.invite.hostStatus === 'open');
+			break;
+		case 'hosting-closed':
+			return invites.filter(x => x.invite.initShip === '~' + window.urbit.ship && x.invite.hostStatus === 'closed');
+			break;
+		case 'hosting-completed':
+			return invites.filter(x => x.invite.initShip === '~' + window.urbit.ship && x.invite.hostStatus === 'completed');
+			break;
+		case 'hosting-cancelled':
+			return invites.filter(x => x.invite.initShip === '~' + window.urbit.ship && x.invite.hostStatus === 'cancelled');
+			break;
+		case 'inbox-rsvpd':
+			return invites.filter(x => x.guestStatus === 'rsvpd');
+			break;
+		case 'inbox-pending':
+			return invites.filter(x => x.guestStatus === 'pending');
+			break;
+		case 'inbox-outofrange':
+			// return invites.filter(x => x.guestStatus === 'rsvpd');
+			return invites;
+			break;
+}
+	return [];
+}
+
+export const unit = (str) => {
+	if(str === '~') {
+		return null;
+	}
+	return str;
+}
+
+const DA_UNIX_EPOCH = bigInt('170141184475152167957503069145530368000'); // `@ud` ~1970.1.1
+const DA_SECOND = bigInt('18446744073709551616'); // `@ud` ~s1
+export function daToUnix(da) {
+  // ported from +time:enjs:format in hoon.hoon
+  const offset = DA_SECOND.divide(bigInt(2000));
+  const epochAdjusted = offset.add(da.subtract(DA_UNIX_EPOCH));
+
+  return Math.round(
+    epochAdjusted.multiply(bigInt(1000)).divide(DA_SECOND).toJSNumber()
+  );
+}
+
+export function unixToDa(unix) {
+  const timeSinceEpoch = bigInt(unix).multiply(DA_SECOND).divide(bigInt(1000));
+  return DA_UNIX_EPOCH.add(timeSinceEpoch);
+}
+
+export function dateToDa(d: Date, mil = false) {
+  const fil = function (n: number) {
+    return n >= 10 ? n : '0' + n;
+  };
+  return (
+    `~${d.getUTCFullYear()}.` +
+    `${d.getUTCMonth() + 1}.` +
+    `${fil(d.getUTCDate())}..` +
+    `${fil(d.getUTCHours())}.` +
+    `${fil(d.getUTCMinutes())}.` +
+    `${fil(d.getUTCSeconds())}` +
+    `${mil ? '..0000' : ''}`
+  );
 }

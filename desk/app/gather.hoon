@@ -2,6 +2,68 @@
 ::  Gather: host and attend subterranean gatherings. 
 ::  Official distro moon: ~pontus-fadpun-polrel-witter
 :: 
+<<<<<<< HEAD
+=======
+:: ...and can perform the following acts:
+::
+:::: User settings  
+::   [%address =address]                                  :: Used to retrieve $position (lat and lon) from Nominatim OSM.
+::   [%position =position]                                :: Used to calculate distance from %meatspace venue addresses 
+::   [%radius =radius]                                    :: Limit %meatspace invites you receive to only those with venue addresses within this radius
+::   [%receive-invite =receive-invite]                    :: Receive invites from either %anyone or %only-in-radius
+::
+:::: Collections
+::   $:  %create-collection                               :: Create a collection of ships (optionally combined with groups) you regularly invite
+::       title=@t
+::       members=(list @p)
+::       =selected
+::       =resource                                        :: If a resource is present, the collection was constructed from a group-store scry and will refresh upon each %create-collection poke
+::   ==                                
+::   $:  %edit-collection                                 :: Change a collection
+::       =id
+::       title=@t
+::       members=(list @p)
+::       =selected
+::       =resource
+::   ==
+::   [%del-collection =id]                                :: Delete a collection
+::   [%refresh-groups ~]                                  :: Scries into %group-store to build group collections; used in conjunction with %send-invite to send to members of a group we're a part of
+::
+:::: Options to edit a %sent invite
+::   [%del-receive-ship =id del-ships=(list @p)]          :: Delete ships from an invite that's already been sent to them
+::   [%add-receive-ship =id add-ships=(list @p)]          :: Add ships to an invite that's already been sent out
+::   [%edit-max-accepted =id qty=@ud]                     :: Change the $max-accepted amount of an invite that's already been sent out
+::   [%edit-desc =id desc=@t]                             :: Change the description of an invite that's already been sent out
+::   [%edit-invite-location =id =location-type]           :: Change the $location-type (%meatspace or %virtual)   
+::   [%edit-invite-position =id =position]                :: Change the lat and lon of a venue address (pulled from Nominatim OSM using the venue address)
+::   [%edit-invite-address =id =address]                  :: Change the venue address
+::   [%edit-invite-access-link =id =access-link]          :: Change the $access-link of a %virtual gathering
+::   [%edit-invite-radius =id =radius]                    :: Change the delivery radius of a %meatspace gathering, meaning future sending of this (%meatspace) invite will only appear within invitees' dashboard that have addresses within the radius of this invite's venue address
+::   [%cancel =id]                                        :: If called by host, cancelling the invite will delete it from the host and all invitee's dashboards; if called by non-host, an invite will be deleted locally and unsubscribed from 
+::   [%complete =id]                                      :: Intended to be called post-gathering to indicate to the host and invitees that the gathering is finished (can only be called by the host)                           
+::   [%close =id]                                         :: As host, refuse any more %accepted invites (i.e. RSVPs)
+::   [%reopen =id]                                        :: If %closed, reopening will allow more invitees to %accept
+::
+:::: Invite communication 
+::   $:  %send-invite                                     :: Invite creation; will poke each  $receive-ship's (i.e. invitees) %subscribe-to-invite action
+::       send-to=(list @p)
+::       =location-type          
+::       =position               
+::       =address                
+::       =access-link            
+::       =radius                 
+::       max-accepted=@ud
+::       desc=@t 
+::   ==
+::   [%accept =id]                                        :: RSVP to an invite 
+::   [%deny =id]                                          :: UnRSVP from an invite 
+::   [%subscribe-to-invite =id]                           :: Auto-poked when invitee receives an invite; host essentially requests the invitee to subscribe to the invite details
+::
+:::: General
+::   [%ban =ship]                                         :: Refuse sending and receiving invites to/from a specific ship 
+::   [%unban =ship]                                       :: Make sending and receiving invites to/from a specific ship available again
+::
+>>>>>>> main
 ::
 /-  *gather, group, res-sur=resource, hark=hark-store
 /+  *gather, res-lib=resource, default-agent, dbug, agentio
@@ -1024,6 +1086,19 @@
   ^-  (quip card _this)
   |^
   ?.  ?=([@ @ @ ~] wire)
+<<<<<<< HEAD
+=======
+    ?.  ?=([@ @ ~] wire)                      :: TODO this is a mess; clean up so %gather, %settings, and %hark wire are the same structure
+      ?+   wire  ~&([dap.bol %strange-wire wire] [~ this])
+          [%gather ~]          
+        ?+   -.sign  (on-agent:def wire sign)
+            %watch-ack
+          ?~  p.sign  [~ this]
+          ~&  "%gather: frontend failed to subscribe to %gather agent."
+          [~ this]
+        ==
+      == 
+>>>>>>> main
     ?+   `@tas`(slav %tas +<:wire)  ~&([dap.bol %strange-wire wire] [~ this])
         %hark      
       ?+    -.sign  (on-agent:def wire sign)
