@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Text, Box, Button } from "@tlon/indigo-react";
-import TopButtons from '../shared/TopButtons';
-import { useStore } from '../../data/store';
+import { useStore } from '../data/store';
 
 const Topbar = () => {
 	const route = useStore(state => state.route);
