@@ -1,4 +1,4 @@
-/-  *gather
+/-  *gather, *odyssey
 |_  act=action
 ++  grow
   |%
@@ -109,7 +109,7 @@
           image+so:dejs-soft:format
           date+de-date
           access+(se %tas)
-          earth-link+so:dejs-soft:format
+          earth-link+so
           excise-comets+bo:dejs-soft:format
           enable-chat+bo 
       ==
@@ -126,7 +126,7 @@
           title+so
           image+so:dejs-soft:format
           date+de-date
-          earth-link+so:dejs-soft:format
+          earth-link+so
           excise-comets+bo:dejs-soft:format
           enable-chat+bo
       ==

@@ -1,4 +1,4 @@
-/-  *gather
+/-  *gather, *odyssey
 |_  upd=update
 ++  grow
   |%
@@ -48,7 +48,7 @@
           ['lastUpdated' (sect last-updated.invite)]                  :: ADDITION
           ['access' s+(scot %tas access.invite)]                              :: ADDITION
           ['marsLink' (en-unit-cord mars-link.invite)]                :: ADDITION
-          ['earthLink' (en-unit-cord earth-link.invite)]              :: ADDITION
+          ['earthLink' s+earth-link.invite]                           :: ADDITION
           ['exciseComets' (en-unit-bool excise-comets.invite)]        :: ADDITION
           ['chat' (en-chat chat.invite)]                              :: ADDITION
           ['catalog' (en-catalog catalog.invite)]                     :: ADDITION

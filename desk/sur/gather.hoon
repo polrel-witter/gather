@@ -6,13 +6,13 @@
 +$  id              @
 +$  selected        ?
 +$  address         @t
-+$  radius          (unit @rs)                        :: CHANGED to unit                                                   
-+$  access-link     (unit @t)                         :: CHANGED to unit
++$  earth-link      @t                                :: NEW
 +$  mars-link       (unit @t)                         :: NEW
-+$  earth-link      (unit @t)                         :: NEW
++$  access-link     (unit @t)                         :: CHANGED to unit
 +$  image           (unit @t)                         :: NEW
 +$  banned          (set @p)
 +$  members         (set @p)
++$  radius          (unit @rs)                        :: CHANGED to unit                                                   
 +$  access          ?(%public %private)               :: NEW
 +$  msgs            (list msg)                        :: NEW
 +$  msg             [who=@p wat=@t wen=@da]           :: NEW; added wen
