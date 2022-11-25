@@ -1,6 +1,6 @@
 import React, { Component, useState } from 'react';
 import { Icon, StatelessTextInput, Text, Box, ManagedTextAreaField, StatelessTextArea, ManagedTextInputField, Button } from "@tlon/indigo-react";
-import { useStore } from '../../data/store';
+import { useStore } from '../data/store';
 import Geolookup from 'react-geolookup-v2';
 import * as Nominatim from 'nominatim-browser';
 import ReactTooltip from 'react-tooltip';
