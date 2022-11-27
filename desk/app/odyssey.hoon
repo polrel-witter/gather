@@ -1,9 +1,9 @@
 ::
-::  %odyssey: beaming fotos from mars to earth via rudder
+::  %odyssey: beaming mars invites to earth via rudder
 ::
 /-  *odyssey, gather
 /+  dbug, default-agent, agentio, rudder
-/~  pages  (page:rudder fotos action)  /app/terraform
+/~  pages  (page:rudder fotos shoot)  /app/odyssey
 ::
 |%
 +$  versioned-state
@@ -24,7 +24,7 @@
   :_  this
   :~
     :*  %pass  /eyre/connect  %arvo  %e
-        %connect  `/apps/gather-earth  %odyssey
+        %connect  `/gather  dap.bol
     ==
   ==
 ::
@@ -36,8 +36,15 @@
   |=  old-state=vase
   ^-  (quip card _this)
   =/  old  !<(versioned-state old-state)
-  ?-  -.old
-    %0  `this(state old)
+  ?-   -.old
+      %0  
+    :_  this(state old)
+    :~  =-  [%pass /eyre/connect %arvo %e -]
+          [%disconnect [~ [%gather %terraform ~]]]
+        ::
+        =-  [%pass /eyre/connect %arvo %e -]
+          [%connect [[~ [%gather ~]] dap.bol]]  
+    ==
   ==
 ::
 ++  on-poke
@@ -47,16 +54,15 @@
        %handle-http-request
      =;  out=(quip card _fotos)
        [-.out this(fotos +.out)]
-     %.  [bol !<(order:rudder vase) fotos]   :: sample data we're passing in
-     %:  (steer:rudder _fotos action)        :: a is gate to be called, b - d are the arguments
-         pages                               :: arg
-       |=  =trail:rudder                     :: arg .. etc
+     %.  [bol !<(order:rudder vase) fotos]  
+     %:  (steer:rudder _fotos shoot)       
+         pages                            
+       |=  =trail:rudder                 
        ^-  (unit place:rudder)
-       ?~  site=(decap:rudder /gather-earth site.trail)  ~
+       ?~  site=(decap:rudder /gather site.trail)  ~
        ?+  u.site  ~
-         ~               `[%page & %gather]
-         [%index ~]      `[%away (snip site.trail)]
-         [%terraform ~]  `[%page | %terraform]
+         ~           `[%page & %gather]
+         [@ ~]       `[%page | %terraform]
        ==
        |=  =order:rudder
        ^-  [[(unit reply:rudder) (list card)] _fotos]
@@ -68,22 +74,37 @@
            url.request.order
            ' is still mia...'
        ==
-       |=  act=action
+       |=  =shoot
        ^-  $@(@t [brief:rudder (list card) _fotos])
-       'earth actions not supported: get to mars.'
+       'by divine right, martians may only perform invite actions! get to mars @ urbit.org'
      ==
   ::
-       %odyssey-action
-     =/  act=action  !<(action vase)
+       %odyssey-shoot
+     =/  =shoot  !<(shoot vase)
      ^-  (quip card _this)
      ?>  =(src.bol our.bol)
-     ?-     -.act
-          %del
-        `this(fotos (~(del by fotos) earth-link.act))
+     ?-     -.shoot
+          %del                :: delete foto and leave sub
+        =/  =path 
+            /(scot %p our.bol)/[%odyssey]/(scot %uv id.shoot)
+        :-  :~  :* 
+                  %pass  path 
+                  %agent  [our.bol %gather] 
+                  %leave  ~
+            ==  ==
+        %=  this 
+           fotos   (~(del by fotos) earth-link.shoot)
+        ==
      ::
-          %pub
-        ?:  =('' earth-link.invite.act)  !!
-       `this(fotos (~(put by fotos) earth-link.invite.act invite.act))
+          %pub                :: establish foto sub
+        =/  =path 
+            /(scot %p our.bol)/[%odyssey]/(scot %uv id.shoot)
+        :_  this
+        :~  :*
+               %pass  path
+               %agent  [our.bol %gather]
+               %watch  path
+        ==  ==
      ==   
   ==
 ::
@@ -97,7 +118,49 @@
   ==
 ::
 ++  on-leave  on-leave:def
-++  on-agent  on-agent:def
+++  on-agent 
+  |=  [=wire =sign:agent:gall]
+  ?>  ?=([@ @ @ ~] wire)
+  ?+    `@tas`(slav %tas i.t.wire)  ~&([dap.bol %strange-wire wire] `this)
+       %odyssey
+     ?+    -.sign  (on-agent:def wire sign)
+          %watch-ack
+        ?~  p.sign  [~ this]
+        ~&  "%odyssey: sub attempt to %gather failed"
+        [~ this]
+     ::
+          %kick
+        :_  this
+        :~  :*
+               %pass  wire
+               %agent  [our.bol %gather]
+               %watch  wire
+        ==  ==
+     ::
+          %fact
+        ?>  ?=(%odyssey-shake p.cage.sign)
+        =/  =shake  !<(shake q.cage.sign)
+        ?-    -.shake  
+             %foto
+           =/  =earth-link:gather 
+               earth-link.invite.shake
+           ?.  (~(has by fotos) earth-link)
+             :-  ~
+             %=  this
+                fotos  %+  ~(put by fotos)
+                          earth-link
+                       invite.shake   
+             ==
+           :-  ~
+           %=  this
+              fotos  %+  ~(jab by fotos)
+                        earth-link
+                     |=(=invite:gather invite.shake)
+           ==
+        ==
+     ==
+  == 
+::   
 ++  on-arvo  on-arvo:def
 ++  on-fail  on-fail:def
 --

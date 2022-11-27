@@ -208,7 +208,7 @@
      ?~  alt
         ~&  "%gather: settings have been updated"
         :_  this
-            (beam:hc [%update-settings settings])
+            (relay:hc [%update-settings settings])
      %=  $
         settings  ^-  _settings
                   ?-    i.alt
@@ -263,7 +263,7 @@
                 %.y
                 `r
             ==
-       :-  (beam:hc [%update-settings settings])
+       :-  (relay:hc [%update-settings settings])
            this(collections.settings (~(del by collections.settings) old))
      =/  gang=members  (silt (remove-our [our.bol (remove-banned [(remove-dupes members.act) banned.settings])]))
      =.  collections.settings   
@@ -276,7 +276,7 @@
              resource.act
           ==
      :_  this
-         (beam:hc [%update-settings settings])
+         (relay:hc [%update-settings settings])
   ::
        %edit-collection
      ~|  [%unexpected-collection-request %edit-collection-title ~]
@@ -293,7 +293,7 @@
           resource  resource.act
        ==
      :_  this
-         (beam:hc [%update-settings settings])
+         (relay:hc [%update-settings settings])
   ::
        %del-collection
      ~|  [%unexpected-collection-request %del-collection ~]
@@ -301,7 +301,7 @@
      =.  collections.settings  (~(del by collections.settings) id.act)
      ::  ~&  "deleting collection"
      :_  this
-         (beam:hc [%update-settings settings])
+         (relay:hc [%update-settings settings])
   ::
        %refresh-groups                                      :: TODO change mentions of $resource to group-store $resource
      ~|  [%failed-to-refresh-groups ~]
@@ -340,7 +340,7 @@
        == 
      =+  eny=eny.bol
      =/  values=(list collection)   (make-collection-values groups)
-     =/  fak=(list card)  (beam:hc [%update-settings settings])
+     =/  fak=(list card)  (relay:hc [%update-settings settings])
      :-  ;:  welp  fak
              ~[[%pass /timers/refresh-groups %arvo %b %wait (add now.bol `@dr`~h24)]]
          ==
@@ -375,8 +375,8 @@
                           gather-action+!>(`action`[%unrsvp id.act])
                       ==
         :_  this(invites (~(del by invites) id.act))
-        =/  faks=(list card)  (beam:hc [%init-all invites settings])
-        ;:  welp  faks  
+        =/  fak=(list card)  (relay:hc [%init-all invites settings])
+        ;:  welp  fak  
           :~  pok
               [%pass path %agent [host.inv %gather] %leave ~]
           ==
@@ -385,8 +385,19 @@
      ?>  ?|  ?=(%cancelled host-status.inv)
              ?=(%completed host-status.inv)
          ==
-     :-  (beam:hc [%init-all invites settings])
-         this(invites (~(del by invites) id.act))
+     =/  fak=(list card)
+       ?:  =('' earth-link.inv)
+          (relay:hc [%init-all invites settings])
+       =/  =path                            
+           /(scot %p our.bol)/[%odyssey]/(scot %uv id.act)
+       ;:  welp  (relay:hc [%init-all invites settings])
+           :~  :*
+                  %pass  path
+                  %agent  [our.bol %odyssey]
+                  %poke  %odyssey-shoot
+                  !>(`shoot:odyssey`[%del:odyssey id.act earth-link.inv])
+       ==  ==  ==           
+     [fak this(invites (~(del by invites) id.act))]
   :: 
        %archive-invite  !!
   :: 
@@ -411,7 +422,17 @@
                ?=(%closed host-status.inv)
            ==
        =.  host-status.inv  new 
-       :-  (beam:hc [%update-invite id inv]) 
+       :-  ?:  =('' earth-link.invite)
+             (relay:hc [%update-invite id inv]) 
+           =/  =path
+               /(scot %p our.bol)/[%odyssey]/(scot %uv id.act)
+           =+  air=(veil:hc [%invite inv])
+           ;:  welp  (relay:hc [%update-invite id inv])
+              :~  :*
+                    %give  %fact
+                    ~[path] 
+                    odyssey-shake+!>(`shake:odyssey`[%foto:odyssey air])
+           ==  ==  ==
        %=  this 
           invites  %+  ~(jab by invites) 
                      id 
@@ -427,13 +448,13 @@
          :_  this
          ^-  (list card)
          :*  ?.  invite-updates.notifications.settings  ~
-             ;:  welp  (beam:hc [%init-all invites settings])
+             ;:  welp  (relay:hc [%init-all invites settings])
                        (harken:hc [(some host.inv) %cancelled title.inv]) 
          ==  ==
        ?>  =(our.bol host.inv)
        =/  guest-list=(list @p)  
          ~(tap in ~(key by guest-list.inv))
-       =+  poks=*(list card)
+       =+  pok=*(list card)
        |-
        ?~  guest-list
          =.  invites  %+  ~(jab by invites)
@@ -444,15 +465,26 @@
          ::
          =+  kik=~[[%give %kick ~[invite.pax rsvp.pax /all] ~]]
          =/  inv=invite  +:(~(got by invites) id)
-         =/  faks=(list card)  (beam:hc [%update-invite id inv])
+         =/  fak=(list card)  
+             ?:  =('' earth-link.inv)
+               (relay:hc [%update-invite id inv])
+             =/  =path
+                 /(scot %p our.bol)/[%odyssey]/(scot %uv id.act)
+             =+  air=(veil:hc [%invite inv])
+             ;:  welp  (relay:hc [%update-invite id inv])
+                :~  :*
+                      %give  %fact
+                      ~[path] 
+                      odyssey-shake+!>(`shake:odyssey`[%foto:odyssey air])
+             ==  ==  ==
          :_  this
-             :(welp poks faks kik)
+             :(welp pok fak kik)
        =/  =path  =/  gs=guest-status  -:(need (~(got by guest-list.inv) i.guest-list))
                   ?:  ?=(%rsvpd (need gs))
                     rsvp.pax
                   invite.pax 
        %=  $
-          poks  ;:  welp  poks  
+          pok  ;:  welp  pok  
                    :~  :*
                          %pass  path
                          %agent  [i.guest-list %gather]
@@ -473,9 +505,9 @@
      |-
      ?~  del-ships.act
        =/  inv=invite  +:(~(got by invites) id.act)
-       =/  faks=(list card)  (beam:hc [%update-invite id.act inv])
+       =/  fak=(list card)  (relay:hc [%update-invite id.act inv])
        :_  this
-           (welp faks dek)                           
+           (welp fak dek)                           
      =/  =path  =/  gs=guest-status  
                   -:(need (~(got by guest-list.inv) i.del-ships.act))
                 ?:  ?=(%rsvpd (need gs))
@@ -526,13 +558,13 @@
            ::
      ::  ~&  "adding {<add-ships>} to invite list on invite {<id.act>}"    
      =+  kiks=*(list card)
-     =+  poks=*(list card)
+     =+  pok=*(list card)
      |-
      ?~  add-ships
        =/  inv=invite  +:(~(got by invites) id.act)
-       =/  faks=(list card)  (beam:hc [%update-invite id.act inv])
+       =/  fak=(list card)  (relay:hc [%update-invite id.act inv])
        :_  this 
-           :(welp faks kiks poks)
+           :(welp fak kiks pok)
      =/  kik=card 
        ?.  (~(has by guest-list.inv) i.add-ships)
          *card
@@ -552,7 +584,7 @@
                     guest-list   %+  ~(put by guest-list.invite) 
                                    i.add-ships  `[`%pending [~]] 
                  ==
-        poks  ;:  welp  poks  
+        pok  ;:  welp  pok  
                  :~  :*
                        %pass  invite.pax 
                        %agent  [i.add-ships %gather]
@@ -594,12 +626,48 @@
                         last-updated  now.bol
                      ==
         =/  inv=invite  +:(~(got by invites) id.act)
+        =/  fak=(list card)
+          ?:  ?&   =('' earth-link.inv)            :: $earth-link cannot be empty
+                   ?=(%public access.inv)          :: and invite must be %public to
+              ==                                   :: send facts to %odyssey
+             *(list card)    
+          =/  =path
+              /(scot %p our.bol)/[%odyssey]/(scot %uv id.act)
+          =+  air=(veil:hc [%invite inv])
+          :~  :*
+                 %give  %fact
+                 ~[path] 
+                 odyssey-shake+!>(`shake:odyssey`[%foto:odyssey air])
+          ==  ==  
         :_  this
             ;:  welp  pok
-                      (beam:hc [%update-invite id.act inv])
-                      (beam:hc [%init-all invites settings])
+                      fak
+                      (relay:hc [%update-invite id.act inv])
+                      (relay:hc [%init-all invites settings])
             ==  
      %=  $
+        pok  ?.  ?=(%earth-link i.alt)  *(list card)    :: $earth-link has changed, one of two things can occur:
+             =/  =path                            
+                 /(scot %p our.bol)/[%odyssey]/(scot %uv id.act)
+             ?:  =('' earth-link.act)                   :: if prev 'x', and now '', del on %odyssey
+               :~  :* 
+                      %pass  path
+                      %agent  [our.bol %odyssey]
+                      %poke  %odyssey-shoot
+                      !>(`shoot:odyssey`[%del:odyssey id.act earth-link.inv])
+               ==  ==
+             ?.  ?|  =('' earth-link.inv)               :: was '', and now 'x' so pub on %odyssey
+                     ?!  %-  earth-link-dupe 
+                           [our.bol invites earth-link.act]
+                 ==
+                *(list card)
+             :~  :*
+                     %pass  path
+                     %agent  [our.bol %odyssey]
+                     %poke  %odyssey-shoot
+                     !>(`shoot:odyssey`[%pub:odyssey id.act])
+             ==  ==
+     ::
         invites  %+  ~(jab by invites)
                    id.act
                  |=  [our=guest-status inv=invite]
@@ -616,7 +684,16 @@
                     %date            [[~] inv(date date.act)]
                     %excise-comets   [[~] inv(excise-comets excise-comets.act)]
                     %enable-chat     [[~] inv(enable-chat enable-chat.act)]
-                    %earth-link      [[~] inv(earth-link earth-link.act)]
+                    %earth-link      
+                  :-  [~]
+                  ?.  ?|  =('' earth-link.inv)       :: if prev '', don't change
+                          =('' earth-link.act)       :: if prev 'x', but now '', change
+                      ==
+                    inv
+                  ?:  (earth-link-dupe [our.bol invites earth-link.act])  :: if dupe, don't change
+                    inv
+                  inv(earth-link earth-link.act)
+                ::    
                     %rsvp-limit     
                   :-  [~]
                   %=  inv
@@ -627,24 +704,6 @@
                                    rsvp-limit.act
                                  rsvp-limit.act
                  ==     == 
-        pok  ?.  ?=(%earth-link i.alt)  *(list card)
-             =/  =path  /(scot %p our.bol)/[%earth]
-             =/  del=card  :* 
-                               %pass  path
-                               %agent  [our.bol %odyssey]
-                               %poke  %odyssey-action
-                               !>(`action:odyssey`[%del:odyssey earth-link.act])
-                           ==
-             ?:  =('' earth-link.act)
-               ~[del]
-             =/  =invite  +:(~(got by invites) id.act)
-             :~  del
-                 :*
-                     %pass  path
-                     %agent  [our.bol %odyssey]
-                     %poke  %odyssey-action
-                     !>(`action:odyssey`[%pub:odyssey invite])
-             ==  ==
         alt  t.alt
      ==
   :: 
@@ -653,7 +712,6 @@
      ?>  =(our.bol src.bol)
      ?<  =('' title.act)
      =/  =id  (crip (swag [0 10] (scow %uv eny.bol)))
-     =/  =path  /(scot %p our.bol)/[%invite]/id
      =/  =mars-link
        ?.  ?=(%public access.act)
          [~] 
@@ -673,6 +731,10 @@
          pulp
        ::::      (remove-comets pulp)                 :: TODO complete lib arm 
        [(blend sugar) sugar]
+     =/  =earth-link
+       ?:  (earth-link-dupe [our.bol invites earth-link.act])
+         ''
+       earth-link.act
      =/  new=invite 
        :*  our.bol            desc.act
            juice.carton       location-type.act
@@ -682,22 +744,24 @@
            %open              title.act
            image.act          date.act
            now.bol            access.act
-           mars-link          earth-link.act
+           mars-link          earth-link
            excise-comets.act  ~
            catalog.settings   enable-chat.act
        ==
      =.  invites  (~(put by invites) id [[~] new])
      ?.  ?=(%private access.new)
        ~&  "%gather: created new public invite"
-       :_  this
-       ?:  =('' earth-link.act)  ~
-       :~  :*  %pass  /(scot %p our.bol)/[%earth]
-               %agent  [our.bol %odyssey]
-               %poke  %odyssey-action
-               !>(`action:odyssey`[%pub:odyssey new])
-       ==  == 
+       :_  this       
+       ?:  =('' earth-link.new)  ~
+       :~  :*  
+              %pass  /(scot %p our.bol)/[%odyssey]/id
+              %agent  [our.bol %odyssey]
+              %poke  %odyssey-shoot
+              !>(`shoot:odyssey`[%pub:odyssey id])
+       ==  ==
      ~&  "%gather: sending private invite..."
      =+  dek=*(list card)
+     =/  =path  /(scot %p our.bol)/[%invite]/id
      =+  fak=(fact:io gather-update+!>(`update`[%update-invite id new]) ~[/all])
      |-
      ?~  sugar.carton
@@ -746,7 +810,7 @@
 ::     =.  guest-list.inv  %+  ~(put by guest-list.inv)
 ::                             our.bol
 ::                           `[%browsing [~]]              :: %browsing indicates we've received the invite details via scry (i.e. no sub) 
-::     :-  (beam:hc [%init-all invites settings])
+::     :-  (relay:hc [%init-all invites settings])
 ::         this(invites (~(put by invites) id inv))
 ::     ==    
   ::
@@ -783,8 +847,8 @@
                      |=  [=guest-status =invite]
                      [[~] inv]
          ==
-     =/  faks=(list card)  (beam:hc [%update-invite id.act inv])
-     ;:  welp  faks 
+     =/  fak=(list card)  (relay:hc [%update-invite id.act inv])
+     ;:  welp  fak 
          :~   :*
                  %pass  rsvp.pax
                  %agent  [src.bol %gather]
@@ -820,8 +884,8 @@
                      |=  [=guest-status =invite]
                      [[~] inv]
          ==
-     =/  faks=(list card)  (beam:hc [%update-invite id.act inv])
-     ;:  welp  faks
+     =/  fak=(list card)  (relay:hc [%update-invite id.act inv])
+     ;:  welp  fak
          :~   :*
                  %pass  invite.pax
                  %agent  [src.bol %gather]
@@ -890,7 +954,7 @@
          %-  some  
            %-  pin:hc 
              [msgs our.bol note.act]
-       :-  (beam:hc [%update-invite id.act inv]) 
+       :-  (relay:hc [%update-invite id.act inv]) 
        %=  this
           invites  %+  ~(jab by invites) 
                      id.act 
@@ -907,7 +971,7 @@
          %-  some  
            %-  pin:hc 
              [msgs src.bol note.act]
-       :-  (beam:hc [%update-invite id.act inv]) 
+       :-  (relay:hc [%update-invite id.act inv]) 
        %=  this
           invites  %+  ~(jab by invites) 
                      id.act 
@@ -921,7 +985,7 @@
        %-  some  
          %-  pin:hc
            [msgs src.bol note.act]
-     :-  (beam:hc [%update-invite id.act inv]) 
+     :-  (relay:hc [%update-invite id.act inv]) 
      %=  this
         invites  %+  ~(jab by invites) 
                    id.act 
@@ -987,7 +1051,7 @@
                           ==  ==  ==
                      rsvpd-ids  t.rsvpd-ids
        ==          ==
-       =+  fak=(beam:hc [%update-settings settings])  
+       =+  fak=(relay:hc [%update-settings settings])  
        :_  this
            :(welp fak kiks levs poks faks)  
      ::
@@ -1055,7 +1119,7 @@
        =.  banned.settings
           (~(del in banned.settings) ship.act)
        :_  this
-           (beam:hc [%update-settings settings])
+           (relay:hc [%update-settings settings])
      `this
     ==   
   -- 
@@ -1227,9 +1291,27 @@
   ?:  ?=([%all ~] path)
     ?>  =(our.bol src.bol)
     :_  this
-        (beam:hc [%init-all invites settings])
+        (relay:hc [%init-all invites settings])
   ?>  ?=([@ @ @ ~] path)
   ?+   i.t.path  (on-watch:def path)
+      %odyssey
+    ?>  =(our.bol src.bol)
+    =/  =id  
+        `@uv`(slav %uv i.t.t.path)
+    ?>  =(our.bol (slav %p i.path))
+    ?>  .^(? %gu /(scot %p our.bol)/odyssey/(scot %da now.bol))
+    =/  inv=invite  
+        +:(~(got by invites) id)
+    ?<  =('' earth-link.inv)
+    ?>  ?=(%public access.inv)
+    =+  air=(veil:hc [%invite inv])
+    :_  this
+    :~  :*
+           %give  %fact
+           ~[path]
+           odyssey-shake+!>(`shake:odyssey`[%foto:odyssey air])
+    ==  ==
+  ::                           
       %invite                                                 
     =/  =id  `@uv`(slav %uv i.t.t.path)
     ?>  =(our.bol (slav %p i.path))
@@ -1254,8 +1336,7 @@
     ::
     =/  air=invite  (veil:hc [%invite inv])
     :-  :~  :* 
-               %give
-               %fact 
+               %give  %fact 
                ~[path]
                gather-update+!>(`update`[%update-invite id air])
         ==  ==
@@ -1278,8 +1359,7 @@
     ?>  ?=(%rsvpd (need gs))
     =/  rsv=invite  (veil:hc [%rsvp inv])
     :-  :~  :*  
-               %give
-               %fact
+               %give  %fact
                ~[path] 
                gather-update+!>(`update`[%update-invite id rsv])
         ==  ==
@@ -1362,11 +1442,11 @@
   == 
 ++  on-leave  on-leave:def 
 ++  on-fail   on-fail:def
---                 ::::::
-::                 ::
-:::: helper core :::: 
-::                 ::
-::                 ::::::
+--               
+::                
+:::: helper core  
+::             
+::             
 |_  bol=bowl:gall
 +*  io    ~(. agentio bol)
 ::
@@ -1412,7 +1492,7 @@
 ::
 ::
 :: Send facts to subscribers
-++  beam 
+++  relay 
   |=  upd=update
   ^-  (list card) 
   ?-    -.upd

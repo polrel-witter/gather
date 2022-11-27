@@ -137,5 +137,20 @@
   ?.  ?=(%pending (need gs))
     $(ships t.ships)
   $(guest-list (~(del by guest-list) i.ships), ships t.ships)
+::
+::
+:: Check for $earth-link dupes
+++  earth-link-dupe
+  |=  [=ship =invites =earth-link]
+  =/  a=?  %.n
+  =/  ids=(list id)  ~(tap in ~(key by invites))
+  |-  ^-  ?
+  ?~  ids  a
+  =/  detail=invite  +:(need (~(get by invites) i.ids))
+  ?.  ?&  =(ship host.detail)
+          =(earth-link earth-link.detail)
+      ==
+    $(ids t.ids)
+  $(a %.y, ids t.ids)
 --
 

@@ -1,12 +1,12 @@
 /-  *odyssey
-|_  upd=update
+|_  shk=shake
 ++  grow
   |%
-  ++  noun  upd
+  ++  noun  shk
   --
 ++  grab
   |%
-  ++  noun  update
+  ++  noun  shake
   --
 ++  grad  %noun
 --
