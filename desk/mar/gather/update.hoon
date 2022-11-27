@@ -1,4 +1,4 @@
-/-  *gather, *odyssey
+/-  *gather
 |_  upd=update
 ++  grow
   |%

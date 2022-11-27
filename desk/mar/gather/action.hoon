@@ -1,4 +1,4 @@
-/-  *gather, *odyssey
+/-  *gather
 |_  act=action
 ++  grow
   |%
