@@ -1,12 +1,12 @@
 /-  *odyssey
-|_  act=action
+|_  sht=shoot
 ++  grow
   |%
-  ++  noun  act
+  ++  noun  sht
   --
 ++  grab
   |%
-  ++  noun  action
+  ++  noun  shoot
   --
 ++  grad  %noun
 --

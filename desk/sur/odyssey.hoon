@@ -1,12 +1,12 @@
-/-  *gather
+/-  gather
 |%
-+$  fotos  (map earth-link invite)
++$  fotos  (map earth-link:gather invite:gather)
 ::
-+$  action 
-  $%  [%pub =invite]
-      [%del =earth-link]
++$  shoot 
+  $%  [%pub =id:gather]                        :: establish foto sub
+      [%del =id:gather =earth-link:gather]     :: stop serving foto
   ==
-+$  update
-  $%  [%foto-update =invite]
++$  shake 
+  $%  [%foto =invite:gather]
   == 
 --
