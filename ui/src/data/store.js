@@ -49,7 +49,7 @@ export const useStore = create((set) => ({
 		doPoke({ "gathering-reminder": data });
 	},
 	pEditSettings: (data) => {
-		doPoke({ "edit-invite": data });
+		doPoke({ "edit-settings": data });
 	},
 	pCreateCollection: (collection) => {
 		set((state) => ({ collectionWaiting: true }));
@@ -98,9 +98,9 @@ export const useStore = create((set) => ({
 	pNewInvite: (data) => {
 		doPoke({ "new-invite": data });
 	},
-	pFind: (data) => {},
+	pAdd: (data) => {},
 	pRsvp: (data) => {
-		doPoke({ rsvp: data });
+		doPoke({ 'add': data });
 	},
 	pUnRsvp: (data) => {
 		doPoke({ unrsvp: data });
@@ -131,9 +131,8 @@ export const useStore = create((set) => ({
 
 	/*  SUBSCRIPTIONS  */
 
-	sAll: (handler) =>
+	sAll: (handler) => {
 		subscribe("/all", (all) => {
-			console.log(all);
 			if (Object.keys(all)[0] === "initAll") {
 				const settings = all.initAll.settings;
 				set((state) => ({
@@ -168,6 +167,7 @@ export const useStore = create((set) => ({
 							chat: unit(item.invite.chat),
 							catalog: unit(item.invite.catalog),
 							enableChat: item.invite.enableChat,
+							image: item.invite.image
 						},
 					})),
 					settings: {
@@ -221,6 +221,7 @@ export const useStore = create((set) => ({
 								chat: unit(item.chat),
 								catalog: unit(item.catalog),
 								enableChat: item.enableChat,
+								image: item.image
 							},
 						})
 					),
@@ -244,5 +245,6 @@ export const useStore = create((set) => ({
 					},
 				}));
 			}
-		}),
+		})},
+	
 }));

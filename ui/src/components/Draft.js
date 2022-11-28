@@ -36,14 +36,14 @@ const Draft = () => {
 	});
 
 	useEffect(() => {
-		// console.log(settings);
-		// if (Object.keys(settings) !== 0) {
-		// 	setInvite({
-		// 		...invite,
-		// 		"excise-comets": settings["exciseComets"],
-		// 		"enable-chat": settings["enableChat"],
-		// 	});
-		// }
+		console.log(settings);
+		if (Object.keys(settings) !== 0) {
+			setInvite({
+				...invite,
+				"excise-comets": settings["exciseComets"],
+				"enable-chat": settings["enableChat"],
+			});
+		}
 		if (collections !== undefined) {
 			setInvite({
 				...invite,
@@ -56,8 +56,8 @@ const Draft = () => {
 
 	return (
 		<div className="draft">
-			<div className="draft-title">
-				<span>Title</span>
+			<div className="draft-title flexcol">
+				<span className="label">Title</span>
 				<input
 					type="text"
 					onChange={(e) =>
@@ -66,7 +66,7 @@ const Draft = () => {
 				/>
 			</div>
 
-			<div className="draft-description">
+			<div className="draft-description flexcol">
 				<span>Description</span>
 				<textarea
 					onChange={(e) =>
@@ -75,40 +75,53 @@ const Draft = () => {
 				/>
 			</div>
 
-			<div className="draft-ise">
-				Image link
-				<div className="draft-ise-image">
-					<input
-						type="text"
-						onChange={(e) =>
-							setInvite({ ...invite, image: e.currentTarget.value })
-						}
-					/>
-				</div>
+			<div className="draft-ise-image flexcol">
+				<span>Image link</span>
+				<input
+					type="text"
+					onChange={(e) =>
+						setInvite({ ...invite, image: e.currentTarget.value })
+					}
+				/>
+			</div>
+
+			<div className="draft-ise flexcol">
 				{/* TODO fix dates */}
-				<div className="draft-ise-datebegin">
+				<div className="draft-ise-datebegin flexcol">
+					<span>Date Begin</span>
 					<input
 						type="datetime-local"
 						onChange={(e) => {
 							const begin = new Date(e.currentTarget.value).toUTCString();
-								setInvite({ ...invite, date: { begin: begin.substr(0, begin.length -4), end: invite.date.end }})
-						}
-						}
+							setInvite({
+								...invite,
+								date: {
+									begin: begin.substr(0, begin.length - 4),
+									end: invite.date.end,
+								},
+							});
+						}}
 					/>
 				</div>
-				<div className="draft-ise-dateend">
+				<div className="draft-ise-dateend flexcol">
+					<span>Date End</span>
 					<input
 						type="datetime-local"
 						onChange={(e) => {
-								const end = new Date(e.currentTarget.value).toUTCString();
-								setInvite({ ...invite, date: { begin: invite.date.begin, end: end.substr(0, end.length -4) }})
-						}
-						}
+							const end = new Date(e.currentTarget.value).toUTCString();
+							setInvite({
+								...invite,
+								date: {
+									begin: invite.date.begin,
+									end: end.substr(0, end.length - 4),
+								},
+							});
+						}}
 					/>
 				</div>
 			</div>
 
-			<div className="draft-accesslink">
+			<div className="draft-accesslink flexcol">
 				<span>Access link</span>
 				<ReactTooltip />
 				<input
@@ -129,8 +142,8 @@ const Draft = () => {
 				setPosition={(position) => setInvite({ ...invite, position })}
 			/>
 
-			<div className="draft-rr">
-				<div className="draft-rr-radius">
+			<div className="draft-rr flexrow">
+				<div className="draft-rr-radius flexcol">
 					<span display="inline">Delivery radius</span>
 					<ReactTooltip />
 					<input
@@ -150,7 +163,7 @@ const Draft = () => {
 					/>
 				</div>
 
-				<div className="draft-rr-rsvplimit">
+				<div className="draft-rr-rsvplimit flexcol">
 					<span>Limit # of RSVPs accepted</span>
 					<ReactTooltip />
 					<input
@@ -167,10 +180,11 @@ const Draft = () => {
 				</div>
 			</div>
 
+			<span> Options </span>
 			<div className="draft-options">
-				Options
 				<div className="draft-options-accesstype">
-					Private
+					<span>Access Type </span>
+					<span> Private </span>
 					<input
 						type="radio"
 						name="accesstype"
@@ -190,7 +204,8 @@ const Draft = () => {
 					/>
 				</div>
 				<div className="draft-options-locationtype">
-					Meatspace
+					<span> Location Type </span>
+					<span> Meatspace </span>
 					<input
 						type="radio"
 						name="locationtype"
@@ -276,7 +291,9 @@ const Draft = () => {
 											createGroup("ship", newCollectionString, collections)
 										)
 									}
-								>Create Ship</button>
+								>
+									Create Ship
+								</button>
 							</div>
 						)}
 						{listSelect === "group" && (
@@ -294,7 +311,9 @@ const Draft = () => {
 											createGroup("group", newCollectionString, collections)
 										)
 									}
-								>Create Group</button>
+								>
+									Create Group
+								</button>
 							</div>
 						)}
 						{listSelect === "collection" && (
@@ -309,10 +328,16 @@ const Draft = () => {
 								<button
 									onClick={() =>
 										pCreateCollection(
-											createGroup("collection", newCollectionString, collections)
+											createGroup(
+												"collection",
+												newCollectionString,
+												collections
+											)
 										)
 									}
-								>Create Collection</button>
+								>
+									Create Collection
+								</button>
 							</div>
 						)}
 					</div>

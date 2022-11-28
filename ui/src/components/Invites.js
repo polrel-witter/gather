@@ -27,7 +27,9 @@ export const Invites = (props) => {
 	);
 	const inviteDetails = useStore((state) => state.inviteDetails);
 	const setInvitesMode = useStore((state) => state.setInvitesMode);
-	console.log(invitesMode.slice(0,7) === 'hosting');
+	const pAdd = useStore((state) => state.pAdd);
+	const [marsLink, setMarsLink] = useState('');
+	console.log(invitesMode.slice(0, 7) === "hosting");
 
 	if (inviteDetails === "")
 		return (
@@ -55,7 +57,6 @@ export const Invites = (props) => {
 							<button onClick={() => setInvitesMode("hosting-cancelled")}>
 								Cancelled
 							</button>
-							<button>Search</button>
 						</div>
 					)}
 					{invitesMode.slice(0, 5) === "inbox" && (
@@ -72,6 +73,15 @@ export const Invites = (props) => {
 							<button>Search</button>
 						</div>
 					)}
+				</div>
+				<div className='invites-search'>
+					<input
+						type="text"
+						onChange={(e) =>
+							setMarsLink(e.currentTarget.value)
+						}
+					/>
+					<button onClick={() => pAdd({'mars-link': marsLink})}>Add</button>
 				</div>
 				{invites.map((invite) => (
 					<Invite invite={invite} />

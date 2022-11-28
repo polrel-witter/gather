@@ -14,15 +14,11 @@ const Location = (props) => {
 			
 	// }
 	return (
-		<Box borderBottom={1}
-			px={px}
-			py={py}
-			// flexWrap= 'nowrap'
+		<Box
 		>
-			<Text> 
+			<span> 
 				Location 
-				<Icon position='center' icon="Info" data-tip='Type full address, click Search, then click an address below to save it.'/>
-			</Text>
+			</span>
 			<ReactTooltip/>
 			{/* <Box display='flex'> */}
 			    <Geolookup

@@ -109,7 +109,7 @@ const InviteDetails = (props) => {
 					Delivery Radius: {invite.radius}
 				</div>
 				<div className="invitedetails-address">
-					Delivery Radius: {invite.address}
+					loelivery Radius: {invite.address}
 				</div>
 				<div className="invitedetails-radius">
 					Delivery Radius: {invite.radius}
@@ -122,7 +122,16 @@ const InviteDetails = (props) => {
 				<div className="invitedetails-guestlist">
 					Guest List
 					{invite.guestList.map((guest) => (
-						<div className="invitedetails-guestlist-item">hello</div>
+						<div className="invitedetails-guestlist-item">
+							<span>{guest.ship}</span>
+							{ guest.shipInvite.guestStatus === 'pending' && 
+							<span> Pending </span>
+							}
+							{ guest.shipInvite.guestStatus === 'rsvpd' && 
+								<span> RSVPd </span>
+							}
+							<span>{guest.shipInvite.rsvpDate}</span>
+							</div>
 					))}
 				</div>
 			</div>

@@ -1,84 +1,165 @@
-.geolookup__suggests--hidden {
-  max-height: 0;
-  overflow: hidden;
-  border-width: 3;
-}
-
-.geolookup__item--active {
-  background: #267dc0;
-	border-style: solid;
-  color: #222;
-}
-
-.geolookup {
-	/* display: flex; */
-	/* flex-wrap: wrap; */
-	/* flex-direction: row; */
-	/* justify-content: center; */
-}
-.geolookup__item {
-	border-style: solid;
-	border-width: 1px;
-	padding: 5px;
-	margin: 5px;
-
-	display: flex;
-}
-
-.geolookup__suggests-wrapper {
+.flexcol {
 	display: flex;
 	flex-direction: column;
 }
-.geolookup__suggests {
-	/* display: flex; */
-	/* flex-direction: column; */
-	/* flex-wrap:wrap; */
-	/* width:100%; */
+.flexrow {
+	display: flex;
 }
-.geolookup__button-wrapper {
-		/* align-self: center; */
+.label {
+	/* font-style: italic; */
 }
 
-.geolookup__button {
-	/* color: blue; */
-		height: 32px;
-		border: 1px solid;
-    border-radius: 4px;
-		border-color: rgba(0,0,0,0.2);
-		overflow: hidden;
 
-		width: 195px;
-    box-sizing: border-box;
+.app {
+	margin: auto;
+  width: 640px;
 }
-
-.geolookup__input-wrapper {
-	/* width: 100%; */
-	/* align-self: center; */
-
-}
-.geolookup__input {
-		border: 1px solid;
-  	padding-right: 8px;
-  	padding-left: 8px;
-    border-radius: 4px;
-		height: 32px;
-		line-height: 1.333334;
-		font-weight: 400;
-		font-size: 14px;
-		border-color: rgba(0,0,0,0.2);
-
-		width: 565px;
-    box-sizing: border-box;
-    align-items: center;
-}
-
-.overbox {
-	width: 768px;
-}
-
-@media only screen and (max-width: 768px) {
-  .overbox {
+@media only screen and (max-width: 640px) {
+  .app {
     width: 100%;
-		/* background-color: red; */
   }
 }
+.app-main {
+}
+.app-main > * {
+}
+
+
+.topbar {
+	display: flex;
+	justify-content: left;
+	align-items: center;
+	/* border-bottom-style: solid; */
+	  border-style: solid;
+}
+.topbar-buttonselected {
+	/* flex-grow: 1; */
+	margin: 10px;
+	border-bottom: 1px;
+	font-weight: bold;
+	border-style: solid;
+}
+.topbar-button {
+	/* flex-grow: 1; */
+	margin: 10px;
+}
+
+
+.draft {
+	/* flex-wrap: wrap; */
+	/* align-items: center; */
+}
+.draft > * {
+	margin-bottom: 5px;
+	/* display: flex; */
+	/* flex-direction: column; */
+}
+.draft-title {
+}
+.draft-title > span {
+}
+.draft-title > input {
+	flex-grow: 1;
+}
+.draft-description {
+}
+.draft-ise {
+	flex-direction: row;
+}
+.draft-ise-image {
+}
+.draft-ise > * {
+	flex-grow: 1;
+}
+.draft-ise-datebegin {
+}
+.draft-ise-dateend {
+}
+.draft-accesslink {
+}
+.draft-options {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+.draft-options-accesstype {
+	/* display: flex; */
+}
+.draft-options-locationtype {
+	/* display: flex; */
+}
+
+
+/* .geolookup__suggests--hidden { */
+/*   max-height: 0; */
+/*   overflow: hidden; */
+/*   border-width: 3; */
+/* } */
+
+/* .geolookup__item--active { */
+/*   /1* background: #267dc0; *1/ */
+/* 	/1* border-style: solid; *1/ */
+/*   /1* color: #222; *1/ */
+/* } */
+
+/* .geolookup { */
+/* 	/1* display: flex; *1/ */
+/* 	/1* flex-wrap: wrap; *1/ */
+/* 	/1* flex-direction: row; *1/ */
+/* 	/1* justify-content: center; *1/ */
+/* } */
+/* .geolookup__item { */
+/* 	border-style: solid; */
+/* 	border-width: 1px; */
+/* 	padding: 5px; */
+/* 	margin: 5px; */
+
+/* 	display: flex; */
+/* } */
+
+/* .geolookup__suggests-wrapper { */
+/* 	display: flex; */
+/* 	flex-direction: column; */
+/* } */
+/* .geolookup__suggests { */
+/* 	/1* display: flex; *1/ */
+/* 	/1* flex-direction: column; *1/ */
+/* 	/1* flex-wrap:wrap; *1/ */
+/* 	/1* width:100%; *1/ */
+/* } */
+/* .geolookup__button-wrapper { */
+/* 		/1* align-self: center; *1/ */
+/* } */
+
+/* .geolookup__button { */
+/* 	/1* color: blue; *1/ */
+/* 		height: 32px; */
+/* 		border: 1px solid; */
+/*     border-radius: 4px; */
+/* 		border-color: rgba(0,0,0,0.2); */
+/* 		overflow: hidden; */
+
+/* 		width: 195px; */
+/*     box-sizing: border-box; */
+/* } */
+
+/* .geolookup__input-wrapper { */
+/* 	/1* width: 100%; *1/ */
+/* 	/1* align-self: center; *1/ */
+
+/* } */
+/* .geolookup__input { */
+/* 		border: 1px solid; */
+/*   	padding-right: 8px; */
+/*   	padding-left: 8px; */
+/*     border-radius: 4px; */
+/* 		height: 32px; */
+/* 		line-height: 1.333334; */
+/* 		font-weight: 400; */
+/* 		font-size: 14px; */
+/* 		border-color: rgba(0,0,0,0.2); */
+
+/* 		width: 565px; */
+/*     box-sizing: border-box; */
+/*     align-items: center; */
+/* } */

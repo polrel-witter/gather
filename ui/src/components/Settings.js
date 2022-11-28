@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Icon } from "@tlon/indigo-react";
 import { useStore } from "../data/store";
 import Location from "./Location";
@@ -79,6 +79,32 @@ const Settings = () => {
 			"rsvp-list": "anyone",
 		},
 	});
+	console.log(newSettings);
+	useEffect(() => {
+		setNewSettings(
+		{
+		address: settings.address,
+		position: settings.position,
+		radius: settings.radius,
+		"receive-invite": settings.receiveInvite,
+		notifications: {
+			"new-invites": settings.notifications.newInvites,
+			"invite-updates": settings.notifications.inviteUpdates,
+		},
+		"excise-comets": settings.exciseComets,
+		"enable-chat": settings.enableChat,
+		catalog: {
+			"invite-list": settings.catalog.inviteList,
+			"access-link": settings.catalog.accessLink,
+			"rsvp-limit": settings.catalog.rsvpLimit,
+			"chat-access": settings.catalog.chatAccess,
+			"rsvp-count": settings.catalog.rsvpCount,
+			"rsvp-list": settings.catalog.rsvpList,
+		}
+		}
+		)
+	}, [settings]);
+
 	const catalog = newSettings.catalog;
 	return (
 		<div>
