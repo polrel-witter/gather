@@ -1251,6 +1251,7 @@
     ^-  hark-type
     ?:  ?=(%address alt)  %address       
     ?:  ?=(%access-link alt)  %access-link
+
     ?:  ?=(%location-type alt)  %location-type
     %new-invite
   :: 
@@ -1715,7 +1716,7 @@
     ?-    veils
         %host-only  ~
         %anyone     rsvp-limit
-        %rsvp-only   ~|("invalid veil for rsvp-limit.catalog" !!)   
+        %rsvp-only  rsvp-limit   
     ==
   ++  rc-check
     |=  [rsvp-count=(unit @ud) =veils]
@@ -1723,7 +1724,7 @@
     ?-    veils 
         %host-only  ~
         %anyone     rsvp-count
-        %rsvp-only  ~|("invalid veil for rsvp-count.catalog" !!) 
+        %rsvp-only  rsvp-count 
     ==
   ++  al-check
     |=  [=access-link =veils pax=?(%rsvp %invite)]
@@ -1731,7 +1732,7 @@
     ?-    veils
         %anyone     access-link
         %rsvp-only  (al-pax-check [access-link pax])
-        %host-only  ~|("invalid veil for access-link.catalog" !!) 
+        %host-only  access-link
     ==   
   ++  ch-check
     |=  [chat=(unit msgs) =veils pax=?(%rsvp %invite)]
@@ -1739,7 +1740,7 @@
     ?-    veils                       
         %anyone     chat  
         %rsvp-only  (ch-pax-check [chat pax]) 
-        %host-only  ~|("invalid veil for chat-access.catalog" !!) 
+        %host-only  ~
     ==
   ++  gl-check
     |=  $:  guest-list=(map @p ship-invite) 
@@ -1750,7 +1751,7 @@
         ==
     ^-  (map @p ship-invite)
     ?-    gst                                
-        %rsvp-only    ~|("invalid veil for guest-list.catalog" !!) 
+        %rsvp-only    ~
       ::
         %host-only
       ?-    rsv
