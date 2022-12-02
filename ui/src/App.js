@@ -51,6 +51,7 @@ class App extends Component {
 			"magsub-micsev-bacmug-moldex"
 		);
 		window.urbit.ship = "dev";
+		
 		// window.urbit = new Urbit("http://localhost:8081","","dolsyt-lavref-mormyr-rissep");
 		// window.urbit.ship = 'fun';
 

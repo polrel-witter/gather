@@ -5,28 +5,22 @@ import Geolookup from 'react-geolookup-v2';
 import * as Nominatim from 'nominatim-browser';
 import ReactTooltip from 'react-tooltip';
 
-const px = '1';
-const py = '2';
-
 const Location = (props) => {
-	// const position = {lat: '.6.022141e23', lon: '.6.022141e23'};
 	const [address, setAddress] = useState('');
 			
-	// }
 	return (
-		<Box
+		<div className='location flexcol'
 		>
 			<span> 
 				Location 
 			</span>
-			<ReactTooltip/>
 			{/* <Box display='flex'> */}
 			    <Geolookup
           inputClassName="geolookup__input--nominatim"
           disableAutoLookup={true}
 					initialValue={props.address}
 					onSuggestsLookup={(userInput)=>{
-						console.log(userInput);
+						// console.log(userInput);
 						return Nominatim.geocode({
       				q: userInput,
       				addressdetails: true
@@ -34,8 +28,8 @@ const Location = (props) => {
 					}}
 					onGeocodeSuggest={(suggest)=>{
 						let geocoded = {};
-						console.log(suggest);
-						console.log(props);
+						// console.log(suggest);
+						// console.log(props);
     				if (suggest) {
     				  geocoded.nominatim = suggest.raw || {};
     				  geocoded.location = {
@@ -53,8 +47,7 @@ const Location = (props) => {
 					}}
 					getSuggestLabel={(suggest)=>{return suggest.display_name;}}
           radius="20" />
-			{/* </Box> */}
-		</Box>
+		</div>
 	 );
 }
 export default Location;

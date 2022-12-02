@@ -282,7 +282,7 @@ export const sortSelected = (a,b) => {
 		return 0;
 }
 
-export const filterInvites = (mode, invites) => {
+export const filterInvites = (mode, invites, settings) => {
 	switch(mode) {
 		case 'hosting-open':
 			return invites.filter(x => x.invite.initShip === '~' + window.urbit.ship && x.invite.hostStatus === 'open');
@@ -303,8 +303,7 @@ export const filterInvites = (mode, invites) => {
 			return invites.filter(x => x.guestStatus === 'pending');
 			break;
 		case 'inbox-outofrange':
-			// return invites.filter(x => x.guestStatus === 'rsvpd');
-			return invites;
+			return filterDistantInvites(invites, settings).filter(x => x.guestStatus !== null);
 			break;
 }
 	return [];

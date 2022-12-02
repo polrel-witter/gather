@@ -17,13 +17,19 @@ import { getDistance } from "geolib";
 import haversine from "haversine-distance";
 import { useAlert } from "react-alert";
 
+const topbarSelected = (invitesMode, button) => {
+	if(invitesMode === button)
+		return {fontWeight:'bold', borderBottom: '1px solid'};
+	return {};
+}
+
 export const Invites = (props) => {
 	const route = useStore((state) => state.route);
 	const invitesMode = useStore((state) => state.invitesMode);
 	const settings = useStore((state) => state.settings);
 	const inviteMode = useStore((state) => state.inviteMode);
 	const invites = useStore((state) =>
-		filterInvites(invitesMode, state.invites)
+		filterInvites(invitesMode, state.invites, settings)
 	);
 	const inviteDetails = useStore((state) => state.inviteDetails);
 	const setInvitesMode = useStore((state) => state.setInvitesMode);
@@ -34,9 +40,9 @@ export const Invites = (props) => {
 	if (inviteDetails === "")
 		return (
 			<div className="invites">
-				<div className="invites-topbar">
+				<div className="invites-topbar flexrow">
 					<select
-						className="invites-topbar-type"
+						className="invites-topbar-type select"
 						name="inbox-hosting"
 						onChange={(e) => setInvitesMode(e.target.value)}
 					>
@@ -45,43 +51,45 @@ export const Invites = (props) => {
 					</select>
 					{invitesMode.slice(0, 7) === "hosting" && (
 						<div className="invites-topbar-hosting">
-							<button onClick={() => setInvitesMode("hosting-open")}>
+							<button style={topbarSelected(invitesMode, 'hosting-open')} onClick={() => setInvitesMode("hosting-open")}>
 								Open
 							</button>
-							<button onClick={() => setInvitesMode("hosting-closed")}>
+							<button style={topbarSelected(invitesMode, 'hosting-closed')} onClick={() => setInvitesMode("hosting-closed")}>
 								Closed
 							</button>
-							<button onClick={() => setInvitesMode("hosting-completed")}>
+							<button style={topbarSelected(invitesMode, 'hosting-completed')} onClick={() => setInvitesMode("hosting-completed")}>
 								Completed
 							</button>
-							<button onClick={() => setInvitesMode("hosting-cancelled")}>
+							<button style={topbarSelected(invitesMode, 'hosting-cancelled')} onClick={() => setInvitesMode("hosting-cancelled")}>
 								Cancelled
 							</button>
 						</div>
 					)}
 					{invitesMode.slice(0, 5) === "inbox" && (
 						<div className="invites-topbar-inbox">
-							<button onClick={() => setInvitesMode("inbox-rsvp")}>
+							<button style={topbarSelected(invitesMode, 'inbox-rsvp')} onClick={() => setInvitesMode("inbox-rsvp")}>
 								RSVPd
 							</button>
-							<button onClick={() => setInvitesMode("inbox-pending")}>
+							<button style={topbarSelected(invitesMode, 'inbox-pending')} onClick={() => setInvitesMode("inbox-pending")}>
 								Pending
 							</button>
-							<button onClick={() => setInvitesMode("inbox-outofrange")}>
+							<button style={topbarSelected(invitesMode, 'inbox-outofrange')} onClick={() => setInvitesMode("inbox-outofrange")}>
 								Out-of-range
 							</button>
-							<button>Search</button>
 						</div>
 					)}
 				</div>
-				<div className='invites-search'>
+				<div className='invites-search flexrow'>
 					<input
+						className='flexgrow'
 						type="text"
 						onChange={(e) =>
 							setMarsLink(e.currentTarget.value)
 						}
 					/>
-					<button onClick={() => pAdd({'mars-link': marsLink})}>Add</button>
+					<button 
+						className='button'
+					onClick={() => pAdd({'mars-link': marsLink})}>Add Invite</button>
 				</div>
 				{invites.map((invite) => (
 					<Invite invite={invite} />

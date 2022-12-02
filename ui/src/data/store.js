@@ -98,9 +98,11 @@ export const useStore = create((set) => ({
 	pNewInvite: (data) => {
 		doPoke({ "new-invite": data });
 	},
-	pAdd: (data) => {},
-	pRsvp: (data) => {
+	pAdd: (data) => {
 		doPoke({ 'add': data });
+	},
+	pRsvp: (data) => {
+		doPoke({ 'rsvp': data });
 	},
 	pUnRsvp: (data) => {
 		doPoke({ unrsvp: data });

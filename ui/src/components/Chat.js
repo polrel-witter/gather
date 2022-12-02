@@ -13,19 +13,33 @@ const Chat = (props) => {
 
 	return (
 		<div className="chat">
-			<button onClick={() => setInviteMode("view")}>Return</button>
-			<div className="chat-messages">
-				{invite.chat.map((chat) => (
-					<div className='chat-message-message'>
-						{chat.wat}
-						<br/>
-						==================
-					</div>
-				))}
+			<div className="invitedetails-topbar">
+				<button onClick={() => setInviteMode("view")}>Return</button>
 			</div>
-			<div className="chat-post">
-				<textarea onChange={(e) => setNote(e.currentTarget.value)} />
-				<button onClick={() => pPost({ id: _invite.id, note })}>Post</button>
+			<div className="chat-messages">
+				{invite.chat !== null ? (
+					invite.chat.map((chat) => (
+						<div className="chat-message-message">
+							<span> {new Date(chat.wen * 1000).toLocaleString()}</span>
+							<span>{chat.wat}</span>
+						</div>
+					))
+				) : (
+					<div></div>
+				)}
+			</div>
+			<div className="chat-post flexrow">
+				<input
+					className="flexgrow"
+					type="text"
+					onChange={(e) => setNote(e.currentTarget.value)}
+				/>
+				<button
+					className="button"
+					onClick={() => pPost({ id: _invite.id, note })}
+				>
+					Post
+				</button>
 			</div>
 		</div>
 	);

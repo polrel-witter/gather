@@ -1,36 +1,20 @@
-.flexcol {
-	display: flex;
-	flex-direction: column;
-}
-.flexrow {
-	display: flex;
-}
-.label {
-	/* font-style: italic; */
-}
-
-
+/* main styling */
 .app {
 	margin: auto;
-  width: 640px;
-}
-@media only screen and (max-width: 640px) {
-  .app {
-    width: 100%;
-  }
+  width: 740px;
 }
 .app-main {
 }
 .app-main > * {
 }
-
-
 .topbar {
 	display: flex;
 	justify-content: left;
 	align-items: center;
 	/* border-bottom-style: solid; */
-	  border-style: solid;
+	  /* border-style: solid; */
+	border-bottom: 1px solid;
+	margin-bottom: 10px;
 }
 .topbar-buttonselected {
 	/* flex-grow: 1; */
@@ -44,122 +28,395 @@
 	margin: 10px;
 }
 
-
-.draft {
-	/* flex-wrap: wrap; */
-	/* align-items: center; */
-}
-.draft > * {
-	margin-bottom: 5px;
-	/* display: flex; */
-	/* flex-direction: column; */
-}
-.draft-title {
-}
-.draft-title > span {
-}
-.draft-title > input {
-	flex-grow: 1;
-}
-.draft-description {
-}
-.draft-ise {
-	flex-direction: row;
-}
-.draft-ise-image {
-}
-.draft-ise > * {
-	flex-grow: 1;
-}
-.draft-ise-datebegin {
-}
-.draft-ise-dateend {
-}
-.draft-accesslink {
-}
-.draft-options {
+/* flexcol */
+.flexcol {
 	display: flex;
 	flex-direction: column;
-	justify-content: space-between;
+	margin-bottom: 5px;
 }
-.draft-options-accesstype {
-	/* display: flex; */
+
+/* flexrow */
+.flexrow {
+	display: flex;
+	flex-direction: row;
 }
-.draft-options-locationtype {
+.flexgrow {
+	flex-grow: 1;
+}
+.title {
+}
+.button {
+	border: 1px solid;
+	padding: 3px;
+}
+.divider {
+	border-bottom: 2px solid;
+	margin-bottom: 10px;
+	margin-top: 30px;
+}
+.radio {
+	/* margin-left: 20px; */
+	display: flex;
+	justify-content: flex-end;
+	margin-bottom: 5px;
+}
+.radio > * {
+	/* margin-right: 15px; */
+	display: flex;
+	flex: 1 1 25%;
+	align-items: center;
+}
+.radio > *:first-child {
+	flex: 1 1 50%;
+	/* margin-right: auto; */
+	/* flex-grow: 9; */
 	/* display: flex; */
+	/* flex-direction: column; */
+	/* justify-content: right; */
+	/* align-items: right; */
+}
+.select {
+	padding: 3px;
+	/* padding-left: 10px; */
+	/* padding-right: 10px; */
+	/* padding: 10px; */
+}
+.radiobox {
+  /* border-bottom: 1px solid; */
+	/* padding-bottom: 10px; */
+	/* padding-top: 10px; */
+	/* margin-bottom: 10px; */
+}
+.list {
+	margin-top: 20px;
+}
+.listitem {
+	align-items: flex-end;
+}
+.onetoleft {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	border: 1px solid;
+	margin-bottom: 5px;
+}
+.onetoleft > *:first-child {
+	margin-right:auto;
+	margin-left:5px;
+	/* margin: 0 auto 0 0; */
+}
+.rightalign {
+	/* justify-self: left; */
+}
+.cardbuttons {
+	display:flex;
+	justify-content: flex-end;
+}
+.cardbuttons > * {
+	margin: 5px;
+	margin-left: 20px;
+}
+.cardbuttons > *:first-child {
+	/* margin-right:auto; */
+	margin-left: 10px;
+}
+.bold {
+	font-weight: bold;
+}
+.rightmargin {
+	margin-right: 10px;
+}
+.textrow {
+	/* margin-right: 10px; */
+	/* color: red; */
+}
+.textrow > *:first-child{
+	margin-right: 10px;
+}
+.border {
+	border-bottom: 1px solid;
+	padding-bottom: 10px;
+	margin-bottom: 10px;
 }
 
 
+
+.send {
+	float: right;
+	border: 1px solid;
+	margin-top: 10px;
+	padding: 5px;
+	padding-left: 60px;
+	padding-right: 60px;
+}
+.invites-topbar {
+}
+.invites-topbar > *:first-child{
+	margin-right:auto;
+	/* margin-left:5px; */
+}
+.invites-topbar-hosting {
+}
+.invites-topbar-hosting > * {
+	margin-left: 5px;
+}
+.invites-topbar-inbox {
+}
+.invites-topbar-inbox > * {
+	margin-left: 5px;
+}
+.invites-search {
+	margin-bottom: 5px;
+	margin-top: 10px;
+}
+.draft-listselect-select {
+	margin-bottom: 15px;
+}
+.invite {
+	border: 1px solid;
+	margin-bottom: 10px;
+}
+.invite-columns {
+	display: flex;
+	flex-direction: row;
+}
+.invite-firstcol {
+	display: flex;
+	flex-direction: column;
+	margin-right:auto;
+	padding: 5px;
+}
+.invite-firstcol > *{
+	/* margin-bottom: 3px; */
+}
+.invite-secondcol {
+	display: flex;
+	flex-direction: column;
+	padding: 5px;
+}
+.invite-secondcol > *{
+	margin-bottom: 3px;
+}
+.invite-title {
+	font-weight: bold;
+}
+.invite-host {
+}
+.invite-status {
+	font-weight: bold;
+}
+.invite-desc {
+	margin: 5px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.invitedetails-topbar {
+	margin: 5px;
+	display: flex;
+}
+.invitedetails-topbar > * {
+	margin-left: 20px;
+	margin-bottom: 20px;
+}
+.invitedetails-topbar > *:first-child {
+	margin-right: auto;
+	margin-left: 0px;
+}
+.invitedetails-columns {
+	display: flex;
+	flex-direction: row;
+	border-bottom: 1px solid;
+	padding: 5px;
+	padding-bottom:10px;
+	margin-bottom:10px;
+}
+.invitedetails-firstcol {
+	display: flex;
+	margin-right:auto;
+	flex-direction: column;
+	/* padding: 5px; */
+}
+.invitedetails-secondcol {
+	margin-bottom: 3px;
+}
+.invitedetails-hoststatus {
+	font-weight: bold;
+}
+.invitedetails-secondcol {
+	padding: 5px;
+}
+.invitedetails-title {
+	font-weight: bold;
+	align-self: center;
+}
+.invitedetails-image {
+	font-weight: bold;
+	align-self: center;
+	margin-bottom: 10px;
+}
+.invitedetails-desc {
+	margin-bottom: 10px;
+	padding-bottom: 10px;
+	border-bottom: 1px solid;
+}
+.invitedetails-reminder {
+	margin-bottom: 10px;
+	padding-bottom: 10px;
+}
+.chat-post {
+	display: flex;
+}
+.chat-post > *:last-child {
+	padding-left: 20px;
+	padding-right: 20px;
+}
+.chat-messages {
+	display: flex;
+	flex-direction: column;
+	margin-bottom: 30px;
+}
+.chat-message-message {
+	display: flex;
+	flex-direction: column;
+	border: 1px solid;
+	margin-bottom: 5px;
+	padding: 5px;
+}
+.chat-message-message > *:first-child {
+	margin-bottom: 5px;
+}
+
+/* .location { */
+/* } */
 /* .geolookup__suggests--hidden { */
-/*   max-height: 0; */
-/*   overflow: hidden; */
-/*   border-width: 3; */
 /* } */
-
 /* .geolookup__item--active { */
-/*   /1* background: #267dc0; *1/ */
-/* 	/1* border-style: solid; *1/ */
-/*   /1* color: #222; *1/ */
 /* } */
-
 /* .geolookup { */
-/* 	/1* display: flex; *1/ */
-/* 	/1* flex-wrap: wrap; *1/ */
-/* 	/1* flex-direction: row; *1/ */
-/* 	/1* justify-content: center; *1/ */
+/* 	display: flex; */
+/* 	/1* flex-direction: column; *1/ */
 /* } */
 /* .geolookup__item { */
-/* 	border-style: solid; */
-/* 	border-width: 1px; */
-/* 	padding: 5px; */
-/* 	margin: 5px; */
-
-/* 	display: flex; */
 /* } */
-
 /* .geolookup__suggests-wrapper { */
-/* 	display: flex; */
-/* 	flex-direction: column; */
-/* } */
-/* .geolookup__suggests { */
-/* 	/1* display: flex; *1/ */
-/* 	/1* flex-direction: column; *1/ */
-/* 	/1* flex-wrap:wrap; *1/ */
-/* 	/1* width:100%; *1/ */
 /* } */
 /* .geolookup__button-wrapper { */
-/* 		/1* align-self: center; *1/ */
+/* 	border: 1px solid; */
+/* 	padding: 3px; */
 /* } */
-
 /* .geolookup__button { */
-/* 	/1* color: blue; *1/ */
-/* 		height: 32px; */
-/* 		border: 1px solid; */
-/*     border-radius: 4px; */
-/* 		border-color: rgba(0,0,0,0.2); */
-/* 		overflow: hidden; */
-
-/* 		width: 195px; */
-/*     box-sizing: border-box; */
 /* } */
-
 /* .geolookup__input-wrapper { */
-/* 	/1* width: 100%; *1/ */
-/* 	/1* align-self: center; *1/ */
-
+/* 	flex-grow: 1; */
 /* } */
 /* .geolookup__input { */
-/* 		border: 1px solid; */
-/*   	padding-right: 8px; */
-/*   	padding-left: 8px; */
-/*     border-radius: 4px; */
-/* 		height: 32px; */
-/* 		line-height: 1.333334; */
-/* 		font-weight: 400; */
-/* 		font-size: 14px; */
-/* 		border-color: rgba(0,0,0,0.2); */
-
-/* 		width: 565px; */
-/*     box-sizing: border-box; */
-/*     align-items: center; */
+/* 	/1* flex: 1 1 100%; *1/ */
 /* } */
+
+.geolookup__suggests--hidden {
+  max-height: 0;
+  overflow: hidden;
+  border-width: 3;
+}
+
+.geolookup__item--active {
+  background: #267dc0;
+	border-style: solid;
+  color: #222;
+}
+
+.geolookup {
+	/* display: flex; */
+	/* flex-direction: row; */
+	/* flex-wrap: wrap; */
+}
+.geolookup__item {
+	border-style: solid;
+	border-width: 1px;
+	padding: 5px;
+	margin: 5px;
+
+	display: flex;
+}
+
+.geolookup__suggests-wrapper {
+	display: flex;
+	flex-direction: column;
+}
+.geolookup__suggests {
+	display: flex;
+	flex-direction: column;
+	flex-wrap:wrap;
+	width:100%;
+}
+.geolookup__button-wrapper {
+		align-self: center;
+		/* width: 8.8%; */
+		/* float: right; */
+}
+
+.geolookup__button {
+	/* color: blue; */
+		border: 1px solid;
+		/* overflow: hidden; */
+		/* width: 9%; */
+		margin: 0px;
+		padding: 0px;
+		padding-top: 2px;
+		padding-bottom: 2px;
+		width: 100px;
+}
+
+.geolookup__input-wrapper {
+	/* width: 100%; */
+	/* align-self: center; */
+}
+.geolookup__input {
+		/* margin-right: auto; */
+		/* border: 1px solid; */
+  	/* padding-right: 8px; */
+  	/* padding-left: 8px; */
+    /* border-radius: 4px; */
+		/* height: 32px; */
+		/* line-height: 1.333334; */
+		/* font-weight: 400; */
+		/* font-size: 14px; */
+		/* border-color: rgba(0,0,0,0.2); */
+		/* width: 90%; */
+		padding: 1px 0px 1px 0px;
+		width: 85.94%;
+		display: inline;
+		/* margin: 0px; */
+		/* border-width: 0px; */
+    /* box-sizing: border-box; */
+    /* align-items: center; */
+}
+@media only screen and (max-width: 740px) {
+  .app {
+    width: 100%;
+  }
+  .geolookup {
+		display: flex;
+		flex-wrap: wrap;
+		/* justify-content: flex-start; */
+		/* padding: 1px 0px 1px 0px; */
+	}
+  .geolookup__button-wrapper {
+		/* flex: 9 0 50%; */
+		/* width: 100px; */
+	}
+  .geolookup__button {
+		width: 100px;
+		margin-left: 0px;
+		padding-left: 0px;
+	}
+	.geolookup__input-wrapper {
+		/* flex: 0 0 76%; */
+		flex-grow: 1;
+		margin-right: 4px;
+	}
+	.geolookup__input {
+		width: 100%;
+	}
+}
