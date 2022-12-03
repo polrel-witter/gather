@@ -96,7 +96,7 @@ const Invite = (props) => {
 			<div className="invite-columns">
 				<div className="invite-firstcol">
 					<div className="invite-title">{invite.title}</div>
-					<div className="invite-host">From <span className='bold'>{'~'+window.urbit.ship}</span></div>
+					<div className="invite-host">From <span className='bold'>{invite.initShip}</span></div>
 					{ invite.date.begin !== null && <div className="invite-date">Date: {new Date(invite.date.begin*1000).toLocaleString()}</div>
 					}
 					<div className="invite-locationtype">Happening in {invite.locationType}</div>

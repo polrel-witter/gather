@@ -18,10 +18,10 @@ import haversine from "haversine-distance";
 import { useAlert } from "react-alert";
 
 const topbarSelected = (invitesMode, button) => {
-	if(invitesMode === button)
-		return {fontWeight:'bold', borderBottom: '1px solid'};
+	if (invitesMode === button)
+		return { fontWeight: "bold", borderBottom: "1px solid" };
 	return {};
-}
+};
 
 export const Invites = (props) => {
 	const route = useStore((state) => state.route);
@@ -34,7 +34,7 @@ export const Invites = (props) => {
 	const inviteDetails = useStore((state) => state.inviteDetails);
 	const setInvitesMode = useStore((state) => state.setInvitesMode);
 	const pAdd = useStore((state) => state.pAdd);
-	const [marsLink, setMarsLink] = useState('');
+	const [marsLink, setMarsLink] = useState("");
 	console.log(invitesMode.slice(0, 7) === "hosting");
 
 	if (inviteDetails === "")
@@ -46,51 +46,85 @@ export const Invites = (props) => {
 						name="inbox-hosting"
 						onChange={(e) => setInvitesMode(e.target.value)}
 					>
-						<option value="hosting-open">Hosting</option>
-						<option value="inbox-rsvp">Inbox</option>
+						<option
+							value="hosting-open"
+							selected={invitesMode.slice(0, 7) === "hosting" ? "selected" : ""}
+						>
+							Hosting
+						</option>
+						<option
+							value="inbox-rsvp"
+							selected={invitesMode.slice(0, 5) === "inbox" ? "selected" : ""}
+						>
+							Inbox
+						</option>
 					</select>
 					{invitesMode.slice(0, 7) === "hosting" && (
 						<div className="invites-topbar-hosting">
-							<button style={topbarSelected(invitesMode, 'hosting-open')} onClick={() => setInvitesMode("hosting-open")}>
+							<button
+								style={topbarSelected(invitesMode, "hosting-open")}
+								onClick={() => setInvitesMode("hosting-open")}
+							>
 								Open
 							</button>
-							<button style={topbarSelected(invitesMode, 'hosting-closed')} onClick={() => setInvitesMode("hosting-closed")}>
+							<button
+								style={topbarSelected(invitesMode, "hosting-closed")}
+								onClick={() => setInvitesMode("hosting-closed")}
+							>
 								Closed
 							</button>
-							<button style={topbarSelected(invitesMode, 'hosting-completed')} onClick={() => setInvitesMode("hosting-completed")}>
+							<button
+								style={topbarSelected(invitesMode, "hosting-completed")}
+								onClick={() => setInvitesMode("hosting-completed")}
+							>
 								Completed
 							</button>
-							<button style={topbarSelected(invitesMode, 'hosting-cancelled')} onClick={() => setInvitesMode("hosting-cancelled")}>
+							<button
+								style={topbarSelected(invitesMode, "hosting-cancelled")}
+								onClick={() => setInvitesMode("hosting-cancelled")}
+							>
 								Cancelled
 							</button>
 						</div>
 					)}
 					{invitesMode.slice(0, 5) === "inbox" && (
 						<div className="invites-topbar-inbox">
-							<button style={topbarSelected(invitesMode, 'inbox-rsvp')} onClick={() => setInvitesMode("inbox-rsvp")}>
+							<button
+								style={topbarSelected(invitesMode, "inbox-rsvp")}
+								onClick={() => setInvitesMode("inbox-rsvp")}
+							>
 								RSVPd
 							</button>
-							<button style={topbarSelected(invitesMode, 'inbox-pending')} onClick={() => setInvitesMode("inbox-pending")}>
+							<button
+								style={topbarSelected(invitesMode, "inbox-pending")}
+								onClick={() => setInvitesMode("inbox-pending")}
+							>
 								Pending
 							</button>
-							<button style={topbarSelected(invitesMode, 'inbox-outofrange')} onClick={() => setInvitesMode("inbox-outofrange")}>
+							<button
+								style={topbarSelected(invitesMode, "inbox-outofrange")}
+								onClick={() => setInvitesMode("inbox-outofrange")}
+							>
 								Out-of-range
 							</button>
 						</div>
 					)}
 				</div>
-				<div className='invites-search flexrow'>
+				{ invitesMode === 'inbox-pending' && (
+				<div className="invites-search flexrow">
 					<input
-						className='flexgrow'
+						className="flexgrow"
 						type="text"
-						onChange={(e) =>
-							setMarsLink(e.currentTarget.value)
-						}
+						onChange={(e) => setMarsLink(e.currentTarget.value)}
 					/>
-					<button 
-						className='button'
-					onClick={() => pAdd({'mars-link': marsLink})}>Add Invite</button>
+					<button
+						className="button"
+						onClick={() => pAdd({ "mars-link": marsLink })}
+					>
+						Add Invite
+					</button>
 				</div>
+				)}
 				{invites.map((invite) => (
 					<Invite invite={invite} />
 				))}

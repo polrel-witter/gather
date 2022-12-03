@@ -167,7 +167,7 @@
 }
 .invites-search {
 	margin-bottom: 5px;
-	margin-top: 10px;
+	/* margin-top: 10px; */
 }
 .draft-listselect-select {
 	margin-bottom: 15px;
@@ -285,6 +285,15 @@
 }
 .chat-message-message > *:first-child {
 	margin-bottom: 5px;
+}
+.guestlistitem-element {
+	/* border: 1px solid; */
+	padding: 1px;
+	margin-left: 5px;
+	margin-right: 5px;
+}
+.invites-topbar {
+	margin-bottom : 5px;
 }
 
 /* .location { */

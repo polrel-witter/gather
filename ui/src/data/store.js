@@ -37,6 +37,25 @@ export const useStore = create((set) => ({
 	},
 	setInvitesMode: (mode) => set((state) => ({ invitesMode: mode })),
 	setInviteMode: (mode) => set((state) => ({ inviteMode: mode })),
+	draftInvite: {
+		"send-to": [],
+		"location-type": "meatspace",
+		position: { lat: ".0", lon: ".0" },
+		address: "",
+		"access-link": "",
+		radius: ".0",
+		"rsvp-limit": null,
+		desc: "",
+		title: "",
+		image: "",
+		date: { begin: "", end: "" },
+		access: "private",
+		"earth-link": "",
+		// TODO fix excise-comets and enable-chat
+		"excise-comets": true,
+		"enable-chat": false,
+	},
+	setDraftInvite: (invite) => set(state => ({ draftInvite: invite })),
 
 	/*  STATE  */
 
@@ -101,13 +120,13 @@ export const useStore = create((set) => ({
 	pAdd: (data) => {
 		doPoke({ 'add': data });
 	},
-	pRsvp: (data) => {
+	pRSVP: (data) => {
 		doPoke({ 'rsvp': data });
 	},
-	pUnRsvp: (data) => {
+	pUnRSVP: (data) => {
 		doPoke({ unrsvp: data });
 	},
-	pSubRsvp: (data) => {},
+	pSubRSVP: (data) => {},
 	pSubInvite: (data) => {},
 	pPost: (data) => {
 		doPoke({ post: data });

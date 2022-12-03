@@ -136,10 +136,12 @@ export const isGroup = (str) => {
 export const createGroup = (type, str, collections) => {
 
 	if(type === 'ship') {
-		return ({title: str, members: [str], selected: true, resource: ''});
+		const newStr = str[0] === '~' ? str : '~' + str;
+		console.log(newStr);
+		return ({title: newStr, members: [newStr], selected: true, resource: ''});
 	}
 	else if(type === 'group') {
-		const result = scryGroup(str);
+		const result = scryGroups(str);
 		return ({title: str, members: [], selected: true, resource: {ship: str.split('/')[0], name: str.split('/')[1]}});
 	}
 	else if(type === 'collection') {
@@ -258,15 +260,11 @@ export const patpValidate = str => {
   return false;
 };
 
-export const scryGroup = (str) => {
+export const scryGroups = (str) => {
 	// const result = {title:'testGroup', selected: true, url: 'webgraph', members: ['~dev']};
     const result = window.urbit.scry({
       app: "graph-store",
-			// path: '/groups/ship/~martyr-sarlev-sarsen/assembly-hackers',
-			// path: '/groups/ship/~difhut-mogsel-pontus-fadpun/testgroup',
-			path: '/keys',
-			// path: '/groups/ship/~hiddev-dannut/new-hooniverse',
-			// path: '/groups/ship/~hiddev-dannut/new-hooniverse/noun'
+			path: '/groups',
     })
 	return result;
 }

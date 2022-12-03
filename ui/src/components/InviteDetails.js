@@ -23,11 +23,13 @@ const InviteDetails = (props) => {
 	const pRSVP = useStore((state) => state.pRSVP);
 	const pUnRSVP = useStore((state) => state.pUnRSVP);
 	const setInviteMode = useStore((state) => state.setInviteMode);
-	const [reminder, setReminder] = useState(0);
+	const oldReminder = useStore(state => state.settings.reminders.gatherings.filter(x => x.id === _invite.id)[0]?.alarm);
+	const [reminder, setReminder] = useState(oldReminder === undefined ? null : oldReminder);
 	const pGatheringReminder = useStore((state) => state.pGatheringReminder);
 
 	const isHosting = invite.initShip === "~" + window.urbit.ship;
-	console.log(invite);
+	const newReminder = new Date(reminder).toISOString().substring(0,16);
+	console.log(oldReminder);
 
 	return (
 		<div className="invitedetails">
@@ -46,19 +48,19 @@ const InviteDetails = (props) => {
 						Edit
 					</button>
 				)}
-				{_invite.guestStatus === "pending" && (
+				{_invite.guestStatus === "pending" && invite.hostStatus === 'open' && (
 					<button
 						className="invitedetails-rsvp"
-						onClick={() => pRSVP(_invite.id)}
+						onClick={() => pRSVP({id: _invite.id})}
 					>
 						RSVP
 					</button>
 				)}
-				{_invite.guestStatus === "rsvpd" && (
+				{_invite.guestStatus === "rsvpd" && invite.hostStatus === 'open' && (
 					<button
 						className="invitedetails-unrsvp"
 						onClick={() => {
-							pUnRSVP(_invite.id);
+							pUnRSVP({id: _invite.id});
 						}}
 					>
 						UnRSVP
@@ -106,6 +108,7 @@ const InviteDetails = (props) => {
 				<div className="invitedetails-reminder flexrow">
 					<input
 						type="datetime-local"
+						value={newReminder}
 						onChange={(e) => {
 							const rem = new Date(e.currentTarget.value);
 							setReminder(rem.valueOf());
@@ -125,8 +128,8 @@ const InviteDetails = (props) => {
 						Last Updated: {new Date(invite.lastUpdated * 1000).toLocaleString()}
 					</div>
 					<div className="invitedetails-rsvpcount textrow">
-						<span>Max RSVPs:</span>
-						<span>{invite.rsvpCount}</span>
+						<span>Access Type:</span>
+						<span>{invite.access}</span>
 					</div>
 					<div className="invitedetails-radius textrow">
 						<span>Delivery Radius:</span>
@@ -145,7 +148,10 @@ const InviteDetails = (props) => {
 						<span>{invite.accessLink}</span>
 					</div>
 					<div className="invitedetails-accesslink textrow">
-						Access Link: {invite.accessLink}
+						Mars Link: {invite.marsLink}
+					</div>
+					<div className="invitedetails-accesslink textrow">
+						Earth Link: {invite.earthLink}
 					</div>
 				</div>
 				<div className="invitedetails-guestlist">
@@ -154,10 +160,10 @@ const InviteDetails = (props) => {
 						<div className="invitedetails-guestlist-item onetoleft">
 							<span>{guest.ship}</span>
 							{guest.shipInvite.guestStatus === "pending" && (
-								<span> Pending </span>
+								<span className='guestlistitem-element'> Pending </span>
 							)}
-							{guest.shipInvite.guestStatus === "rsvpd" && <span> RSVPd </span>}
-							<span>{guest.shipInvite.rsvpDate}</span>
+							{guest.shipInvite.guestStatus === "rsvpd" && <span className='guestlistitem-element'> RSVPd </span>}
+							<span className='guestlistitem-element'>{guest.shipInvite.rsvpDate}</span>
 						</div>
 					))}
 				</div>

@@ -16,33 +16,50 @@ const Draft = () => {
 	const pEditCollection = useStore((state) => state.pEditCollection);
 	const pDeleteCollection = useStore((state) => state.pDeleteCollection);
 	const [newCollectionString, setNewCollectionString] = useState("");
-	const [invite, setInvite] = useState({
-		"send-to": [],
-		"location-type": "meatspace",
-		position: { lat: ".0", lon: ".0" },
-		address: "",
-		"access-link": "",
-		radius: ".0",
-		"rsvp-limit": 0,
-		desc: "",
-		title: "",
-		image: "",
-		date: { begin: "", end: "" },
-		access: "private",
-		"earth-link": "",
-		// TODO fix excise-comets and enable-chat
-		"excise-comets": true,
-		"enable-chat": true,
-	});
+	const invite = useStore((state) => state.draftInvite);
+	const setInvite = useStore((state) => state.setDraftInvite);
+	// const [invite, setInvite] = useState({
+	// 	"send-to": [],
+	// 	"location-type": "meatspace",
+	// 	position: { lat: ".0", lon: ".0" },
+	// 	address: "",
+	// 	"access-link": "",
+	// 	radius: ".0",
+	// 	"rsvp-limit": 0,
+	// 	desc: "",
+	// 	title: "",
+	// 	image: "",
+	// 	date: { begin: "", end: "" },
+	// 	access: "private",
+	// 	"earth-link": "",
+	// 	// TODO fix excise-comets and enable-chat
+	// 	"excise-comets": true,
+	// 	"enable-chat": true,
+	// });
 
 	useEffect(() => {
-		console.log(settings);
+		// if (Object.keys(settings) !== 0) {
+		// 	console.log(settings['enableChat']);
+		// 	setInvite({
+		// 		...invite,
+		// 		// "excise-comets": settings["exciseComets"],
+		// 		// "enable-chat": settings["enableChat"],
+		// 		"excise-comets": false,
+		// 		"enable-chat": settings["enableChat"],
+		// 	});
+		// }
+	}, []);
+
+	useEffect(() => {
 		if (Object.keys(settings) !== 0) {
-			setInvite({
+			console.log(settings['enableChat']);
+			const newInvite = {
 				...invite,
 				"excise-comets": settings["exciseComets"],
 				"enable-chat": settings["enableChat"],
-			});
+			};
+			console.log(newInvite);
+			// setInvite(newInvite);
 		}
 		if (collections !== undefined) {
 			setInvite({

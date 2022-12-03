@@ -8,8 +8,10 @@ import Settings from "./components/Settings";
 import patpValidate from "./patpValidate";
 import { Box, Text } from "@tlon/indigo-react";
 import { useStore } from "./data/store";
-import { scryGroup } from "./utils";
+import { scryGroups } from "./utils";
 import { useAlert } from "react-alert";
+
+const ship = 'dev';
 
 const AppSwitch = () => {
 	const route = useStore((state) => state.route);
@@ -45,28 +47,40 @@ class App extends Component {
 		// window.urbit = new Urbit("http://localhost:8081","","ranser-masfyr-parwyd-sabdux");
 		// window.urbit.ship = 'taclev-togpub-pontus-fadpun';
 
-		window.urbit = new Urbit(
-			"http://localhost:8080",
-			"",
-			"magsub-micsev-bacmug-moldex"
-		);
-		window.urbit.ship = "dev";
-		
-		// window.urbit = new Urbit("http://localhost:8081","","dolsyt-lavref-mormyr-rissep");
-		// window.urbit.ship = 'fun';
-
-		// window.urbit = new Urbit("");
-		// window.urbit.ship = window.ship;
+		switch (ship) {
+			case "fun":
+				window.urbit = new Urbit(
+					"http://localhost:8081",
+					"",
+					"dolsyt-lavref-mormyr-rissep"
+				);
+				window.urbit.ship = "fun";
+				break;
+			case "dev":
+				window.urbit = new Urbit(
+					"http://localhost:8080",
+					"",
+					"magsub-micsev-bacmug-moldex"
+				);
+				window.urbit.ship = "dev";
+				break;
+			default:
+				window.urbit = new Urbit("");
+				window.urbit.ship = window.ship;
+				break;
+		}
 
 		window.urbit.onOpen = () => this.setState({ conn: "ok" });
 		window.urbit.onRetry = () => this.setState({ conn: "try" });
 		window.urbit.onError = () => this.setState({ conn: "err" });
-		// scryGroup('');
+
+		console.log(scryGroups());
+		scryGroups();
 	}
 	render() {
 		return (
 			<div className="app">
-					<Topbar />
+				<Topbar />
 				<div className="app-main">
 					<AppSwitch />
 				</div>
