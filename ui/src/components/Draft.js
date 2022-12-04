@@ -1,8 +1,16 @@
 import React, { useState, useEffect } from "react";
 import Location from "./Location";
 import { useStore } from "../data/store";
-import { createGroup, toggleSelect, deleteGroup, sortSelected, getColType} from "../utils";
+import {
+	createGroup,
+	toggleSelect,
+	deleteGroup,
+	sortSelected,
+	getColType,
+	alert,
+} from "../utils";
 import { useAlert } from "react-alert";
+import Alert from "./Alert";
 import ReactTooltip from "react-tooltip";
 
 const Draft = () => {
@@ -10,7 +18,10 @@ const Draft = () => {
 	const collectionWaiting = useStore((state) => state.collectionWaiting);
 	const collections = useStore((state) => state.settings.collections);
 	const settings = useStore((state) => state.settings);
+	const _alert = useAlert();
 	const alert = useAlert();
+	const redAlert = (str) => _alert.show(<Alert str={str} color={'red'}/>);
+	const greenAlert = (str) => _alert.show(<Alert str={str} color={'green'}/>);
 	const pNewInvite = useStore((state) => state.pNewInvite);
 	const pCreateCollection = useStore((state) => state.pCreateCollection);
 	const pEditCollection = useStore((state) => state.pEditCollection);
@@ -51,24 +62,18 @@ const Draft = () => {
 	}, []);
 
 	useEffect(() => {
-		// if (Object.keys(settings) !== 0) {
-		// 	console.log(settings["enableChat"]);
-		// 	const newInvite = {
-		// 		...invite,
-		// 		"excise-comets": settings["exciseComets"],
-		// 		"enable-chat": settings["enableChat"],
-		// 	};
-		// 	console.log(newInvite);
-		// 	setInvite(newInvite);
-		// }
-		if (collections !== undefined) {
-			setInvite({
-				...invite,
-				"send-to": collections
+			const sendTo = collections !== undefined ? collections
 					.filter((x) => x.collection.selected)
-					.reduce((prev, curr) => prev.concat(curr.collection.members), []),
-			});
-		}
+				.reduce((prev, curr) => prev.concat(curr.collection.members), []) : collections;
+			const exciseComets = Object.keys(settings) !== 0 ? settings['exciseComets'] : invite['excise-comets'];
+			const enableChat = Object.keys(settings) !== 0 ? settings['enableChat'] : invite['enableChat'];
+			const newInvite = {
+				...invite,
+				"send-to": sendTo,
+				"excise-comets": exciseComets,
+				"enable-chat": enableChat
+			};
+			setInvite(newInvite);
 	}, [collections, settings]);
 
 	return (
@@ -156,7 +161,7 @@ const Draft = () => {
 				address={invite.address}
 				position={invite.position}
 				originalState={invite}
-				setState={ setInvite }
+				setState={setInvite}
 			/>
 
 			<div className="draft-rr flexrow">
@@ -165,7 +170,7 @@ const Draft = () => {
 					<input
 						type="number"
 						min="0"
-						value={invite.radius.slice(1)}
+						value={invite.radius?.slice(1)}
 						onChange={(e) => {
 							// const re = /^[0-9\b]+$/;
 							// if (
@@ -174,7 +179,11 @@ const Draft = () => {
 							// )
 							setInvite({
 								...invite,
-								radius: "." + parseInt(e.currentTarget.value),
+								radius:
+									isNaN(parseInt(e.currentTarget.value)) ||
+									e.currentTarget.value === null
+										? null
+										: "." + parseInt(e.currentTarget.value),
 							});
 						}}
 					/>
@@ -278,6 +287,7 @@ const Draft = () => {
 						<div className="draft-listselect-ship flexrow">
 							<input
 								className="flexgrow"
+								placeholder="~{ship}"
 								type="text"
 								onChange={(e) => setNewCollectionString(e.currentTarget.value)}
 							/>
@@ -297,6 +307,7 @@ const Draft = () => {
 						<div className="draft-listselect-group flexrow">
 							<input
 								className="flexgrow"
+								placeholder="~{patp}/{groupname}"
 								onChange={(e) => setNewCollectionString(e.currentTarget.value)}
 								type="text"
 							/>
@@ -316,6 +327,7 @@ const Draft = () => {
 						<div className="draft-listselect-collection flexrow">
 							<input
 								className="flexgrow"
+								placeholder="Select ships, groups, and/or other collections below"
 								type="text"
 								onChange={(e) => setNewCollectionString(e.currentTarget.value)}
 							/>
@@ -384,13 +396,18 @@ const Draft = () => {
 				<button
 					className="send"
 					onClick={() => {
-						if (invite["send-to"].length !== 0) {
-							alert.show(<div style={{ color: "green" }}>Invite Sent</div>);
-							pNewInvite(invite);
-						} else
-							alert.show(
-								<div style={{ color: "red" }}>No collection selected!</div>
-							);
+						if (invite["send-to"].length === 0) {
+							// alert.show(<div style={{ color: "green" }}>Invite Sent</div>);
+							redAlert('No Collection Selected!');
+						} 
+						else if (invite.title === '') {
+							redAlert('No title!');
+								pNewInvite(invite);
+						}
+						else {
+								pNewInvite(invite);
+								greenAlert('Invite Sent!');
+						}
 					}}
 				>
 					Send

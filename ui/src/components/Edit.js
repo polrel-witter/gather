@@ -62,27 +62,27 @@ const Edit = (props) => {
 				<div className="edit-locationtype radio">
 					<span> Location Type </span>
 					<div>
-					<input
-						type="radio"
-						name="locationtype"
-						checked={eInvite["location-type"] === "meatspace"}
-						// checked="checked"
-						onChange={(e) => {
-							setEditedInvite({ ...eInvite, "location-type": "meatspace" });
-						}}
-					/>
-					<span> Meatspace </span>
+						<input
+							type="radio"
+							name="locationtype"
+							checked={eInvite["location-type"] === "meatspace"}
+							// checked="checked"
+							onChange={(e) => {
+								setEditedInvite({ ...eInvite, "location-type": "meatspace" });
+							}}
+						/>
+						<span> Meatspace </span>
 					</div>
 					<div>
-					<input
-						type="radio"
-						name="locationtype"
-						checked={eInvite["location-type"] === "virtual"}
-						onChange={(e) => {
-							setEditedInvite({ ...eInvite, "location-type": "virtual" });
-						}}
-					/>
-					<span>Virtual</span>
+						<input
+							type="radio"
+							name="locationtype"
+							checked={eInvite["location-type"] === "virtual"}
+							onChange={(e) => {
+								setEditedInvite({ ...eInvite, "location-type": "virtual" });
+							}}
+						/>
+						<span>Virtual</span>
 					</div>
 				</div>
 				<div className="edit-accesslink flexcol">
@@ -101,8 +101,9 @@ const Edit = (props) => {
 					<div className="edit-rr-radius flexgrow flexcol">
 						<span display="inline">Delivery radius</span>
 						<input
-							type="text"
-							value={eInvite.radius.slice(1)}
+							type="number"
+							min="0"
+							value={eInvite.radius?.slice(1)}
 							onChange={(e) => {
 								const re = /^[0-9\b]+$/;
 								if (
@@ -111,7 +112,11 @@ const Edit = (props) => {
 								)
 									setEditedInvite({
 										...eInvite,
-										radius: "." + String(e.currentTarget.value),
+										radius:
+											isNaN(parseInt(e.currentTarget.value)) ||
+											e.currentTarget.value === null
+												? null
+												: "." + parseInt(e.currentTarget.value),
 									});
 							}}
 						/>
@@ -138,8 +143,8 @@ const Edit = (props) => {
 				<Location
 					address={eInvite.address}
 					position={eInvite.position}
-					setAddress={(address) => setEditedInvite({ ...eInvite, address })}
-					setPosition={(position) => setEditedInvite({ ...eInvite, position })}
+					originalState={eInvite}
+					setState={setEditedInvite}
 				/>
 				<div className="edit-image flexcol">
 					<span> Image link </span>
@@ -185,63 +190,63 @@ const Edit = (props) => {
 				<div className="edit-excisecomets radio">
 					<span> Excise Comets </span>
 					<div>
-					<input
-						type="radio"
-						name="advanced-excisecomets"
-						checked={eInvite["excise-comets"] === true}
-						onChange={() => {
-							setEditedInvite({
-								...eInvite,
-								"excise-comets": true,
-							});
-						}}
-					/>
-					<span>Yes</span>
+						<input
+							type="radio"
+							name="advanced-excisecomets"
+							checked={eInvite["excise-comets"] === true}
+							onChange={() => {
+								setEditedInvite({
+									...eInvite,
+									"excise-comets": true,
+								});
+							}}
+						/>
+						<span>Yes</span>
 					</div>
 					<div>
-					<input
-						type="radio"
-						name="advanced-excisecomets"
-						checked={eInvite["excise-comets"] === false}
-						onChange={() => {
-							setEditedInvite({
-								...eInvite,
-								"excise-comets": false,
-							});
-						}}
-					/>
-					<span>No</span>
+						<input
+							type="radio"
+							name="advanced-excisecomets"
+							checked={eInvite["excise-comets"] === false}
+							onChange={() => {
+								setEditedInvite({
+									...eInvite,
+									"excise-comets": false,
+								});
+							}}
+						/>
+						<span>No</span>
 					</div>
 				</div>
 				<div className="edit-enablechat radio">
 					<span> Enable Chat </span>
 					<div>
-					<input
-						type="radio"
-						name="advanced-enablechat"
-						checked={eInvite["enable-chat"] === true}
-						onChange={() => {
-							setEditedInvite({
-								...eInvite,
-								"enable-chat": true,
-							});
-						}}
-					/>
-					<span>Yes</span>
+						<input
+							type="radio"
+							name="advanced-enablechat"
+							checked={eInvite["enable-chat"] === true}
+							onChange={() => {
+								setEditedInvite({
+									...eInvite,
+									"enable-chat": true,
+								});
+							}}
+						/>
+						<span>Yes</span>
 					</div>
 					<div>
-					<input
-						type="radio"
-						name="advanced-enablechat"
-						checked={eInvite["enable-chat"] === false}
-						onChange={() => {
-							setEditedInvite({
-								...eInvite,
-								"enable-chat": false,
-							});
-						}}
-					/>
-					<span>No</span>
+						<input
+							type="radio"
+							name="advanced-enablechat"
+							checked={eInvite["enable-chat"] === false}
+							onChange={() => {
+								setEditedInvite({
+									...eInvite,
+									"enable-chat": false,
+								});
+							}}
+						/>
+						<span>No</span>
 					</div>
 				</div>
 			</div>

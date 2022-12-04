@@ -4,6 +4,7 @@ import { useStore } from "../data/store";
 import Location from "./Location";
 import { patpValidate } from "../utils";
 import { useAlert } from "react-alert";
+import Alert from "./Alert";
 
 const Banned = () => {
 	const banned = useStore((state) => state.settings.banned);
@@ -11,7 +12,9 @@ const Banned = () => {
 	const pUnban = useStore((state) => state.pUnban);
 	const pBan = useStore((state) => state.pBan);
 	const [banSearch, setBanSearch] = useState("");
-	const alert = useAlert();
+	const _alert = useAlert();
+	const redAlert = (str) => _alert.show(<Alert str={str} color={"red"} />);
+	const greenAlert = (str) => _alert.show(<Alert str={str} color={"green"} />);
 	return (
 		<div className="settings-banned">
 			<span>Banned Ships</span>
@@ -27,10 +30,14 @@ const Banned = () => {
 				<button
 					className="button"
 					onClick={() => {
-						if (patpValidate(banSearch)) pBan(banSearch);
-						alert.show(
-							"You will no longer send or receive invites to/from this ship"
-						);
+						if (patpValidate(banSearch) && banSearch !== ('~' + window.urbit.ship)) {
+							pBan(banSearch);
+							alert.show(
+								"You will no longer send or receive invites to/from this ship"
+							);
+						}
+						else
+							redAlert("You can't ban yourself");
 					}}
 				>
 					Ban
@@ -114,11 +121,15 @@ const Settings = () => {
 				<input
 					type="number"
 					min="0"
-					value={newSettings.radius === null ? 0 : newSettings.radius.slice(1)}
+					value={newSettings.radius?.slice(1)}
 					onChange={(e) => {
 						setNewSettings({
 							...newSettings,
-							radius: "." + parseInt(e.currentTarget.value),
+							radius:
+								isNaN(parseInt(e.currentTarget.value)) ||
+								e.currentTarget.value === null
+									? null
+									: "." + parseInt(e.currentTarget.value),
 						});
 					}}
 				/>
@@ -167,38 +178,38 @@ const Settings = () => {
 				<div className="radio">
 					<span>Notify me when I receive new invites</span>
 					<div>
-					<input
-						type="radio"
-						name="notify-newinvites"
-						checked={newSettings.notifications["new-invites"] === true}
-						onChange={() => {
-							setNewSettings({
-								...newSettings,
-								notifications: {
-									...newSettings.notifications,
-									"new-invites": true,
-								},
-							});
-						}}
-					/>
-					<span>Yes</span>
+						<input
+							type="radio"
+							name="notify-newinvites"
+							checked={newSettings.notifications["new-invites"] === true}
+							onChange={() => {
+								setNewSettings({
+									...newSettings,
+									notifications: {
+										...newSettings.notifications,
+										"new-invites": true,
+									},
+								});
+							}}
+						/>
+						<span>Yes</span>
 					</div>
 					<div>
-					<input
-						type="radio"
-						name="notify-newinvites"
-						checked={newSettings.notifications["new-invites"] === false}
-						onChange={() => {
-							setNewSettings({
-								...newSettings,
-								notifications: {
-									...newSettings.notifications,
-									"new-invites": false,
-								},
-							});
-						}}
-					/>
-					<span>No</span>
+						<input
+							type="radio"
+							name="notify-newinvites"
+							checked={newSettings.notifications["new-invites"] === false}
+							onChange={() => {
+								setNewSettings({
+									...newSettings,
+									notifications: {
+										...newSettings.notifications,
+										"new-invites": false,
+									},
+								});
+							}}
+						/>
+						<span>No</span>
 					</div>
 				</div>
 				<div className="radio">
@@ -206,38 +217,38 @@ const Settings = () => {
 						Notify me when a host updates an invite to which I'm RSVPd
 					</span>
 					<div>
-					<input
-						type="radio"
-						name="notify-inviteupdates"
-						checked={newSettings.notifications["invite-updates"] === true}
-						onChange={() => {
-							setNewSettings({
-								...newSettings,
-								notifications: {
-									...newSettings.notifications,
-									"invite-updates": true,
-								},
-							});
-						}}
-					/>
-					<span>Yes</span>
+						<input
+							type="radio"
+							name="notify-inviteupdates"
+							checked={newSettings.notifications["invite-updates"] === true}
+							onChange={() => {
+								setNewSettings({
+									...newSettings,
+									notifications: {
+										...newSettings.notifications,
+										"invite-updates": true,
+									},
+								});
+							}}
+						/>
+						<span>Yes</span>
 					</div>
 					<div>
-					<input
-						type="radio"
-						name="notify-inviteupdates"
-						checked={newSettings.notifications["invite-updates"] === false}
-						onChange={() => {
-							setNewSettings({
-								...newSettings,
-								notifications: {
-									...newSettings.notifications,
-									"invite-updates": false,
-								},
-							});
-						}}
-					/>
-					<span>No</span>
+						<input
+							type="radio"
+							name="notify-inviteupdates"
+							checked={newSettings.notifications["invite-updates"] === false}
+							onChange={() => {
+								setNewSettings({
+									...newSettings,
+									notifications: {
+										...newSettings.notifications,
+										"invite-updates": false,
+									},
+								});
+							}}
+						/>
+						<span>No</span>
 					</div>
 				</div>
 			</div>
@@ -246,187 +257,199 @@ const Settings = () => {
 				<div className="radio">
 					<span>Excise Comets</span>
 					<div>
-					<input
-						type="radio"
-						name="advanced-excisecomets"
-						checked={newSettings["excise-comets"] === true}
-						onChange={() => {
-							setNewSettings({
-								...newSettings,
-								"excise-comets": true,
-							});
-						}}
-					/>
-					<span>Yes</span>
+						<input
+							type="radio"
+							name="advanced-excisecomets"
+							checked={newSettings["excise-comets"] === true}
+							onChange={() => {
+								setNewSettings({
+									...newSettings,
+									"excise-comets": true,
+								});
+							}}
+						/>
+						<span>Yes</span>
 					</div>
 					<div>
-					<input
-						type="radio"
-						name="advanced-excisecomets"
-						checked={newSettings["excise-comets"] === false}
-						onChange={() => {
-							setNewSettings({
-								...newSettings,
-								"excise-comets": false,
-							});
-						}}
-					/>
-					<span>No</span>
+						<input
+							type="radio"
+							name="advanced-excisecomets"
+							checked={newSettings["excise-comets"] === false}
+							onChange={() => {
+								setNewSettings({
+									...newSettings,
+									"excise-comets": false,
+								});
+							}}
+						/>
+						<span>No</span>
 					</div>
 				</div>
 				<div className="radio">
 					<span>Enable Chat</span>
 					<div>
-					<input
-						type="radio"
-						name="advanced-enablechat"
-						checked={newSettings["enable-chat"] === true}
-						onChange={() => {
-							setNewSettings({
-								...newSettings,
-								"enable-chat": true,
-							});
-						}}
-					/>
-					<span>Yes</span>
+						<input
+							type="radio"
+							name="advanced-enablechat"
+							checked={newSettings["enable-chat"] === true}
+							onChange={() => {
+								setNewSettings({
+									...newSettings,
+									"enable-chat": true,
+								});
+							}}
+						/>
+						<span>Yes</span>
 					</div>
 					<div>
-					<input
-						type="radio"
-						name="advanced-enablechat"
-						checked={newSettings["enable-chat"] === false}
-						onChange={() => {
-							setNewSettings({
-								...newSettings,
-								"enable-chat": false,
-							});
-						}}
-					/>
-					<span>No</span>
+						<input
+							type="radio"
+							name="advanced-enablechat"
+							checked={newSettings["enable-chat"] === false}
+							onChange={() => {
+								setNewSettings({
+									...newSettings,
+									"enable-chat": false,
+								});
+							}}
+						/>
+						<span>No</span>
 					</div>
 				</div>
 				<div className="radio">
 					<span>RSVP limit can be seen by</span>
 					<div>
-					<input
-						type="radio"
-						name="advanced-rsvplimit"
-						checked={newSettings.catalog["rsvp-limit"] === "host-only"}
-						onChange={() => {
-							setNewSettings({
-								...newSettings,
-								catalog: { ...newSettings.catalog, "rsvp-limit": "host-only" },
-							});
-						}}
-					/>
-					<span>Host Only</span>
+						<input
+							type="radio"
+							name="advanced-rsvplimit"
+							checked={newSettings.catalog["rsvp-limit"] === "host-only"}
+							onChange={() => {
+								setNewSettings({
+									...newSettings,
+									catalog: {
+										...newSettings.catalog,
+										"rsvp-limit": "host-only",
+									},
+								});
+							}}
+						/>
+						<span>Host Only</span>
 					</div>
 					<div>
-					<input
-						type="radio"
-						name="advanced-rsvplimit"
-						checked={newSettings.catalog["rsvp-limit"] === "anyone"}
-						onChange={() => {
-							setNewSettings({
-								...newSettings,
-								catalog: { ...newSettings.catalog, "rsvp-limit": "anyone" },
-							});
-						}}
-					/>
-					<span>Anyone</span>
+						<input
+							type="radio"
+							name="advanced-rsvplimit"
+							checked={newSettings.catalog["rsvp-limit"] === "anyone"}
+							onChange={() => {
+								setNewSettings({
+									...newSettings,
+									catalog: { ...newSettings.catalog, "rsvp-limit": "anyone" },
+								});
+							}}
+						/>
+						<span>Anyone</span>
 					</div>
 				</div>
 				<div className="radio">
 					<span>RSVP count can be seen by</span>
 					<div>
-					<input
-						type="radio"
-						name="advanced-rsvpcount"
-						checked={newSettings.catalog["rsvp-count"] === "host-only"}
-						onChange={() => {
-							setNewSettings({
-								...newSettings,
-								catalog: { ...newSettings.catalog, "rsvp-count": "host-only" },
-							});
-						}}
-					/>
-					<span>Host Only</span>
+						<input
+							type="radio"
+							name="advanced-rsvpcount"
+							checked={newSettings.catalog["rsvp-count"] === "host-only"}
+							onChange={() => {
+								setNewSettings({
+									...newSettings,
+									catalog: {
+										...newSettings.catalog,
+										"rsvp-count": "host-only",
+									},
+								});
+							}}
+						/>
+						<span>Host Only</span>
 					</div>
 					<div>
-					<input
-						type="radio"
-						name="advanced-rsvpcount"
-						checked={newSettings.catalog["rsvp-count"] === "anyone"}
-						onChange={() => {
-							setNewSettings({
-								...newSettings,
-								catalog: { ...newSettings.catalog, "rsvp-count": "anyone" },
-							});
-						}}
-					/>
-					<span>Anyone</span>
+						<input
+							type="radio"
+							name="advanced-rsvpcount"
+							checked={newSettings.catalog["rsvp-count"] === "anyone"}
+							onChange={() => {
+								setNewSettings({
+									...newSettings,
+									catalog: { ...newSettings.catalog, "rsvp-count": "anyone" },
+								});
+							}}
+						/>
+						<span>Anyone</span>
 					</div>
 				</div>
 				<div className="radio">
 					<span>Access link can be seen by</span>
 					<div>
-					<input
-						type="radio"
-						name="advanced-accesslink"
-						checked={newSettings.catalog["access-link"] === "rsvp-only"}
-						onChange={() => {
-							setNewSettings({
-								...newSettings,
-								catalog: { ...newSettings.catalog, "access-link": "rsvp-only" },
-							});
-						}}
-					/>
-					<span>RSVP Only</span>
+						<input
+							type="radio"
+							name="advanced-accesslink"
+							checked={newSettings.catalog["access-link"] === "rsvp-only"}
+							onChange={() => {
+								setNewSettings({
+									...newSettings,
+									catalog: {
+										...newSettings.catalog,
+										"access-link": "rsvp-only",
+									},
+								});
+							}}
+						/>
+						<span>RSVP Only</span>
 					</div>
 					<div>
-					<input
-						type="radio"
-						name="advanced-accesslink"
-						checked={newSettings.catalog["access-link"] === "anyone"}
-						onChange={() => {
-							setNewSettings({
-								...newSettings,
-								catalog: { ...newSettings.catalog, "access-link": "anyone" },
-							});
-						}}
-					/>
-					<span>Anyone</span>
+						<input
+							type="radio"
+							name="advanced-accesslink"
+							checked={newSettings.catalog["access-link"] === "anyone"}
+							onChange={() => {
+								setNewSettings({
+									...newSettings,
+									catalog: { ...newSettings.catalog, "access-link": "anyone" },
+								});
+							}}
+						/>
+						<span>Anyone</span>
 					</div>
 				</div>
 				<div className="radio">
 					<span>Chat Access can be seen by</span>
 					<div>
-					<input
-						type="radio"
-						name="advanced-chataccess"
-						checked={newSettings.catalog["chat-access"] === "rsvp-only"}
-						onChange={() => {
-							setNewSettings({
-								...newSettings,
-								catalog: { ...newSettings.catalog, "chat-access": "rsvp-only" },
-							});
-						}}
-					/>
-					<span>RSVP Only</span>
+						<input
+							type="radio"
+							name="advanced-chataccess"
+							checked={newSettings.catalog["chat-access"] === "rsvp-only"}
+							onChange={() => {
+								setNewSettings({
+									...newSettings,
+									catalog: {
+										...newSettings.catalog,
+										"chat-access": "rsvp-only",
+									},
+								});
+							}}
+						/>
+						<span>RSVP Only</span>
 					</div>
 					<div>
-					<input
-						type="radio"
-						name="advanced-chataccess"
-						checked={newSettings.catalog["chat-access"] === "anyone"}
-						onChange={() => {
-							setNewSettings({
-								...newSettings,
-								catalog: { ...newSettings.catalog, "chat-access": "anyone" },
-							});
-						}}
-					/>
-					<span>Anyone</span>
+						<input
+							type="radio"
+							name="advanced-chataccess"
+							checked={newSettings.catalog["chat-access"] === "anyone"}
+							onChange={() => {
+								setNewSettings({
+									...newSettings,
+									catalog: { ...newSettings.catalog, "chat-access": "anyone" },
+								});
+							}}
+						/>
+						<span>Anyone</span>
 					</div>
 				</div>
 				<div className="radio">
@@ -466,46 +489,46 @@ const Settings = () => {
 				<div className="radio">
 					<span>RSVP list can be seen by</span>
 					<div>
-					<input
-						type="radio"
-						name="advanced-rsvplist"
-						checked={newSettings.catalog["rsvp-list"] === "host-only"}
-						onChange={() => {
-							setNewSettings({
-								...newSettings,
-								catalog: { ...newSettings.catalog, "rsvp-list": "host-only" },
-							});
-						}}
-					/>
-					<span>Host Only</span>
+						<input
+							type="radio"
+							name="advanced-rsvplist"
+							checked={newSettings.catalog["rsvp-list"] === "host-only"}
+							onChange={() => {
+								setNewSettings({
+									...newSettings,
+									catalog: { ...newSettings.catalog, "rsvp-list": "host-only" },
+								});
+							}}
+						/>
+						<span>Host Only</span>
 					</div>
 					<div>
-					<input
-						type="radio"
-						name="advanced-rsvplist"
-						checked={newSettings.catalog["rsvp-list"] === "rsvp-only"}
-						onChange={() => {
-							setNewSettings({
-								...newSettings,
-								catalog: { ...newSettings.catalog, "rsvp-list": "rsvp-only" },
-							});
-						}}
-					/>
-					<span>RSVP Only</span>
+						<input
+							type="radio"
+							name="advanced-rsvplist"
+							checked={newSettings.catalog["rsvp-list"] === "rsvp-only"}
+							onChange={() => {
+								setNewSettings({
+									...newSettings,
+									catalog: { ...newSettings.catalog, "rsvp-list": "rsvp-only" },
+								});
+							}}
+						/>
+						<span>RSVP Only</span>
 					</div>
 					<div>
-					<input
-						type="radio"
-						name="advanced-rsvplist"
-						checked={newSettings.catalog["rsvp-list"] === "anyone"}
-						onChange={() => {
-							setNewSettings({
-								...newSettings,
-								catalog: { ...newSettings.catalog, "rsvp-list": "anyone" },
-							});
-						}}
-					/>
-					<span>Anyone</span>
+						<input
+							type="radio"
+							name="advanced-rsvplist"
+							checked={newSettings.catalog["rsvp-list"] === "anyone"}
+							onChange={() => {
+								setNewSettings({
+									...newSettings,
+									catalog: { ...newSettings.catalog, "rsvp-list": "anyone" },
+								});
+							}}
+						/>
+						<span>Anyone</span>
 					</div>
 				</div>
 			</div>

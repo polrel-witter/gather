@@ -43,7 +43,7 @@ export const useStore = create((set) => ({
 		position: null,
 		address: "",
 		"access-link": "",
-		radius: ".0",
+		radius: null,
 		"rsvp-limit": null,
 		desc: "",
 		title: "",
@@ -53,7 +53,7 @@ export const useStore = create((set) => ({
 		"earth-link": "",
 		// TODO fix excise-comets and enable-chat
 		"excise-comets": true,
-		"enable-chat": false,
+		"enable-chat": true,
 	},
 	setDraftInvite: (invite) => set(state => ({ draftInvite: invite })),
 
@@ -109,8 +109,8 @@ export const useStore = create((set) => ({
 	pAltHostStatus: (data) => {
 		doPoke({ "alt-host-status": data });
 	},
-	pUnInviteShips: (data) => {},
 	pInviteShips: (data) => {},
+	pUnInviteShips: (data) => {},
 	pEditInvite: (data) => {
 		doPoke({ "edit-invite": data });
 	},
@@ -126,27 +126,27 @@ export const useStore = create((set) => ({
 	pUnRSVP: (data) => {
 		doPoke({ unrsvp: data });
 	},
-	pSubRSVP: (data) => {},
-	pSubInvite: (data) => {},
+	// pSubRSVP: (data) => {},
+	// pSubInvite: (data) => {},
 	pPost: (data) => {
 		doPoke({ post: data });
 	},
 	pBan: (ship) => {
-		set((state) => ({
-			settings: {
-				...state.settings,
-				banned: state.settings.banned.concat([ship]),
-			},
-		}));
+		// set((state) => ({
+		// 	settings: {
+		// 		...state.settings,
+		// 		banned: state.settings.banned.concat([ship]),
+		// 	},
+		// }));
 		doPoke({ ban: { ship: ship } });
 	},
 	pUnban: (ship) => {
-		set((state) => ({
-			settings: {
-				...state.settings,
-				banned: state.settings.banned.filter((x) => x !== ship),
-			},
-		}));
+		// set((state) => ({
+		// 	settings: {
+		// 		...state.settings,
+		// 		banned: state.settings.banned.filter((x) => x !== ship),
+		// 	},
+		// }));
 		doPoke({ unban: { ship: ship } });
 	},
 
@@ -154,6 +154,7 @@ export const useStore = create((set) => ({
 
 	sAll: (handler) => {
 		subscribe("/all", (all) => {
+			console.log(all);
 			if (Object.keys(all)[0] === "initAll") {
 				const settings = all.initAll.settings;
 				console.log(settings);

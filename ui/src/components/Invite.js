@@ -80,7 +80,7 @@ const InboxButtons = (props) => {
 	return (
 		<div className="invite-inbox cardbuttons">
 			<Button text="View" click={() => focusInvite(invite.id)} />
-			<Button text="Delete" click={() => pDelInvite(invite.id)} />
+			<Button text="Delete" click={() => pDelInvite({id: invite.id})} />
 			<Button text="Ban Host" click={() => pBan(invite.invite.initShip)} />
 		</div>
 	);
