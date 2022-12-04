@@ -40,7 +40,7 @@ export const useStore = create((set) => ({
 	draftInvite: {
 		"send-to": [],
 		"location-type": "meatspace",
-		position: { lat: ".0", lon: ".0" },
+		position: null,
 		address: "",
 		"access-link": "",
 		radius: ".0",
@@ -156,6 +156,7 @@ export const useStore = create((set) => ({
 		subscribe("/all", (all) => {
 			if (Object.keys(all)[0] === "initAll") {
 				const settings = all.initAll.settings;
+				console.log(settings);
 				set((state) => ({
 					invites: all.initAll.invites.map((item) => ({
 						id: item.id,

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Location from "./Location";
 import { useStore } from "../data/store";
-import { createGroup, toggleSelect, deleteGroup, sortSelected } from "../utils";
+import { createGroup, toggleSelect, deleteGroup, sortSelected, getColType} from "../utils";
 import { useAlert } from "react-alert";
 import ReactTooltip from "react-tooltip";
 
@@ -51,16 +51,16 @@ const Draft = () => {
 	}, []);
 
 	useEffect(() => {
-		if (Object.keys(settings) !== 0) {
-			console.log(settings['enableChat']);
-			const newInvite = {
-				...invite,
-				"excise-comets": settings["exciseComets"],
-				"enable-chat": settings["enableChat"],
-			};
-			console.log(newInvite);
-			// setInvite(newInvite);
-		}
+		// if (Object.keys(settings) !== 0) {
+		// 	console.log(settings["enableChat"]);
+		// 	const newInvite = {
+		// 		...invite,
+		// 		"excise-comets": settings["exciseComets"],
+		// 		"enable-chat": settings["enableChat"],
+		// 	};
+		// 	console.log(newInvite);
+		// 	setInvite(newInvite);
+		// }
 		if (collections !== undefined) {
 			setInvite({
 				...invite,
@@ -155,8 +155,8 @@ const Draft = () => {
 			<Location
 				address={invite.address}
 				position={invite.position}
-				setAddress={(address) => setInvite({ ...invite, address })}
-				setPosition={(position) => setInvite({ ...invite, position })}
+				originalState={invite}
+				setState={ setInvite }
 			/>
 
 			<div className="draft-rr flexrow">
@@ -336,61 +336,82 @@ const Draft = () => {
 						{/* {collectionWaiting && <span> Collection Waiting </span>} */}
 						{collections !== undefined &&
 							collections.length !== 0 &&
-							collections.sort(sortSelected).map((collection) => (
-								<div className="draft-list-item onetoleft">
-									<span>{collection.collection.title}</span>
-									{collection.collection.selected && (
+							collections.sort(sortSelected).map((collection) => {
+								const colType = getColType(collection);
+								return (
+									<div className="draft-list-item onetoleft">
+										<span>{collection.collection.title + colType}</span>
+										{collection.collection.selected && (
+											<button
+												className="button"
+												width="100%"
+												onClick={() =>
+													pEditCollection(
+														toggleSelect(collection.id, collections)
+													)
+												}
+											>
+												Unselect
+											</button>
+										)}
+										{!collection.collection.selected && (
+											<button
+												className="button"
+												width="100%"
+												onClick={() =>
+													pEditCollection(
+														toggleSelect(collection.id, collections)
+													)
+												}
+											>
+												Select
+											</button>
+										)}
 										<button
 											className="button"
 											width="100%"
-											onClick={() =>
-												pEditCollection(
-													toggleSelect(collection.id, collections)
-												)
-											}
+											onClick={() => pDeleteCollection(collection.id)}
 										>
-											Unselect
+											Delete
 										</button>
-									)}
-									{!collection.collection.selected && (
-										<button
-											className="button"
-											width="100%"
-											onClick={() =>
-												pEditCollection(
-													toggleSelect(collection.id, collections)
-												)
-											}
-										>
-											Select
-										</button>
-									)}
-									<button
-										className="button"
-										width="100%"
-										onClick={() => pDeleteCollection(collection.id)}
-									>
-										Delete
-									</button>
-								</div>
-							))}
+									</div>
+								);
+							})}
 					</div>
 				</div>
 			)}
-			<button
-				className="send"
-				onClick={() => {
-					if (invite["send-to"].length !== 0) {
-						alert.show(<div style={{ color: "green" }}>Invite Sent</div>);
-						pNewInvite(invite);
-					} else
-						alert.show(
-							<div style={{ color: "red" }}>No collection selected!</div>
-						);
-				}}
-			>
-				Send
-			</button>
+			{invite.access === "private" && (
+				<button
+					className="send"
+					onClick={() => {
+						if (invite["send-to"].length !== 0) {
+							alert.show(<div style={{ color: "green" }}>Invite Sent</div>);
+							pNewInvite(invite);
+						} else
+							alert.show(
+								<div style={{ color: "red" }}>No collection selected!</div>
+							);
+					}}
+				>
+					Send
+				</button>
+			)}
+			{invite.access === "public" && (
+				<button
+					className="send"
+					onClick={() => {
+						if (invite["send-to"].length !== 0) {
+							alert.show(<div style={{ color: "green" }}>Invite Sent</div>);
+							pNewInvite(invite);
+						} else
+							alert.show(
+								<div style={{ color: "red" }}>No collection selected!</div>
+							);
+					}}
+				>
+					Create
+				</button>
+			)}
 		</div>
 	);
 };

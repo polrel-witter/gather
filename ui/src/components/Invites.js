@@ -35,7 +35,6 @@ export const Invites = (props) => {
 	const setInvitesMode = useStore((state) => state.setInvitesMode);
 	const pAdd = useStore((state) => state.pAdd);
 	const [marsLink, setMarsLink] = useState("");
-	console.log(invitesMode.slice(0, 7) === "hosting");
 
 	if (inviteDetails === "")
 		return (
@@ -121,7 +120,7 @@ export const Invites = (props) => {
 						className="button"
 						onClick={() => pAdd({ "mars-link": marsLink })}
 					>
-						Add Invite
+						Add Public Invite
 					</button>
 				</div>
 				)}

@@ -227,7 +227,7 @@ const Edit = (props) => {
 							});
 						}}
 					/>
-					<span>No</span>
+					<span>Yes</span>
 					</div>
 					<div>
 					<input
@@ -241,7 +241,7 @@ const Edit = (props) => {
 							});
 						}}
 					/>
-					<span>Yes</span>
+					<span>No</span>
 					</div>
 				</div>
 			</div>

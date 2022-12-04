@@ -20,6 +20,7 @@
     "formik": "^2.2.9",
     "geolib": "^3.3.3",
     "haversine-distance": "^1.2.1",
+    "immer": "^9.0.16",
     "lodash": "^4.17.21",
     "markdown-to-jsx": "^7.1.7",
     "nominatim-browser": "^2.1.0",

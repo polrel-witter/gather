@@ -76,7 +76,6 @@ const InboxButtons = (props) => {
 	const focusInvite = useStore((state) => state.focusInvite);
 	const pDelInvite = useStore((state) => state.pDelInvite);
 	const pBan = useStore((state) => state.pBan);
-	console.log(invite);
 
 	return (
 		<div className="invite-inbox cardbuttons">
@@ -90,7 +89,6 @@ const InboxButtons = (props) => {
 const Invite = (props) => {
 	const invite = props.invite.invite;
 	const invitesMode = useStore((state) => state.invitesMode);
-	console.log(invite);
 	return (
 		<div className="invite">
 			<div className="invite-columns">

@@ -19,18 +19,18 @@ export const properPosition = (position) => {
 
 export const filterDistantInvites = (invites, settings) => {
 	return invites.filter( invite => {
+		console.log(invite);
 		if( invite.invite.locationType === 'virtual' ||
-				settings.receiveInvite === 'anyone'      ||
-			  invite.invite.initShip === '~' + window.urbit.ship
+				settings.receiveInvite === 'anyone'
 		)
 			return true;
 
-		if ( invite.invite.position.lon === '500' ||
-				 settings.position.lon === '500' )
+		if ( invite.invite.position === null ||
+				 settings.position === null)
 			return true;
 
-		const inviteNA = (invite.invite.radius === '0' || invite.invite.position.lon === '500');
-		const inviteeNA = (settings.radius === '0' || settings.position.lon === '500');
+		const inviteNA = (invite.invite.radius === null || invite.invite.position.lon === null);
+		const inviteeNA = (settings.radius === null || settings.position.lon === null);
 		const isInviteInside = haversine(
 			{ latitude: invite.invite.position.lat, longitude: invite.invite.position.lon },
 			{ latitude: settings.position.lat, longitude: settings.position.lon }
@@ -137,7 +137,6 @@ export const createGroup = (type, str, collections) => {
 
 	if(type === 'ship') {
 		const newStr = str[0] === '~' ? str : '~' + str;
-		console.log(newStr);
 		return ({title: newStr, members: [newStr], selected: true, resource: ''});
 	}
 	else if(type === 'group') {
@@ -145,7 +144,8 @@ export const createGroup = (type, str, collections) => {
 		return ({title: str, members: [], selected: true, resource: {ship: str.split('/')[0], name: str.split('/')[1]}});
 	}
 	else if(type === 'collection') {
-		return ({title: str, members: collections.filter(x => x.collection.selected).reduce((prev, curr) => prev.concat(curr.collection.members), []), 
+		const newStr = str[0] === '~' ? str.slice(1) : str;
+		return ({title: newStr, members: collections.filter(x => x.collection.selected).reduce((prev, curr) => prev.concat(curr.collection.members), []), 
 			selected: true, resource: ''});
 	}
 }
@@ -301,7 +301,7 @@ export const filterInvites = (mode, invites, settings) => {
 			return invites.filter(x => x.guestStatus === 'pending');
 			break;
 		case 'inbox-outofrange':
-			return filterDistantInvites(invites, settings).filter(x => x.guestStatus !== null);
+			return filterDistantInvites(invites, settings).filter(x => x.invite.initShip !== '~' + window.urbit.ship);
 			break;
 }
 	return [];
@@ -344,4 +344,12 @@ export function dateToDa(d: Date, mil = false) {
     `${fil(d.getUTCSeconds())}` +
     `${mil ? '..0000' : ''}`
   );
+}
+
+export const getColType = (col) => {
+	if (col.collection.resource !== '~')
+		return ' (group)';
+	if (col.collection.title[0] === '~')
+		return ' (ship)';
+	return ' (collection)';
 }

@@ -74,8 +74,8 @@ class App extends Component {
 		window.urbit.onRetry = () => this.setState({ conn: "try" });
 		window.urbit.onError = () => this.setState({ conn: "err" });
 
-		console.log(scryGroups());
-		scryGroups();
+		// console.log(scryGroups());
+		// scryGroups();
 	}
 	render() {
 		return (

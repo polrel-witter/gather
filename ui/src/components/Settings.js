@@ -126,8 +126,8 @@ const Settings = () => {
 			<Location
 				address={settings.address}
 				position={settings.position}
-				setAddress={(address) => setNewSettings({ ...newSettings, address })}
-				setPosition={(position) => setNewSettings({ ...newSettings, position })}
+				originalState={newSettings}
+				setState={setNewSettings}
 			/>
 			<Banned />
 			<div className="divider">Location filtering</div>
