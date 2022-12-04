@@ -36,7 +36,7 @@
           ['guestList' (en-guest-list guest-list.invite)]             ::CHANGED to handle unit
           ['locationType' s+(scot %tas location-type.invite)] 
           ['position' (en-position position.invite)]   
-          ['inviteAddress' s+address.invite]           
+          ['address' s+address.invite]           
           ['accessLink' (en-unit-cord access-link.invite)]            ::CHANGED to handle unit
           ['radius' (en-unit-rs radius.invite)] 
           ['rsvpLimit' (en-unit-decimal rsvp-limit.invite)]           ::CHANGED name & to handle unit
