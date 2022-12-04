@@ -52,7 +52,7 @@ export const Invites = (props) => {
 							Hosting
 						</option>
 						<option
-							value="inbox-rsvp"
+							value="inbox-rsvpd"
 							selected={invitesMode.slice(0, 5) === "inbox" ? "selected" : ""}
 						>
 							Inbox
@@ -89,8 +89,8 @@ export const Invites = (props) => {
 					{invitesMode.slice(0, 5) === "inbox" && (
 						<div className="invites-topbar-inbox">
 							<button
-								style={topbarSelected(invitesMode, "inbox-rsvp")}
-								onClick={() => setInvitesMode("inbox-rsvp")}
+								style={topbarSelected(invitesMode, "inbox-rsvpd")}
+								onClick={() => setInvitesMode("inbox-rsvpd")}
 							>
 								RSVPd
 							</button>

@@ -174,8 +174,8 @@ export const useStore = create((set) => ({
 							address: item.invite.address,
 							accessLink: unit(item.invite.accessLink),
 							radius: unit(item.invite.radius),
-							rsvpLimit: item.invite.rsvpLimit,
-							rsvpCount: item.invite.rsvpCount,
+							rsvpLimit: unit(item.invite.rsvpLimit),
+							rsvpCount: unit(item.invite.rsvpCount),
 							hostStatus: item.invite.hostStatus,
 							title: item.invite.title,
 							date: {

@@ -253,7 +253,7 @@ const Edit = (props) => {
 			<button
 				className="edit-save send"
 				onClick={() => {
-					alert.show(<div style={{ color: "green" }}>Invite Sent</div>);
+					alert.show(<div style={{ color: "green" }}>Edit Saved</div>);
 					pEditInvite(eInvite);
 				}}
 			>

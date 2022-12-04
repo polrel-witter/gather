@@ -13,6 +13,8 @@ import {
 import { useStore } from "../data/store";
 import { patpValidate } from "../utils";
 import Location from "./Location";
+import { useAlert } from "react-alert";
+import Alert from "./Alert";
 
 const InviteDetails = (props) => {
 	const invites = useStore((state) => state.invites);
@@ -23,13 +25,23 @@ const InviteDetails = (props) => {
 	const pRSVP = useStore((state) => state.pRSVP);
 	const pUnRSVP = useStore((state) => state.pUnRSVP);
 	const setInviteMode = useStore((state) => state.setInviteMode);
-	const oldReminder = useStore(state => state.settings.reminders.gatherings.filter(x => x.id === _invite.id)[0]?.alarm);
-	const [reminder, setReminder] = useState(oldReminder === undefined ? null : oldReminder);
+	const oldReminder = useStore(
+		(state) =>
+			state.settings.reminders.gatherings.filter((x) => x.id === _invite.id)[0]
+				?.alarm
+	);
+	const [reminder, setReminder] = useState(
+		oldReminder === undefined ? null : oldReminder
+	);
 	const pGatheringReminder = useStore((state) => state.pGatheringReminder);
 
 	const isHosting = invite.initShip === "~" + window.urbit.ship;
-	const newReminder = new Date(reminder).toISOString().substring(0,16);
+	const newReminder = new Date(reminder).toISOString().substring(0, 16);
 	console.log(oldReminder);
+
+	const _alert = useAlert();
+	const redAlert = (str) => _alert.show(<Alert str={str} color={"red"} />);
+	const greenAlert = (str) => _alert.show(<Alert str={str} color={"green"} />);
 
 	return (
 		<div className="invitedetails">
@@ -48,19 +60,26 @@ const InviteDetails = (props) => {
 						Edit
 					</button>
 				)}
-				{_invite.guestStatus === "pending" && invite.hostStatus === 'open' && (
+				{_invite.guestStatus === "pending" && invite.hostStatus === "open" && (
 					<button
 						className="invitedetails-rsvp"
-						onClick={() => pRSVP({id: _invite.id})}
+						onClick={() => {
+							if (
+								invite.rsvpCount === invite.rsvpLimit &&
+								invite.rsvpLimit !== null
+							)
+								redAlert("RSVP limit reached!");
+							else pRSVP({ id: _invite.id });
+						}}
 					>
 						RSVP
 					</button>
 				)}
-				{_invite.guestStatus === "rsvpd" && invite.hostStatus === 'open' && (
+				{_invite.guestStatus === "rsvpd" && invite.hostStatus === "open" && (
 					<button
 						className="invitedetails-unrsvp"
 						onClick={() => {
-							pUnRSVP({id: _invite.id});
+							pUnRSVP({ id: _invite.id });
 						}}
 					>
 						UnRSVP
@@ -155,15 +174,19 @@ const InviteDetails = (props) => {
 					</div>
 				</div>
 				<div className="invitedetails-guestlist">
-					<div className='divider'>Guest List</div>
+					<div className="divider">Guest List</div>
 					{invite.guestList.map((guest) => (
 						<div className="invitedetails-guestlist-item onetoleft">
 							<span>{guest.ship}</span>
 							{guest.shipInvite.guestStatus === "pending" && (
-								<span className='guestlistitem-element'> Pending </span>
+								<span className="guestlistitem-element"> Pending </span>
 							)}
-							{guest.shipInvite.guestStatus === "rsvpd" && <span className='guestlistitem-element'> RSVPd </span>}
-							<span className='guestlistitem-element'>{guest.shipInvite.rsvpDate}</span>
+							{guest.shipInvite.guestStatus === "rsvpd" && (
+								<span className="guestlistitem-element"> RSVPd </span>
+							)}
+							<span className="guestlistitem-element">
+								{new Date(guest.shipInvite.rsvpDate * 1000).toLocaleString()}
+							</span>
 						</div>
 					))}
 				</div>
