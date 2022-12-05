@@ -147,7 +147,6 @@
          =resource
      ==
      [%del-collection =id]
-     [%refresh-groups ~]
   ::
   :: Adjust an invite
      [%del-invite =id]                          :: NEW; deletes an invite locally

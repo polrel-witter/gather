@@ -75,14 +75,13 @@
           resource+de-resource 
       ==
     ++  de-catalog
-      =,  dejs-soft:format
       %-  ot
-      :~  invite-list+so
-          access-link+so
-          rsvp-limit+so
-          rsvp-count+so
-          chat-access+so
-          rsvp-list+so
+      :~  invite-list+(se %tas)
+          access-link+(se %tas)
+          rsvp-limit+(se %tas)
+          rsvp-count+(se %tas)
+          chat-access+(se %tas)
+          rsvp-list+(se %tas)
       ==
     ++  de-edit-settings
       %-  ot
@@ -90,9 +89,9 @@
           position+(mu de-position)
           radius+(mu (se %rs))
           receive-invite+(se %tas) 
-          notifications+de-notifications
           excise-comets+bo:dejs-soft:format
-          catalog+de-catalog
+          notifications+de-notifications
+          catalog+(mu de-catalog)
           enable-chat+bo
       ==
     ++  de-new-invite

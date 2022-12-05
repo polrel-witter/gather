@@ -1,6 +1,6 @@
 ::
 ::  Gather: host and attend martian gatherings. 
-::  Official distro moon: ~pontus-fadpun-polrel-witter
+::  Distro moon: ~pontus-fadpun-polrel-witter
 :: 
 ::
 /-  *gather, odyssey, group, res-sur=resource, hark=hark-store
@@ -72,8 +72,7 @@
     hc    ~(. +> bol)
 ++  on-init
   ^-  (quip card _this)
-  :-  :~  (~(poke pass:io /(scot %p our.bol)/[%settings]) [our.bol %gather] gather-action+!>(`action`[%refresh-groups ~]))   
-      ==
+  :-  ~   
   %=  this
     settings  :*
                  *position 
@@ -119,7 +118,7 @@
          init-ship.i                    desc.i
          guest-list                     location-type.i
          `position.i                    address.i
-         `access-link.i                 `radius.i
+         `access-link.i                 `radius.i 
          `max-accepted.i                `accepted-count.i
          (coerce-hs host-status.i)      *@t 
          *image                         *date
@@ -139,7 +138,7 @@
     =/  new-settings=_settings 
       :* 
          `position.old-settings 
-         `radius.old-settings
+         `radius.old-settings 
          address.old-settings
          collections.old-settings
          banned.old-settings
@@ -208,7 +207,7 @@
      ?~  alt
         ~&  "%gather: settings have been updated"
         :_  this
-            (relay:hc [%update-settings settings])
+            (relay:hc [%init-all invites settings])
      %=  $
         settings  ^-  _settings
                   ?-    i.alt
@@ -255,6 +254,8 @@
        =/  name=tape  (oust [0 2] `tape`(scow %t +:r)) 
        =/  title=@t  (crip (weld (scow %p -:r) (runt [1 '/'] name))) 
        =.  collections.settings
+         ?<  (collection-dupe [collections.settings title.act])
+         ~|  "%gather: {<title.act>} is a duplicate collection title, not saving"     
          %+  ~(put by collections.settings)
             (crip (swag [0 10] (scow %uv eny.bol)))
             :* 
@@ -266,9 +267,11 @@
        :-  (relay:hc [%update-settings settings])
            this(collections.settings (~(del by collections.settings) old))
      =/  gang=members  (silt (remove-our [our.bol (remove-banned [(remove-dupes members.act) banned.settings])]))
-     =.  collections.settings   
+     =.  collections.settings
+       ?<  (collection-dupe [collections.settings title.act])
+       ~|  "%gather: {<title.act>} is a duplicate collection title, not saving"     
        %+  ~(put by collections.settings)
-          (scot %uv eny.bol)
+          (crip (swag [0 10] (scow %uv eny.bol)))
           :*
              title.act 
              gang
@@ -303,70 +306,19 @@
      :_  this
          (relay:hc [%update-settings settings])
   ::
-       %refresh-groups                                      :: TODO change mentions of $resource to group-store $resource
-     ~|  [%failed-to-refresh-groups ~]
-     ?>  =(our.bol src.bol)
-     ~&  "%gather: refreshing groups"
-     =|  r=resource:res-sur
-     =/  temp=(set resource:res-sur)  
-       .^((set resource:res-sur) %gy /(scot %p our.bol)/group-store/(scot %da now.bol)/groups)
-     =/  resources=(list resource:res-sur)  ~(tap in temp)
-     =/  groups=(map resource:res-sur members)
-       =|  export=(map resource:res-sur members)  
-       |-
-       ?~  resources  export
-       =+  r=-:resources
-       =/  g=(unit group:group) 
-         .^  (unit group:group)  %gx 
-            ;:  welp  
-               (path /(scot %p our.bol)/group-store/(scot %da now.bol))
-               /groups
-               (en-path:res-lib r)
-               /noun
-            ==
-         ==
-       =/  gang=members  -:(need g)
-       %=  $
-         export  (~(put by export) r gang)
-         resources  t.resources
-       ==
-     =.  collections.settings
-       =/  group-ids=(list id)  (get-group-ids collections.settings)  
-       |-
-       ?~  group-ids  collections.settings
-       %=  $
-          collections.settings  (~(del by collections.settings) i.group-ids)
-          group-ids  t.group-ids
-       == 
-     =+  eny=eny.bol
-     =/  values=(list collection)   (make-collection-values groups)
-     =/  fak=(list card)  (relay:hc [%update-settings settings])
-     :-  ;:  welp  fak
-             ~[[%pass /timers/refresh-groups %arvo %b %wait (add now.bol `@dr`~h24)]]
-         ==
-     %=  this
-        collections.settings  |-  
-                              ?~  values  collections.settings
-                              %=  $
-                                 collections.settings   
-                                     %+  ~(put by collections.settings) 
-                                        (crip (swag [0 10] (scow %uv eny.bol)))
-                                        i.values
-                               :: 
-                                  values  t.values
-                                  eny  +(eny)
-     ==                       ==
-  ::
        %del-invite
      ~|  [%failed-to-delete-invite ~]
      =/  inv=invite  +:(~(got by invites) id.act)
      =/  pax=[invite=path rsvp=path]  (forge:hc [id.act host.inv])
      ?.  =(our.bol host.inv)
         ?<  =(our.bol host.inv)
+        =.  invites  (~(del by invites) id.act)
+        =/  fak=(list card)  
+            (relay:hc [%init-all invites settings])
         =/  =path  (which-path:hc [id.act host.inv]) 
         =+  on=+<:path
         ?:  ?=(%none on)
-           [~ this(invites (~(del by invites) id.act))]
+           [fak this]
         =/  pok=card  ?.  ?=(%rsvp on)
                         *card
                       :*  %pass  path 
@@ -374,30 +326,29 @@
                           %poke 
                           gather-action+!>(`action`[%unrsvp id.act])
                       ==
-        :_  this(invites (~(del by invites) id.act))
-        =/  fak=(list card)  (relay:hc [%init-all invites settings])
-        ;:  welp  fak  
-          :~  pok
-              [%pass path %agent [host.inv %gather] %leave ~]
-          ==
-        ==
+        :_  this
+        ;:  welp  fak 
+           :~  pok
+               [%pass path %agent [host.inv %gather] %leave ~]
+        ==  ==
      ?>  =(our.bol host.inv)
      ?>  ?|  ?=(%cancelled host-status.inv)
              ?=(%completed host-status.inv)
          ==
+     =.  invites  (~(del by invites) id.act)
      =/  fak=(list card)
-       ?:  =('' earth-link.inv)
-          (relay:hc [%init-all invites settings])
-       =/  =path                            
-           /(scot %p our.bol)/[%odyssey]/(scot %uv id.act)
-       ;:  welp  (relay:hc [%init-all invites settings])
-           :~  :*
-                  %pass  path
-                  %agent  [our.bol %odyssey]
-                  %poke  %odyssey-shoot
-                  !>(`shoot:odyssey`[%del:odyssey id.act earth-link.inv])
-       ==  ==  ==           
-     [fak this(invites (~(del by invites) id.act))]
+       =/  pok=card
+         ?:  =('' earth-link.inv)  *card
+         =/  =path                            
+             /(scot %p our.bol)/[%odyssey]/(scot %uv id.act)
+         :*
+            %pass  path
+            %agent  [our.bol %odyssey]
+            %poke  %odyssey-shoot
+            !>(`shoot:odyssey`[%del:odyssey id.act earth-link.inv])
+         ==   
+       :(welp ~[pok] (relay:hc [%init-all invites settings]))
+     [fak this]
   :: 
        %archive-invite  !!
   :: 
@@ -444,7 +395,7 @@
        ^-  (quip card _this)
        ?.  =(our.bol src.bol)
          ?>  =(src.bol host.inv)
-         ~&  "{<title.inv>} has been revoked"
+         ~&  "%gather: {<title.inv>} has been revoked"
          :_  this
          ^-  (list card)
          :*  ?.  invite-updates.notifications.settings  ~
@@ -728,8 +679,8 @@
              ::
        =/  sugar=(list @p)
          ?.  (need excise-comets.act)  pulp
-         pulp
-       ::::      (remove-comets pulp)                 :: TODO complete lib arm 
+         (remove-comets pulp)
+       ::                  
        [(blend sugar) sugar]
      =/  =earth-link
        ?:  (earth-link-dupe [our.bol invites earth-link.act])
@@ -749,20 +700,26 @@
            catalog.settings   enable-chat.act
        ==
      =.  invites  (~(put by invites) id [[~] new])
+     =/  fak=card
+       :*  %give
+           %fact
+           ~[/all]
+           gather-update+!>(`update`[%update-invite id new])
+       ==
      ?.  ?=(%private access.new)
        ~&  "%gather: created new public invite"
        :_  this       
-       ?:  =('' earth-link.new)  ~
-       :~  :*  
-              %pass  /(scot %p our.bol)/[%odyssey]/id
-              %agent  [our.bol %odyssey]
-              %poke  %odyssey-shoot
-              !>(`shoot:odyssey`[%pub:odyssey id])
-       ==  ==
+       ?:  =('' earth-link.new)  ~[fak]
+         :~  fak
+             :*  
+                %pass  /(scot %p our.bol)/[%odyssey]/id
+                %agent  [our.bol %odyssey]
+                %poke  %odyssey-shoot
+                !>(`shoot:odyssey`[%pub:odyssey id])
+         ==  ==
      ~&  "%gather: sending private invite..."
      =+  dek=*(list card)
      =/  =path  /(scot %p our.bol)/[%invite]/id
-     =+  fak=(fact:io gather-update+!>(`update`[%update-invite id new]) ~[/all])
      |-
      ?~  sugar.carton
        [(into dek 0 fak) this]         
@@ -831,7 +788,7 @@
      =.  inv
        ?>  ?:  =(rsvp-limit.inv ~)  %.y
            ?.  (gth +((need rsvp-count.inv)) (need rsvp-limit.inv))  %.y
-           ~&  "%gather: max accepted count for {<title.inv>} has been reached"
+           ~&  "%gather: max rsvp count for {<title.inv>} has been reached"
            !!
        %=  inv
           rsvp-count  (some +((need rsvp-count.inv)))
@@ -1175,22 +1132,20 @@
         =+  upd=update
         ?.  (~(has by invites) id.upd)
           ~&  "%gather: adding new invite from {<src.bol>}"
-          :-  :~  (fact:io cage.sign ~[/all])
-              ==
-          %=  this
-             invites  %+  ~(put by invites) 
+          =.  invites  %+  ~(put by invites) 
                         id.upd 
                       [`%pending invite.upd]
+          :_  this
+          :~  (fact:io cage.sign ~[/all])
           ==
         ::  ~&  "%gather: {<src.bol>} has updated their invite (id {<id.upd>})"
         =/  inv=invite  +:(~(got by invites) id.upd)
         ?>  =(src.bol host.inv)
-        :_  %=  this
-              invites  %+  ~(jab by invites)
+        =.  invites  %+  ~(jab by invites)
                          id.upd
                        |=  [=guest-status =invite] 
                        [`%pending invite.upd] 
-            ==
+        :_  this
         ^-  (list card)
         :*  (fact:io cage.sign ~[/all])
             ?.  invite-updates.notifications.settings  ~
@@ -1219,22 +1174,20 @@
         =+  upd=update
         ?.  (~(has by invites) id.upd)
           ~&  "%gather: adding rsvp details from {<src.bol>}"
-          :-  :~  (fact:io cage.sign ~[/all])
-              ==
-          %=  this
-             invites  %+  ~(put by invites) 
+          =.  invites  %+  ~(put by invites) 
                         id.upd  
                       [`%rsvpd invite.upd]
+          :_  this
+          :~  (fact:io cage.sign ~[/all])
           ==
         :: ~&  "%gather: {<src.bol>} has updated their rsvp details"
         =/  inv=invite  +:(~(got by invites) id.upd)
         ?>  =(src.bol host.inv)
-        :_  %=  this
-              invites  %+  ~(jab by invites)
-                         id.upd
-                       |=  [=guest-status =invite] 
-                       [`%rsvpd invite.upd]
-            ==
+        =.  invites  %+  ~(jab by invites)
+                        id.upd
+                     |=  [=guest-status =invite] 
+                     [`%rsvpd invite.upd]
+        :_  this
         ^-  (list card)
         :*  (fact:io cage.sign ~[/all])
             ?.  invite-updates.notifications.settings  ~
@@ -1251,7 +1204,6 @@
     ^-  hark-type
     ?:  ?=(%address alt)  %address       
     ?:  ?=(%access-link alt)  %access-link
-
     ?:  ?=(%location-type alt)  %location-type
     %new-invite
   :: 
@@ -1376,15 +1328,6 @@
   |=  [=wire =sign-arvo]
   ^-  (quip card _this)
   ?+    wire  (on-arvo:def wire sign-arvo)
-      [%timers %refresh-groups ~]
-    ?+    sign-arvo  (on-arvo:def wire sign-arvo)
-        [%behn %wake *]
-      ?~  error.sign-arvo
-        :_  this
-        :~  (~(poke pass:io /(scot %p our.bol)/[%settings]) [our.bol %gather] gather-action+!>(`action`[%refresh-groups ~]))   
-        ==
-      (on-arvo:def wire sign-arvo)
-    ==
       [%timers %gatherings @ ~]
     ?+    sign-arvo  (on-arvo:def wire sign-arvo)
          [%behn %wake *]

@@ -17,7 +17,12 @@
 ::
 ::
 ::
-++  remove-comets  !!
+++  remove-comets
+  |=  l=(list @p)
+  ^-  (list @p)
+  %+  skim  `(list @p)`l
+  |=  a=@p  
+  ?!  ?=(%pawn (clan:title a))
 ::
 ::
 :: Remove duplicate ships from a list
@@ -137,6 +142,19 @@
   ?.  ?=(%pending (need gs))
     $(ships t.ships)
   $(guest-list (~(del by guest-list) i.ships), ships t.ships)
+::
+::
+:: Check $collection titles for dupes
+++  collection-dupe
+  |=  [collections=(map id collection) new-title=@t]
+  =/  a=?  %.n
+  =/  ids=(list id)  ~(tap in ~(key by collections))
+  |-  ^-  ?
+  ?~  ids  a
+  =/  old-title=@t  -:(~(got by collections) i.ids)
+  ?.  =(old-title new-title)
+    $(ids t.ids)
+  $(a %.y, ids t.ids)
 ::
 ::
 :: Check for $earth-link dupes
