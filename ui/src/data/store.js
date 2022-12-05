@@ -48,7 +48,7 @@ export const useStore = create((set) => ({
 		desc: "",
 		title: "",
 		image: "",
-		date: { begin: "", end: "" },
+		date: { begin: null, end: null },
 		access: "private",
 		"earth-link": "",
 		// TODO fix excise-comets and enable-chat
@@ -109,8 +109,12 @@ export const useStore = create((set) => ({
 	pAltHostStatus: (data) => {
 		doPoke({ "alt-host-status": data });
 	},
-	pInviteShips: (data) => {},
-	pUnInviteShips: (data) => {},
+	pInviteShips: (data) => {
+		doPoke({ "invite-ships": data });
+	},
+	pUnInviteShips: (data) => {
+		doPoke({ "uninvite-ships": data });
+	},
 	pEditInvite: (data) => {
 		doPoke({ "edit-invite": data });
 	},

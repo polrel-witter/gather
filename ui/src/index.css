@@ -237,14 +237,19 @@
 	flex-direction: column;
 	/* padding: 5px; */
 }
-.invitedetails-secondcol {
+.invitedetails-bigchunk {
 	margin-bottom: 3px;
+	padding: 5px;
 }
 .invitedetails-hoststatus {
 	font-weight: bold;
 }
 .invitedetails-secondcol {
-	padding: 5px;
+	display: flex;
+	flex-direction: column;
+	/* justify-content: center; */
+	align-items: flex-end;
+	
 }
 .invitedetails-title {
 	font-weight: bold;
@@ -288,12 +293,19 @@
 }
 .guestlistitem-element {
 	/* border: 1px solid; */
-	padding: 1px;
+	/* padding: 1px; */
 	margin-left: 5px;
 	margin-right: 5px;
 }
 .invites-topbar {
 	margin-bottom : 5px;
+}
+.invitedetails-guestlist-button {
+	padding-bottom: 1px;
+}
+.invitedetails-guestlist-addship {
+	margin-top: 20px;
+	margin-bottom: 30px;
 }
 
 /* .location { */

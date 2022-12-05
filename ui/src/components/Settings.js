@@ -23,6 +23,7 @@ const Banned = () => {
 					className="flexgrow"
 					type="text"
 					value={banSearch}
+					placeholder={'~{ship}'}
 					onChange={(e) => {
 						setBanSearch(e.currentTarget.value);
 					}}
@@ -30,14 +31,17 @@ const Banned = () => {
 				<button
 					className="button"
 					onClick={() => {
-						if (patpValidate(banSearch) && banSearch !== ('~' + window.urbit.ship)) {
+						if (banSearch === ('~' + window.urbit.ship)) {
+							redAlert("You can't ban yourself!");
+						}
+						else if(!patpValidate(banSearch))
+							redAlert("Invalid @p!");
+						else {
 							pBan(banSearch);
-							alert.show(
+							greenAlert(
 								"You will no longer send or receive invites to/from this ship"
 							);
 						}
-						else
-							redAlert("You can't ban yourself");
 					}}
 				>
 					Ban
@@ -52,7 +56,7 @@ const Banned = () => {
 								className="button"
 								onClick={() => {
 									pUnban(ship);
-									alert.show(
+									greenAlert(
 										"You are now open to sending and receiving invites to/from this ship"
 									);
 								}}
@@ -69,6 +73,9 @@ const Banned = () => {
 const Settings = () => {
 	const settings = useStore((state) => state.settings);
 	const pEditSettings = useStore((state) => state.pEditSettings);
+	const _alert = useAlert();
+	const redAlert = (str) => _alert.show(<Alert str={str} color={"red"} />);
+	const greenAlert = (str) => _alert.show(<Alert str={str} color={"green"} />);
 	const [newSettings, setNewSettings] = useState({
 		address: settings.address,
 		position: settings.position,
@@ -117,7 +124,7 @@ const Settings = () => {
 	return (
 		<div>
 			<div className="settings-radius flexcol">
-				<span>My Radius</span>
+				<span>My Radius (km)</span>
 				<input
 					type="number"
 					min="0"
@@ -538,6 +545,7 @@ const Settings = () => {
 					onClick={() => {
 						console.log(newSettings);
 						pEditSettings(newSettings);
+						greenAlert("Settings Saved");
 					}}
 				>
 					Save

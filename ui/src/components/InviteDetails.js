@@ -30,14 +30,16 @@ const InviteDetails = (props) => {
 			state.settings.reminders.gatherings.filter((x) => x.id === _invite.id)[0]
 				?.alarm
 	);
+	const [shipInvite, setShipInvite] = useState("");
+	const pInviteShips = useStore((state) => state.pInviteShips);
+	const pUnInviteShips = useStore((state) => state.pUnInviteShips);
 	const [reminder, setReminder] = useState(
 		oldReminder === undefined ? null : oldReminder
 	);
 	const pGatheringReminder = useStore((state) => state.pGatheringReminder);
 
 	const isHosting = invite.initShip === "~" + window.urbit.ship;
-	const newReminder = new Date(reminder).toISOString().substring(0, 16);
-	console.log(oldReminder);
+	const newReminder = reminder === null ? null : new Date(reminder).toISOString().substring(0, 16);
 
 	const _alert = useAlert();
 	const redAlert = (str) => _alert.show(<Alert str={str} color={"red"} />);
@@ -99,15 +101,19 @@ const InviteDetails = (props) => {
 							<span className="bold">Host</span> {invite.initShip}
 						</div>
 						<div className="invitedetails-datebegin">
-							<span className="rightmargin">Start Date</span>
+							<span className="rightmargin">Start Date:</span>
 							<span className="leftmargin">
-								{new Date(invite.date.begin * 1000).toLocaleString()}
+								{invite.date.begin === null
+									? ""
+									: new Date(invite.date.begin * 1000).toLocaleString()}
 							</span>
 						</div>
 						<div className="invitedetails-dateend">
-							<span className="rightmargin">End Date</span>
+							<span className="rightmargin">End Date:</span>
 							<span className="leftmargin">
-								{new Date(invite.date.end * 1000).toLocaleString()}
+								{invite.date.end === null
+									? ""
+									: new Date(invite.date.end * 1000).toLocaleString()}
 							</span>
 						</div>
 					</div>
@@ -116,10 +122,14 @@ const InviteDetails = (props) => {
 							{invite.rsvpCount} / {invite.rsvpLimit} RSVPd
 						</div>
 						<div className="invitedetails-hoststatus">{invite.hostStatus}</div>
+						{/* <span>Last Updated:</span> */}
+						<div className="invitedetails-lastupdated textrow">
+							{new Date(invite.lastUpdated * 1000).toLocaleString()}
+						</div>
 					</div>
 				</div>
 			</div>
-			<div className="flexcol invitedetails-secondcol">
+			<div className="flexcol invitedetails-bigchunk">
 				<div className="invitedetails-title">{invite.title}</div>
 				<img className="invitedetails-image" src={invite.image} />
 				<div className="invitedetails-desc">{invite.desc}</div>
@@ -127,7 +137,7 @@ const InviteDetails = (props) => {
 				<div className="invitedetails-reminder flexrow">
 					<input
 						type="datetime-local"
-						value={newReminder}
+						value={newReminder === null ? null : newReminder}
 						onChange={(e) => {
 							const rem = new Date(e.currentTarget.value);
 							setReminder(rem.valueOf());
@@ -142,10 +152,7 @@ const InviteDetails = (props) => {
 						Set Reminder
 					</button>
 				</div>
-				<div className="invitedetails-secondcol border">
-					<div className="invitedetails-lastupdated textrow">
-						Last Updated: {new Date(invite.lastUpdated * 1000).toLocaleString()}
-					</div>
+				<div className="invitedetails-firstcol border">
 					<div className="invitedetails-rsvpcount textrow">
 						<span>Access Type:</span>
 						<span>{invite.access}</span>
@@ -175,6 +182,27 @@ const InviteDetails = (props) => {
 				</div>
 				<div className="invitedetails-guestlist">
 					<div className="divider">Guest List</div>
+					<div className="invitedetails-guestlist-addship flexrow">
+						<input
+							className="flexgrow"
+							placeholder="~{ship}"
+							value={shipInvite}
+							type="text"
+							onChange={(e) => {
+								setShipInvite(e.currentTarget.value);
+							}}
+						/>
+						<button
+							className="button"
+							onClick={() => {
+								if (patpValidate(shipInvite)) {
+									pInviteShips({ id: _invite.id, "add-ships": [shipInvite] });
+								} else redAlert("@p not valid!");
+							}}
+						>
+							Add Ship
+						</button>
+					</div>
 					{invite.guestList.map((guest) => (
 						<div className="invitedetails-guestlist-item onetoleft">
 							<span>{guest.ship}</span>
@@ -185,8 +213,18 @@ const InviteDetails = (props) => {
 								<span className="guestlistitem-element"> RSVPd </span>
 							)}
 							<span className="guestlistitem-element">
-								{new Date(guest.shipInvite.rsvpDate * 1000).toLocaleString()}
+								{guest.shipInvite.rsvpDate === "~"
+									? "~"
+									: new Date(guest.shipInvite.rsvpDate * 1000).toLocaleString()}
 							</span>
+							<button
+								className="button invitedetails-guestlist-button"
+								onClick={() =>
+									pUnInviteShips({ id: _invite.id, "del-ships": [guest.ship] })
+								}
+							>
+								Uninvite
+							</button>
 						</div>
 					))}
 				</div>

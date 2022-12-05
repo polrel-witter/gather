@@ -161,7 +161,7 @@ export const createGroup = (type, str, collections) => {
 		const newStr = str[0] === "~" ? str : "~" + str;
 		return { title: newStr, members: [newStr], selected: true, resource: "" };
 	} else if (type === "group") {
-		const result = scryGroups(str);
+		// const result = scryGroups(str);
 		return {
 			title: str,
 			members: [],

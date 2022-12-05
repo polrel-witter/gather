@@ -17,10 +17,10 @@ const Edit = (props) => {
 		"location-type": invite.locationType,
 		position: invite.position,
 		address: invite.address,
-		"access-link": invite.address,
+		"access-link": invite.accessLink,
 		"rsvp-limit": invite.rsvpLimit,
 		radius: invite.radius,
-		image: "",
+		image: invite.image,
 		date: invite.date,
 		"earth-link": invite.earthLink,
 		"excise-comets": invite.exciseComets,
@@ -45,6 +45,7 @@ const Edit = (props) => {
 					<span>Title</span>
 					<input
 						type="text"
+						value={eInvite.title}
 						onChange={(e) => {
 							setEditedInvite({ ...eInvite, title: e.currentTarget.value });
 						}}
@@ -54,6 +55,7 @@ const Edit = (props) => {
 					<span>Description</span>
 					<textarea
 						type="text"
+						value={eInvite.desc}
 						onChange={(e) => {
 							setEditedInvite({ ...eInvite, desc: e.currentTarget.value });
 						}}
@@ -89,6 +91,7 @@ const Edit = (props) => {
 					<span>Access link</span>
 					<input
 						type="text"
+						value={eInvite['access-link']}
 						onChange={(e) => {
 							setEditedInvite({
 								...eInvite,
@@ -99,7 +102,7 @@ const Edit = (props) => {
 				</div>
 				<div className="edit-rr flexrow">
 					<div className="edit-rr-radius flexgrow flexcol">
-						<span display="inline">Delivery radius</span>
+						<span display="inline">Delivery radius (km)</span>
 						<input
 							type="number"
 							min="0"
@@ -150,6 +153,7 @@ const Edit = (props) => {
 					<span> Image link </span>
 					<input
 						type="text"
+						value={eInvite.image}
 						onChange={(e) =>
 							setEditedInvite({ ...eInvite, image: e.currentTarget.value })
 						}
@@ -159,7 +163,8 @@ const Edit = (props) => {
 					<div className="edit-datebegin flexcol flexgrow">
 						<span> Date Begin </span>
 						<input
-							type="date"
+							type="datetime-local"
+							value={(eInvite.date.begin === null ? null : (new Date(eInvite.date.begin *1000)).toISOString().slice(0, -1))}
 							onChange={(e) =>
 								setEditedInvite({
 									...eInvite,
@@ -174,7 +179,8 @@ const Edit = (props) => {
 					<div className="edit-dateend flexcol flexgrow">
 						<span> Date End </span>
 						<input
-							type="date"
+							type="datetime-local"
+							value={(eInvite.date.end === null ? null : (new Date(eInvite.date.end *1000)).toISOString().slice(0, -1))}
 							onChange={(e) =>
 								setEditedInvite({
 									...eInvite,
@@ -249,6 +255,40 @@ const Edit = (props) => {
 						<span>No</span>
 					</div>
 				</div>
+				{invite.access === "public" && (
+					<div className="draft-public">
+						<div className="draft-public-earthlink flexcol">
+							<span className="label">Earth Link</span>
+							<input
+								type="text"
+								value={
+									window.location.protocol +
+									"//" +
+									window.location.hostname +
+									":" +
+									window.location.port +
+									"/gather/" +
+									eInvite['earth-link']
+								}
+								onChange={(e) => {
+									const re = /^[a-zA-Z0-9_-]*$/;
+									const baseUrl =
+										window.location.protocol +
+										"//" +
+										window.location.hostname +
+										":" +
+										window.location.port +
+										"/gather/";
+									if (re.test(e.currentTarget.value.slice(baseUrl.length)))
+										setEditedInvite({
+											...eInvite,
+											"earth-link": e.currentTarget.value.slice(baseUrl.length),
+										});
+								}}
+							/>
+						</div>
+					</div>
+				)}
 			</div>
 			<button
 				className="edit-save send"

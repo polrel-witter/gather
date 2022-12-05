@@ -8,6 +8,7 @@ import {
 	sortSelected,
 	getColType,
 	alert,
+	patpValidate,
 } from "../utils";
 import { useAlert } from "react-alert";
 import Alert from "./Alert";
@@ -20,8 +21,8 @@ const Draft = () => {
 	const settings = useStore((state) => state.settings);
 	const _alert = useAlert();
 	const alert = useAlert();
-	const redAlert = (str) => _alert.show(<Alert str={str} color={'red'}/>);
-	const greenAlert = (str) => _alert.show(<Alert str={str} color={'green'}/>);
+	const redAlert = (str) => _alert.show(<Alert str={str} color={"red"} />);
+	const greenAlert = (str) => _alert.show(<Alert str={str} color={"green"} />);
 	const pNewInvite = useStore((state) => state.pNewInvite);
 	const pCreateCollection = useStore((state) => state.pCreateCollection);
 	const pEditCollection = useStore((state) => state.pEditCollection);
@@ -62,18 +63,27 @@ const Draft = () => {
 	}, []);
 
 	useEffect(() => {
-			const sendTo = collections !== undefined ? collections
-					.filter((x) => x.collection.selected)
-				.reduce((prev, curr) => prev.concat(curr.collection.members), []) : collections;
-			const exciseComets = Object.keys(settings) !== 0 ? settings['exciseComets'] : invite['excise-comets'];
-			const enableChat = Object.keys(settings) !== 0 ? settings['enableChat'] : invite['enableChat'];
-			const newInvite = {
-				...invite,
-				"send-to": sendTo,
-				"excise-comets": exciseComets,
-				"enable-chat": enableChat
-			};
-			setInvite(newInvite);
+		const sendTo =
+			collections !== undefined
+				? collections
+						.filter((x) => x.collection.selected)
+						.reduce((prev, curr) => prev.concat(curr.collection.members), [])
+				: collections;
+		const exciseComets =
+			Object.keys(settings) !== 0
+				? settings["exciseComets"]
+				: invite["excise-comets"];
+		const enableChat =
+			Object.keys(settings) !== 0
+				? settings["enableChat"]
+				: invite["enableChat"];
+		const newInvite = {
+			...invite,
+			"send-to": sendTo,
+			"excise-comets": exciseComets,
+			"enable-chat": enableChat,
+		};
+		setInvite(newInvite);
 	}, [collections, settings]);
 
 	return (
@@ -108,7 +118,6 @@ const Draft = () => {
 			</div>
 
 			<div className="draft-date flexrow">
-				{/* TODO fix dates */}
 				<div className="draft-date-datebegin flexcol flexgrow">
 					<span>Date Begin</span>
 					<input
@@ -166,7 +175,7 @@ const Draft = () => {
 
 			<div className="draft-rr flexrow">
 				<div className="draft-rr-radius flexcol flexgrow">
-					<span>Delivery radius</span>
+					<span>Delivery radius (km)</span>
 					<input
 						type="number"
 						min="0"
@@ -293,11 +302,14 @@ const Draft = () => {
 							/>
 							<button
 								className="button"
-								onClick={() =>
-									pCreateCollection(
-										createGroup("ship", newCollectionString, collections)
-									)
-								}
+								onClick={() => {
+									if (!patpValidate(newCollectionString))
+										redAlert("Invalid @p!");
+									else
+										pCreateCollection(
+											createGroup("ship", newCollectionString, collections)
+										);
+								}}
 							>
 								Add Ship
 							</button>
@@ -398,15 +410,13 @@ const Draft = () => {
 					onClick={() => {
 						if (invite["send-to"].length === 0) {
 							// alert.show(<div style={{ color: "green" }}>Invite Sent</div>);
-							redAlert('No Collection Selected!');
-						} 
-						else if (invite.title === '') {
-							redAlert('No title!');
-								pNewInvite(invite);
-						}
-						else {
-								pNewInvite(invite);
-								greenAlert('Invite Sent!');
+							redAlert("No Collection Selected!");
+						} else if (invite.title === "") {
+							redAlert("No title!");
+							pNewInvite(invite);
+						} else {
+							pNewInvite(invite);
+							greenAlert("Invite Sent!");
 						}
 					}}
 				>
@@ -414,20 +424,52 @@ const Draft = () => {
 				</button>
 			)}
 			{invite.access === "public" && (
-				<button
-					className="send"
-					onClick={() => {
-						if (invite["send-to"].length !== 0) {
-							alert.show(<div style={{ color: "green" }}>Invite Sent</div>);
-							pNewInvite(invite);
-						} else
-							alert.show(
-								<div style={{ color: "red" }}>No collection selected!</div>
-							);
-					}}
-				>
-					Create
-				</button>
+				<div className="draft-public">
+					<div className="draft-public-earthlink flexcol">
+						<span className="label">Earth Link</span>
+						<input
+							type="text"
+							value={
+								window.location.protocol +
+								"//" +
+								window.location.hostname +
+								":" +
+								window.location.port +
+								"/gather/" +
+								invite["earth-link"]
+							}
+							onChange={(e) => {
+								const re = /^[a-zA-Z0-9_-]*$/;
+								const baseUrl =
+									window.location.protocol +
+									"//" +
+									window.location.hostname +
+									":" +
+									window.location.port +
+									"/gather/";
+								if (re.test(e.currentTarget.value.slice(baseUrl.length)))
+									setInvite({
+										...invite,
+										"earth-link": e.currentTarget.value.slice(baseUrl.length),
+									});
+							}}
+						/>
+					</div>
+					<button
+						className="send"
+						onClick={() => {
+							if (invite["send-to"].length !== 0) {
+								alert.show(<div style={{ color: "green" }}>Invite Sent</div>);
+								pNewInvite(invite);
+							} else
+								alert.show(
+									<div style={{ color: "red" }}>No collection selected!</div>
+								);
+						}}
+					>
+						Create
+					</button>
+				</div>
 			)}
 		</div>
 	);

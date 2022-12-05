@@ -109,20 +109,23 @@ export const Invites = (props) => {
 						</div>
 					)}
 				</div>
-				{ invitesMode === 'inbox-pending' && (
-				<div className="invites-search flexrow">
-					<input
-						className="flexgrow"
-						type="text"
-						onChange={(e) => setMarsLink(e.currentTarget.value)}
-					/>
-					<button
-						className="button"
-						onClick={() => pAdd({ "mars-link": marsLink })}
-					>
-						Add Public Invite
-					</button>
-				</div>
+				{invitesMode === "inbox-pending" && (
+					<div className="invites-search flexrow">
+						<input
+							className="flexgrow"
+							type="text"
+							placeholder="~{ship}/gather/{invite-id}"
+							onChange={(e) => setMarsLink(e.currentTarget.value)}
+						/>
+						<button
+							className="button"
+							onClick={() => {
+								pAdd({ "mars-link": marsLink });
+							}}
+						>
+							Add Public Invite
+						</button>
+					</div>
 				)}
 				{invites.map((invite) => (
 					<Invite invite={invite} />
