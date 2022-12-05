@@ -129,6 +129,7 @@
 .textrow {
 	/* margin-right: 10px; */
 	/* color: red; */
+	margin-bottom: 10px;
 }
 .textrow > *:first-child{
 	margin-right: 10px;
@@ -249,7 +250,6 @@
 	flex-direction: column;
 	/* justify-content: center; */
 	align-items: flex-end;
-	
 }
 .invitedetails-title {
 	font-weight: bold;

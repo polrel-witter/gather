@@ -210,7 +210,7 @@ const Draft = () => {
 								e.currentTarget.value === "" ||
 								re.test(e.currentTarget.value)
 							)
-								setInvite({ ...invite, "rsvp-limit": e.currentTarget.value });
+								setInvite({ ...invite, "rsvp-limit": parseInt(e.currentTarget.value) });
 						}}
 					/>
 				</div>

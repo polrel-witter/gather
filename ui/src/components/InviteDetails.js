@@ -39,7 +39,10 @@ const InviteDetails = (props) => {
 	const pGatheringReminder = useStore((state) => state.pGatheringReminder);
 
 	const isHosting = invite.initShip === "~" + window.urbit.ship;
-	const newReminder = reminder === null ? null : new Date(reminder).toISOString().substring(0, 16);
+	const newReminder =
+		reminder === null
+			? null
+			: new Date(reminder).toISOString().substring(0, 16);
 
 	const _alert = useAlert();
 	const redAlert = (str) => _alert.show(<Alert str={str} color={"red"} />);
@@ -119,12 +122,15 @@ const InviteDetails = (props) => {
 					</div>
 					<div className="invitedetails-secondcol">
 						<div className="invitedetails-rsvpnumber">
-							{invite.rsvpCount} / {invite.rsvpLimit} RSVPd
+							{invite.rsvpLimit === null
+								? "No RSVP Limit"
+								: invite.rsvpCount + "/" + invite.rsvpLimit + " RSVPd"}
 						</div>
 						<div className="invitedetails-hoststatus">{invite.hostStatus}</div>
 						{/* <span>Last Updated:</span> */}
 						<div className="invitedetails-lastupdated textrow">
-							{new Date(invite.lastUpdated * 1000).toLocaleString()}
+							{"Last Updated: " +
+								new Date(invite.lastUpdated * 1000).toLocaleString()}
 						</div>
 					</div>
 				</div>
@@ -133,7 +139,6 @@ const InviteDetails = (props) => {
 				<div className="invitedetails-title">{invite.title}</div>
 				<img className="invitedetails-image" src={invite.image} />
 				<div className="invitedetails-desc">{invite.desc}</div>
-				{/* TODO make reminder work */}
 				<div className="invitedetails-reminder flexrow">
 					<input
 						type="datetime-local"
@@ -152,7 +157,7 @@ const InviteDetails = (props) => {
 						Set Reminder
 					</button>
 				</div>
-				<div className="invitedetails-firstcol border">
+				<div className="invitedetails-firstcol">
 					<div className="invitedetails-rsvpcount textrow">
 						<span>Access Type:</span>
 						<span>{invite.access}</span>
