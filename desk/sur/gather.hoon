@@ -150,7 +150,6 @@
   ::
   :: Adjust an invite
      [%del-invite =id]                          :: NEW; deletes an invite locally
-     [%archive-invite =id]                      :: NEW
      [%alt-host-status =id =host-status]        :: CHANGED
      [%uninvite-ships =id del-ships=(list @p)]  :: CHANGED 
      [%invite-ships =id add-ships=(list @p)]    :: CHANGED
@@ -204,7 +203,6 @@
   $%
      [%init-all =invites =settings]
      [%update-invite =id =invite]       
-     [%update-settings =settings]   
   ==
 ::
 ::

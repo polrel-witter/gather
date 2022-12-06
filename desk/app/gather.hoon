@@ -264,7 +264,7 @@
                 %.y
                 `r
             ==
-       :-  (relay:hc [%update-settings settings])
+       :-  (relay:hc [%init-all invites settings])
            this(collections.settings (~(del by collections.settings) old))
      =/  gang=members  (silt (remove-our [our.bol (remove-banned [(remove-dupes members.act) banned.settings])]))
      =.  collections.settings
@@ -279,7 +279,7 @@
              resource.act
           ==
      :_  this
-         (relay:hc [%update-settings settings])
+         (relay:hc [%init-all invites settings])
   ::
        %edit-collection
      ~|  [%unexpected-collection-request %edit-collection-title ~]
@@ -296,7 +296,7 @@
           resource  resource.act
        ==
      :_  this
-         (relay:hc [%update-settings settings])
+         (relay:hc [%init-all invites settings])
   ::
        %del-collection
      ~|  [%unexpected-collection-request %del-collection ~]
@@ -304,7 +304,7 @@
      =.  collections.settings  (~(del by collections.settings) id.act)
      ::  ~&  "deleting collection"
      :_  this
-         (relay:hc [%update-settings settings])
+         (relay:hc [%init-all invites settings])
   ::
        %del-invite
      ~|  [%failed-to-delete-invite ~]
@@ -350,8 +350,6 @@
        :(welp ~[pok] (relay:hc [%init-all invites settings]))
      [fak this]
   :: 
-       %archive-invite  !!
-  :: 
        %alt-host-status
      =/  inv=invite  +:(~(got by invites) id.act)
      =/  pax=[invite=path rsvp=path]  (forge:hc [id.act host.inv])
@@ -374,11 +372,11 @@
            ==
        =.  host-status.inv  new 
        :-  ?:  =('' earth-link.invite)
-             (relay:hc [%update-invite id inv]) 
+             (relay:hc [%init-all invites settings]) 
            =/  =path
                /(scot %p our.bol)/[%odyssey]/(scot %uv id.act)
            =+  air=(veil:hc [%invite inv])
-           ;:  welp  (relay:hc [%update-invite id inv])
+           ;:  welp  (relay:hc [%init-all invites settings])
               :~  :*
                     %give  %fact
                     ~[path] 
@@ -417,12 +415,15 @@
          =+  kik=~[[%give %kick ~[invite.pax rsvp.pax /all] ~]]
          =/  inv=invite  +:(~(got by invites) id)
          =/  fak=(list card)  
-             ?:  =('' earth-link.inv)
-               (relay:hc [%update-invite id inv])
+             =/  mol=(list card)
+               ;:  welp  (relay:hc [%update-invite id inv])
+                         (relay:hc [%init-all invites settings])
+               ==
+             ?:  =('' earth-link.inv)  mol
              =/  =path
                  /(scot %p our.bol)/[%odyssey]/(scot %uv id.act)
              =+  air=(veil:hc [%invite inv])
-             ;:  welp  (relay:hc [%update-invite id inv])
+             ;:  welp  mol
                 :~  :*
                       %give  %fact
                       ~[path] 
@@ -456,7 +457,10 @@
      |-
      ?~  del-ships.act
        =/  inv=invite  +:(~(got by invites) id.act)
-       =/  fak=(list card)  (relay:hc [%update-invite id.act inv])
+       =/  fak=(list card)  
+          ;:  welp  (relay:hc [%update-invite id.act inv])
+                    (relay:hc [%init-all invites settings])
+          ==
        :_  this
            (welp fak dek)                           
      =/  =path  =/  gs=guest-status  
@@ -513,7 +517,10 @@
      |-
      ?~  add-ships
        =/  inv=invite  +:(~(got by invites) id.act)
-       =/  fak=(list card)  (relay:hc [%update-invite id.act inv])
+       =/  fak=(list card)  
+         ;:  welp  (relay:hc [%update-invite id.act inv])
+                   (relay:hc [%init-all invites settings])
+         ==
        :_  this 
            :(welp fak kiks pok)
      =/  kik=card 
@@ -618,7 +625,6 @@
                      %poke  %odyssey-shoot
                      !>(`shoot:odyssey`[%pub:odyssey id.act])
              ==  ==
-     ::
         invites  %+  ~(jab by invites)
                    id.act
                  |=  [our=guest-status inv=invite]
@@ -704,7 +710,7 @@
        :*  %give
            %fact
            ~[/all]
-           gather-update+!>(`update`[%update-invite id new])
+           gather-update+!>(`update`[%init-all invites settings])
        ==
      ?.  ?=(%private access.new)
        ~&  "%gather: created new public invite"
@@ -804,7 +810,10 @@
                      |=  [=guest-status =invite]
                      [[~] inv]
          ==
-     =/  fak=(list card)  (relay:hc [%update-invite id.act inv])
+     =/  fak=(list card)  
+       ;:  welp  (relay:hc [%update-invite id.act inv])
+                 (relay:hc [%init-all invites settings])
+       ==
      ;:  welp  fak 
          :~   :*
                  %pass  rsvp.pax
@@ -841,7 +850,10 @@
                      |=  [=guest-status =invite]
                      [[~] inv]
          ==
-     =/  fak=(list card)  (relay:hc [%update-invite id.act inv])
+     =/  fak=(list card)  
+       ;:  welp  (relay:hc [%update-invite id.act inv])
+                 (relay:hc [%init-all invites settings])
+       ==
      ;:  welp  fak
          :~   :*
                  %pass  invite.pax
@@ -911,7 +923,9 @@
          %-  some  
            %-  pin:hc 
              [msgs our.bol note.act]
-       :-  (relay:hc [%update-invite id.act inv]) 
+       :-  ;:  welp  (relay:hc [%update-invite id.act inv])
+                     (relay:hc [%init-all invites settings])
+           == 
        %=  this
           invites  %+  ~(jab by invites) 
                      id.act 
@@ -928,7 +942,9 @@
          %-  some  
            %-  pin:hc 
              [msgs src.bol note.act]
-       :-  (relay:hc [%update-invite id.act inv]) 
+       :-  ;:  welp  (relay:hc [%update-invite id.act inv])
+                     (relay:hc [%init-all invites settings])
+           == 
        %=  this
           invites  %+  ~(jab by invites) 
                      id.act 
@@ -942,7 +958,9 @@
        %-  some  
          %-  pin:hc
            [msgs src.bol note.act]
-     :-  (relay:hc [%update-invite id.act inv]) 
+     :-  ;:  welp  (relay:hc [%update-invite id.act inv])
+                   (relay:hc [%init-all invites settings])
+         == 
      %=  this
         invites  %+  ~(jab by invites) 
                    id.act 
@@ -1008,7 +1026,7 @@
                           ==  ==  ==
                      rsvpd-ids  t.rsvpd-ids
        ==          ==
-       =+  fak=(relay:hc [%update-settings settings])  
+       =+  fak=(relay:hc [%init-all invites settings])  
        :_  this
            :(welp fak kiks levs poks faks)  
      ::
@@ -1051,7 +1069,7 @@
                        %give
                        %fact
                        ~[/all]
-                       gather-update+!>(`update`[%update-invite i.our-ids inv])
+                       gather-update+!>(`update`[%init-all invites settings])
                  ==  ==
                  :~  :*
                        %give
@@ -1076,7 +1094,7 @@
        =.  banned.settings
           (~(del in banned.settings) ship.act)
        :_  this
-           (relay:hc [%update-settings settings])
+           (relay:hc [%init-all invites settings])
      `this
     ==   
   -- 
@@ -1136,8 +1154,8 @@
                         id.upd 
                       [`%pending invite.upd]
           :_  this
-          :~  (fact:io cage.sign ~[/all])
-          ==
+              (relay:hc [%init-all invites settings])
+          ::
         ::  ~&  "%gather: {<src.bol>} has updated their invite (id {<id.upd>})"
         =/  inv=invite  +:(~(got by invites) id.upd)
         ?>  =(src.bol host.inv)
@@ -1147,10 +1165,11 @@
                        [`%pending invite.upd] 
         :_  this
         ^-  (list card)
-        :*  (fact:io cage.sign ~[/all])
-            ?.  invite-updates.notifications.settings  ~
-            (harken-appraisal [inv invite.upd])
-          ==
+        ;:  welp  (relay:hc [%init-all invites settings])
+           :*  ?.  invite-updates.notifications.settings  ~
+               (harken-appraisal [inv invite.upd])
+           ==
+        ==
       ==
     ==
   ::
@@ -1178,8 +1197,8 @@
                         id.upd  
                       [`%rsvpd invite.upd]
           :_  this
-          :~  (fact:io cage.sign ~[/all])
-          ==
+              (relay:hc [%init-all invites settings])
+          ::
         :: ~&  "%gather: {<src.bol>} has updated their rsvp details"
         =/  inv=invite  +:(~(got by invites) id.upd)
         ?>  =(src.bol host.inv)
@@ -1189,9 +1208,10 @@
                      [`%rsvpd invite.upd]
         :_  this
         ^-  (list card)
-        :*  (fact:io cage.sign ~[/all])
-            ?.  invite-updates.notifications.settings  ~
-            (harken-appraisal [inv invite.upd])
+        ;:  welp  (relay:hc [%init-all invites settings])
+          :*  ?.  invite-updates.notifications.settings  ~
+              (harken-appraisal [inv invite.upd])
+          ==
         ==
       ==
     ==
@@ -1443,16 +1463,12 @@
        %init-all  
      ~[(fact:io gather-update+!>(`update`[%init-all invites settings]) ~[/all])] 
   ::
-       %update-settings  
-     ~[(fact:io gather-update+!>(`update`[%update-settings settings]) ~[/all])]  
-  ::
        %update-invite 
      =/  pax=[invite=path rsvp=path]  (forge [id.upd host.invite.upd])
      =+  rsv=(veil [%rsvp invite.upd])
      =+  air=(veil [%invite invite.upd])
      :~  (fact:io gather-update+!>(`update`[%update-invite id.upd rsv]) ~[rsvp.pax])
          (fact:io gather-update+!>(`update`[%update-invite id.upd air]) ~[invite.pax])
-         (fact:io gather-update+!>(`update`[%update-invite id.upd invite.upd]) ~[/all])
      ==
   ==
 ::
