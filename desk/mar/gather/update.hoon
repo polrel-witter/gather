@@ -20,12 +20,6 @@
       :~  ['id' (tape (trip id.upd))] 
           ['invite' (en-invite invite.upd)]
       ==
-    ::
-        %update-settings
-      %+  frond  'updateSettings'
-      %-  pairs
-      :~  ['settings' (en-settings settings.upd)]
-      ==
     ==
     ++  en-invite
       |=  =invite
