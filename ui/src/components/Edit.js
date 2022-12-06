@@ -193,37 +193,37 @@ const Edit = (props) => {
 						/>
 					</div>
 				</div>
-				<div className="edit-excisecomets radio">
-					<span> Excise Comets </span>
-					<div>
-						<input
-							type="radio"
-							name="advanced-excisecomets"
-							checked={eInvite["excise-comets"] === true}
-							onChange={() => {
-								setEditedInvite({
-									...eInvite,
-									"excise-comets": true,
-								});
-							}}
-						/>
-						<span>Yes</span>
-					</div>
-					<div>
-						<input
-							type="radio"
-							name="advanced-excisecomets"
-							checked={eInvite["excise-comets"] === false}
-							onChange={() => {
-								setEditedInvite({
-									...eInvite,
-									"excise-comets": false,
-								});
-							}}
-						/>
-						<span>No</span>
-					</div>
-				</div>
+				{/* <div className="edit-excisecomets radio"> */}
+				{/* 	<span> Excise Comets </span> */}
+				{/* 	<div> */}
+				{/* 		<input */}
+				{/* 			type="radio" */}
+				{/* 			name="advanced-excisecomets" */}
+				{/* 			checked={eInvite["excise-comets"] === true} */}
+				{/* 			onChange={() => { */}
+				{/* 				setEditedInvite({ */}
+				{/* 					...eInvite, */}
+				{/* 					"excise-comets": true, */}
+				{/* 				}); */}
+				{/* 			}} */}
+				{/* 		/> */}
+				{/* 		<span>Yes</span> */}
+				{/* 	</div> */}
+				{/* 	<div> */}
+				{/* 		<input */}
+				{/* 			type="radio" */}
+				{/* 			name="advanced-excisecomets" */}
+				{/* 			checked={eInvite["excise-comets"] === false} */}
+				{/* 			onChange={() => { */}
+				{/* 				setEditedInvite({ */}
+				{/* 					...eInvite, */}
+				{/* 					"excise-comets": false, */}
+				{/* 				}); */}
+				{/* 			}} */}
+				{/* 		/> */}
+				{/* 		<span>No</span> */}
+				{/* 	</div> */}
+				{/* </div> */}
 				<div className="edit-enablechat radio">
 					<span> Enable Chat </span>
 					<div>
@@ -293,8 +293,8 @@ const Edit = (props) => {
 			<button
 				className="edit-save send"
 				onClick={() => {
-					alert.show(<div style={{ color: "green" }}>Edit Saved</div>);
 					pEditInvite(eInvite);
+					alert.show(<div style={{ color: "green" }}>Edit Saved</div>);
 				}}
 			>
 				Save

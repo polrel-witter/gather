@@ -173,6 +173,9 @@
 .draft-listselect-select {
 	margin-bottom: 15px;
 }
+.draft-links {
+	margin-bottom: 15px;
+}
 .invite {
 	border: 1px solid;
 	margin-bottom: 10px;
@@ -290,6 +293,12 @@
 }
 .chat-message-message > *:first-child {
 	margin-bottom: 5px;
+}
+.chat-message-message-firstrow {
+	justify-content: flex-end;
+	padding-bottom: 10px;
+	/* align-items: center; */
+	/* background-color: red; */
 }
 .guestlistitem-element {
 	/* border: 1px solid; */

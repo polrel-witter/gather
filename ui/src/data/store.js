@@ -116,6 +116,7 @@ export const useStore = create((set) => ({
 		doPoke({ "uninvite-ships": data });
 	},
 	pEditInvite: (data) => {
+		doPoke({ "edit-invite": {...data, 'earth-link': '' }});
 		doPoke({ "edit-invite": data });
 	},
 	pNewInvite: (data) => {

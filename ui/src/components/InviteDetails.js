@@ -182,32 +182,40 @@ const InviteDetails = (props) => {
 						Mars Link: {invite.marsLink}
 					</div>
 					<div className="invitedetails-accesslink textrow">
-						Earth Link: {invite.earthLink}
+						{'Earth Link: ' + window.location.protocol +
+							"//" +
+							window.location.hostname +
+							":" +
+							window.location.port +
+							"/gather/" +
+							invite.earthLink}
 					</div>
 				</div>
 				<div className="invitedetails-guestlist">
 					<div className="divider">Guest List</div>
-					<div className="invitedetails-guestlist-addship flexrow">
-						<input
-							className="flexgrow"
-							placeholder="~{ship}"
-							value={shipInvite}
-							type="text"
-							onChange={(e) => {
-								setShipInvite(e.currentTarget.value);
-							}}
-						/>
-						<button
-							className="button"
-							onClick={() => {
-								if (patpValidate(shipInvite)) {
-									pInviteShips({ id: _invite.id, "add-ships": [shipInvite] });
-								} else redAlert("@p not valid!");
-							}}
-						>
-							Add Ship
-						</button>
-					</div>
+					{invite.initShip === "~" + window.urbit.ship && (
+						<div className="invitedetails-guestlist-addship flexrow">
+							<input
+								className="flexgrow"
+								placeholder="~{ship}"
+								value={shipInvite}
+								type="text"
+								onChange={(e) => {
+									setShipInvite(e.currentTarget.value);
+								}}
+							/>
+							<button
+								className="button"
+								onClick={() => {
+									if (patpValidate(shipInvite)) {
+										pInviteShips({ id: _invite.id, "add-ships": [shipInvite] });
+									} else redAlert("@p not valid!");
+								}}
+							>
+								Add Ship
+							</button>
+						</div>
+					)}
 					{invite.guestList.map((guest) => (
 						<div className="invitedetails-guestlist-item onetoleft">
 							<span>{guest.ship}</span>

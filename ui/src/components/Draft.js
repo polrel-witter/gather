@@ -274,9 +274,7 @@ const Draft = () => {
 
 			<div className="draft-optionstitle divider"> Invitees </div>
 			{invite["access"] === "public" && (
-				<div className="draft-links">
-					Everyone can be invited who receives the mars or earth link
-				</div>
+				<div className="draft-links">A mars link will be generated upon creation, which makes the invite shareable with anyone on mars. To share the invite with normies, include a url-safe name for the earth link below.</div>
 			)}
 
 			{invite["access"] === "private" && (
@@ -458,12 +456,12 @@ const Draft = () => {
 					<button
 						className="send"
 						onClick={() => {
-							if (invite["send-to"].length !== 0) {
+							if (invite["title"] !== '') {
 								alert.show(<div style={{ color: "green" }}>Invite Sent</div>);
 								pNewInvite(invite);
 							} else
 								alert.show(
-									<div style={{ color: "red" }}>No collection selected!</div>
+									<div style={{ color: "red" }}>No title!</div>
 								);
 						}}
 					>
