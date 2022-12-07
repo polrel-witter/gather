@@ -412,7 +412,7 @@
                       =.  host-status.invite  %cancelled
                       [[~] invite]
          ::
-         =+  kik=~[[%give %kick ~[invite.pax rsvp.pax /all] ~]]
+         =+  kik=~[[%give %kick ~[invite.pax rsvp.pax] ~]]
          =/  inv=invite  +:(~(got by invites) id)
          ~&  host-status.inv
          =/  fak=(list card)  
