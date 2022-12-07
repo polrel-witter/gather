@@ -347,7 +347,8 @@
             %poke  %odyssey-shoot
             !>(`shoot:odyssey`[%del:odyssey id.act earth-link.inv])
          ==   
-       :(welp ~[pok] (relay:hc [%init-all invites settings]))
+      :(welp ~[pok] (relay:hc [%init-all invites settings]))
+     ~&  fak
      [fak this]
   :: 
        %alt-host-status
@@ -397,9 +398,8 @@
          :_  this
          ^-  (list card)
          :*  ?.  invite-updates.notifications.settings  ~
-             ;:  welp  (relay:hc [%init-all invites settings])
-                       (harken:hc [(some host.inv) %cancelled title.inv]) 
-         ==  ==
+             (harken:hc [(some host.inv) %cancelled title.inv]) 
+         ==
        ?>  =(our.bol host.inv)
        =/  guest-list=(list @p)  
          ~(tap in ~(key by guest-list.inv))
@@ -414,6 +414,7 @@
          ::
          =+  kik=~[[%give %kick ~[invite.pax rsvp.pax /all] ~]]
          =/  inv=invite  +:(~(got by invites) id)
+         ~&  host-status.inv
          =/  fak=(list card)  
              =/  mol=(list card)
                ;:  welp  (relay:hc [%update-invite id inv])
@@ -423,6 +424,7 @@
              =/  =path
                  /(scot %p our.bol)/[%odyssey]/(scot %uv id.act)
              =+  air=(veil:hc [%invite inv])
+             ~&  mol
              ;:  welp  mol
                 :~  :*
                       %give  %fact
@@ -431,10 +433,11 @@
              ==  ==  ==
          :_  this
              :(welp pok fak kik)
-       =/  =path  =/  gs=guest-status  -:(need (~(got by guest-list.inv) i.guest-list))
-                  ?:  ?=(%rsvpd (need gs))
-                    rsvp.pax
-                  invite.pax 
+       =/  =path  
+         =/  gs=guest-status  -:(need (~(got by guest-list.inv) i.guest-list))
+         ?:  ?=(%rsvpd (need gs))
+            rsvp.pax
+         invite.pax 
        %=  $
           pok  ;:  welp  pok  
                    :~  :*

@@ -7,5 +7,5 @@
   license+'MIT'
   image+'https://mocbel.nyc3.digitaloceanspaces.com/gather/IMG_20220823_144220.jpg'
   base+'gather'
-  glob-ames+[~pontus-fadpun-polrel-witter 0v0]
+  glob-ames+[~firbus-litfed 0v0]
 ==
