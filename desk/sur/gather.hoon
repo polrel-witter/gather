@@ -2,43 +2,43 @@
 ::
 :: Basic types
 +$  ship            @p
-+$  host            @p                                :: CHANGED name
++$  host            @p                     
 +$  id              @
 +$  selected        ?
 +$  address         @t
-+$  earth-link      @t                                :: NEW
-+$  mars-link       (unit @t)                         :: NEW
-+$  access-link     (unit @t)                         :: CHANGED to unit
-+$  image           (unit @t)                         :: NEW
++$  earth-link      @t                        
++$  mars-link       (unit @t)                        
++$  access-link     (unit @t)                         
++$  image           (unit @t)                      
 +$  banned          (set @p)
 +$  members         (set @p)
-+$  radius          (unit @rs)                        :: CHANGED to unit                                                   
-+$  access          ?(%public %private)               :: NEW
-+$  msgs            (list msg)                        :: NEW
-+$  msg             [who=@p wat=@t wen=@da]           :: NEW; added wen
-+$  position        (unit [lat=@rs lon=@rs])          :: CHANGED to unit
++$  radius          (unit @rs)                                                                          
++$  access          ?(%public %private)           
++$  msgs            (list msg)                     
++$  msg             [who=@p wat=@t wen=@da]         
++$  position        (unit [lat=@rs lon=@rs])          
 +$  location-type   ?(%virtual %meatspace) 
 +$  receive-invite  ?(%only-in-radius %anyone)   
 +$  resource        (unit [ship=@p name=@tas])                :: Simplified version of $resource from /landscape/sur
 +$  collection      [title=@t =members =selected =resource]
-+$  veils           ?(%anyone %rsvp-only %host-only)  :: NEW
-+$  alarm           @da                               :: NEW
-+$  date            [begin=(unit @da) end=(unit @da)] :: NEW
-+$  reminders                                         :: NEW; CHANGED remoted unit
++$  veils           ?(%anyone %rsvp-only %host-only)  
++$  alarm           @da                               
++$  date            [begin=(unit @da) end=(unit @da)] 
++$  reminders                                         
   $:
      gatherings=(map id alarm)
   ==
 ::
-+$  notifications                                 :: NEW
++$  notifications                               
   $:
      new-invites=?
-     invite-updates=?                             :: NEW includes changes to gathering date, description, location-type, address, access-link, and cancellations
+     invite-updates=?                          
   ==
 ::
-+$  guest-status                                   :: CHANGED invitee-status ->  guest-status
++$  guest-status                               
   %-  unit
   $?  
-      %rsvpd                                       :: CHANGED %accepted -> %rsvpd
+      %rsvpd                                       
       %pending
   ==
 ::
@@ -46,18 +46,18 @@
   $?
      %closed
      %completed
-     %cancelled                                    :: NEW
-     %open                                         :: CHANGED %sent -> %open
+     %cancelled                                  
+     %open                                         
   ==
 ::
-+$  ship-invite                                    :: Changed to unit
++$  ship-invite                                   
   %-  unit
   $:
-     =guest-status                                 :: CHANGED %accepted -> %rsvpd
-     rsvp-date=(unit @da)                          :: NEW 
+     =guest-status                                 
+     rsvp-date=(unit @da)                     
   ==
 ::
-+$  catalog                                        :: NEW
++$  catalog                                     
   %-  unit
   $:
      guest-list=veils          
@@ -72,7 +72,7 @@
 :: Invite data structure
 +$  invite
   $:
-     =host                                      :: CHANGED name
+     =host                                     
      desc=@t
      guest-list=(map @p ship-invite)   
      =location-type
@@ -80,26 +80,26 @@
      =address      
      =access-link  
      =radius       
-     rsvp-limit=(unit @ud)               :: Changed name & to unit
-     rsvp-count=(unit @ud)               :: Changed name & to unit
+     rsvp-limit=(unit @ud)               
+     rsvp-count=(unit @ud)               
      =host-status
-     title=@t                            :: NEW
-     =image                              :: NEW
-     =date                               :: NEW
-     last-updated=@da                    :: NEW
-     =access                             :: NEW
-     =mars-link                          :: NEW
-     =earth-link                         :: NEW
-     excise-comets=(unit ?)              :: NEW      
-     chat=(unit msgs)                    :: NEW 
-     =catalog                            :: NEW; pulled from settings
-     enable-chat=?                       :: NEW
+     title=@t                        
+     =image                            
+     =date                              
+     last-updated=@da                   
+     =access                             
+     =mars-link                        
+     =earth-link                         
+     excise-comets=(unit ?)               
+     chat=(unit msgs)                  
+     =catalog                            
+     enable-chat=?                       
   ==
 ::
 ::
 :: Latest state structure
 +$  invites  (map id [guest-status invite])   
-+$  settings                             :: User settings
++$  settings                             
   $: 
      =position
      =radius
@@ -107,11 +107,11 @@
      collections=(map id collection)
      =banned                        
      =receive-invite
-     =reminders                            :: NEW
-     =notifications                        :: NEW
-     excise-comets=(unit ?)                :: NEW
-     =catalog                              :: NEW
-     enable-chat=?                         :: NEW
+     =reminders                           
+     =notifications                     
+     excise-comets=(unit ?)                
+     =catalog                              
+     enable-chat=?                         
   ==
 ::
 ::
@@ -120,8 +120,8 @@
   $%
   ::
   :: Adjust Settings
-     [%gathering-reminder =id =alarm]      :: NEW
-     $:  %edit-settings                    :: NEW; combined with other edits 
+     [%gathering-reminder =id =alarm]      
+     $:  %edit-settings                    
          =address
          =position
          =radius
@@ -149,11 +149,11 @@
      [%del-collection =id]
   ::
   :: Adjust an invite
-     [%del-invite =id]                          :: NEW; deletes an invite locally
-     [%alt-host-status =id =host-status]        :: CHANGED
-     [%uninvite-ships =id del-ships=(list @p)]  :: CHANGED 
-     [%invite-ships =id add-ships=(list @p)]    :: CHANGED
-     $:  %edit-invite                           :: NEW; combined with all other previous edit options       
+     [%del-invite =id]                          
+     [%alt-host-status =id =host-status]        
+     [%uninvite-ships =id del-ships=(list @p)]  
+     [%invite-ships =id add-ships=(list @p)]   
+     $:  %edit-invite                              
          =id
          desc=@t
          =location-type
@@ -171,7 +171,7 @@
       ==    
   ::
   :: Invite communication 
-     $:  %new-invite                                   :: CHANGED       
+     $:  %new-invite                                      
          send-to=(list @p)
          =location-type
          =position
@@ -180,20 +180,20 @@
          =radius 
          rsvp-limit=(unit @ud)
          desc=@t
-         title=@t                                       :: NEW
-         =image                                         :: NEW
-         =date                                          :: NEW
-         =access                                        :: NEW
+         title=@t                                      
+         =image                                         
+         =date                                         
+         =access                                      
          =earth-link                      
-         excise-comets=(unit ?)                         :: NEW
-         enable-chat=?                                  :: NEW
+         excise-comets=(unit ?)                       
+         enable-chat=?                                 
      ==
-     [%add =mars-link]                                  :: NEW
-     [%rsvp =id]                                        :: CHANGED name
-     [%unrsvp =id]                                      :: CHANGED
-     [%sub-rsvp =id]                                    :: NEW
-     [%sub-invite =id]                                  :: ADJUSTED 11/6; removed ship since %find will perform the search function
-     [%post =id note=@t]                                :: NEW
+     [%add =mars-link]                                
+     [%rsvp =id]                                       
+     [%unrsvp =id]                                     
+     [%sub-rsvp =id]                                    
+     [%sub-invite =id]                                  
+     [%post =id note=@t]                              
   ::
   :: Banning
      [%ban =ship]

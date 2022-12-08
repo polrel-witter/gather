@@ -1137,7 +1137,7 @@
     ?+    -.sign  (on-agent:def wire sign)
         %watch-ack
       ?~  p.sign  [~ this]
-      ~&  "%gather: invite subscription to {<src.bol>} failed"
+      :: ~&  "%gather: invite subscription to {<src.bol>} failed"
       [~ this] 
     ::
         %kick
@@ -1180,7 +1180,7 @@
     ?+    -.sign  (on-agent:def wire sign)
         %watch-ack
       ?~  p.sign  [~ this]
-      ~&  "%gather: rsvp subscription to {<src.bol>} failed"
+      :: ~&  "%gather: rsvp subscription to {<src.bol>} failed"
       [~ this] 
     ::
         %kick
