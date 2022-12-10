@@ -12,7 +12,7 @@
 +$  image           (unit @t)                      
 +$  banned          (set @p)
 +$  members         (set @p)
-+$  radius          (unit @rs)                                                                          
++$  radius          (unit @ud)                                                                          
 +$  access          ?(%public %private)           
 +$  msgs            (list msg)                     
 +$  msg             [who=@p wat=@t wen=@da]         

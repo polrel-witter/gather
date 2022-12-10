@@ -87,7 +87,7 @@
       %-  ot
       :~  address+so
           position+(mu de-position)
-          radius+(mu (se %rs))
+          radius+(mu (se %ud))
           receive-invite+(se %tas) 
           excise-comets+bo:dejs-soft:format
           notifications+de-notifications
@@ -101,7 +101,7 @@
           position+(mu de-position)    
           address+so              
           access-link+so:dejs-soft:format    
-          radius+(mu (se %rs))        
+          radius+(mu (se %ud))        
           rsvp-limit+ni:dejs-soft:format
           desc+so
           title+so
@@ -121,7 +121,7 @@
           address+so
           access-link+so:dejs-soft:format
           rsvp-limit+ni:dejs-soft:format
-          radius+(mu (se %rs))
+          radius+(mu (se %ud))
           title+so
           image+so:dejs-soft:format
           date+de-date

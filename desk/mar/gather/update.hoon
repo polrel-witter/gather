@@ -32,7 +32,7 @@
           ['position' (en-position position.invite)]   
           ['address' s+address.invite]           
           ['accessLink' (en-unit-cord access-link.invite)]           
-          ['radius' (en-unit-rs radius.invite)] 
+          ['radius' (en-unit-decimal radius.invite)] 
           ['rsvpLimit' (en-unit-decimal rsvp-limit.invite)]       
           ['rsvpCount' (en-unit-decimal rsvp-count.invite)]          
           ['hostStatus' s+(scot %tas host-status.invite)]
@@ -64,7 +64,7 @@
       ^-  ^json
       %-  pairs
       :~  ['position' (en-position position.settings)] 
-          ['radius' (en-unit-rs radius.settings)]
+          ['radius' (en-unit-decimal radius.settings)]
           ['address' s+address.settings]
           ['collections' (en-collections collections.settings)]
           ['banned' (en-banned banned.settings)] 

@@ -37,14 +37,7 @@
   ^-  (quip card _this)
   =/  old  !<(versioned-state old-state)
   ?-   -.old
-      %0  
-    :_  this(state old)
-    :~  =-  [%pass /eyre/connect %arvo %e -]
-          [%disconnect [~ [%gather %terraform ~]]]
-        ::
-        =-  [%pass /eyre/connect %arvo %e -]
-          [%connect [[~ [%gather ~]] dap.bol]]  
-    ==
+      %0  `this(state old)
   ==
 ::
 ++  on-poke

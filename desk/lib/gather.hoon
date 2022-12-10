@@ -16,7 +16,7 @@
   ~(tap in (~(dif in import) banned))
 ::
 ::
-::
+:: Only trust those with skin in the game
 ++  remove-comets
   |=  l=(list @p)
   ^-  (list @p)

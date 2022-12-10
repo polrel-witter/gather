@@ -118,7 +118,7 @@
          init-ship.i                    desc.i
          guest-list                     location-type.i
          `position.i                    address.i
-         `access-link.i                 `radius.i 
+         `access-link.i                 [~] 
          `max-accepted.i                `accepted-count.i
          (coerce-hs host-status.i)      *@t 
          *image                         *date
@@ -138,7 +138,7 @@
     =/  new-settings=_settings 
       :* 
          `position.old-settings 
-         `radius.old-settings 
+         [~]
          address.old-settings
          collections.old-settings
          banned.old-settings
@@ -326,6 +326,7 @@
                           %poke 
                           gather-action+!>(`action`[%unrsvp id.act])
                       ==
+
         :_  this
         ;:  welp  fak 
            :~  pok
@@ -907,6 +908,7 @@
      =/  inv=invite  +:(~(got by invites) id.act)   
      ?.  enable-chat.inv
        ~|("%gather: chat is not enabled on invite, {<title.inv>}" !!)
+     |^
      ?:  =(our.bol src.bol)
        ?.  =(our.bol host.inv)
          =/  =path  (which-path:hc [id.act host.inv]) 
@@ -919,57 +921,40 @@
                  %poke   %gather-action                  
                  !>(`action`[%post id.act note.act])          
          ==  ==
-       =/  =msgs
-         ?~  chat.inv  *msgs
-         (need chat.inv)
-       =.  chat.inv  
-         %-  some  
-           %-  pin:hc 
-             [msgs our.bol note.act]
-       :-  ;:  welp  (relay:hc [%update-invite id.act inv])
-                     (relay:hc [%init-all invites settings])
-           == 
-       %=  this
-          invites  %+  ~(jab by invites) 
-                     id.act 
-                   |=  [=guest-status =invite]
-                   [[~] inv]
-       ==
-     ?>  =(our.bol host.inv)
-     =/  =msgs  
-       ?~  chat.inv  *msgs  
-       (need chat.inv)  
+       (stamp [id.act note.act])              :: We post as host
+     ?>  =(our.bol host.inv)                  :: We post for guest           
      =+  chat-access=+>+>+<:catalog.inv
      ?.  ?=(%rsvp-only chat-access)
-       =.  chat.inv  
-         %-  some  
-           %-  pin:hc 
-             [msgs src.bol note.act]
-       :-  ;:  welp  (relay:hc [%update-invite id.act inv])
-                     (relay:hc [%init-all invites settings])
-           == 
-       %=  this
-          invites  %+  ~(jab by invites) 
-                     id.act 
-                   |=  [=guest-status =invite]
-                   [[~] inv]
-       ==
+       %-  stamp 
+         [id.act note.act]
+       ::
      =/  gs=guest-status  
        -:(need (~(got by guest-list.inv) src.bol))
      ?>  ?=(%rsvpd (need gs))
-     =.  chat.inv
-       %-  some  
-         %-  pin:hc
-           [msgs src.bol note.act]
-     :-  ;:  welp  (relay:hc [%update-invite id.act inv])
-                   (relay:hc [%init-all invites settings])
-         == 
-     %=  this
-        invites  %+  ~(jab by invites) 
-                   id.act 
-                 |=  [=guest-status =invite]
-                 [[~] inv]
-     ==
+     %-  stamp 
+       [id.act note.act]
+     ::
+     ++  stamp 
+       |=  [=id note=@t]
+       =/  inv=invite  +:(~(got by invites) id)
+       =/  =msgs  
+         ?~  chat.inv  *msgs  
+         (need chat.inv)  
+       =.  invites  %+  ~(jab by invites)
+                      id
+                    |=  [=guest-status =invite]
+                    :-  [~]
+                    %=  invite
+                       chat  %-  some  
+                               %-  pin:hc 
+                               [msgs our.bol note]
+                    ==
+       :_  this
+       =/  upd=invite  +:(~(got by invites) id)   
+       ;:  welp  (relay:hc [%update-invite id upd])
+                 (relay:hc [%init-all invites settings])
+       == 
+     --
   ::
        %ban
      ~|  [%failed-ban ~]
@@ -1438,7 +1423,6 @@
 ++  pin
   |=  [=msgs =ship note=@t]
   ^-  _msgs
-  ~&  [msgs ship note] 
   (into msgs 0 [ship note now.bol])
 ::
 ::
