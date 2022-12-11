@@ -3,7 +3,7 @@
   info+'Host and attend gatherings'
   color+0xf2.f3ef
   version+[0 1 0]
-  website+'https://github.com/nuljmn/gather'
+  website+'https://github.com/polrel-witter/gather'
   license+'MIT'
   image+'https://mocbel.nyc3.digitaloceanspaces.com/gather/IMG_20220823_144220.jpg'
   base+'gather'
