@@ -42,40 +42,38 @@ class App extends Component {
 	constructor(props) {
 		super(props);
 
-		// window.urbit = new Urbit("http://localhost:8080","","lidlut-tabwed-pillex-ridrup");
-		// window.urbit.ship = 'zod';
-		// window.urbit = new Urbit("http://localhost:8081","","ranser-masfyr-parwyd-sabdux");
-		// window.urbit.ship = 'taclev-togpub-pontus-fadpun';
+		window.urbit = new Urbit("http://localhost:8080","","lidlut-tabwed-pillex-ridrup");
+		window.urbit.ship = 'zod';
+		window.urbit = new Urbit("http://localhost:8081","","ranser-masfyr-parwyd-sabdux");
+		window.urbit.ship = 'taclev-togpub-pontus-fadpun';
 
-	//	switch (ship) {
-	//		case "fun":
-	//			window.urbit = new Urbit(
-	//				"http://localhost:8081",
-	//				"",
-	//				"dolsyt-lavref-mormyr-rissep"
-	//			);
-	//			window.urbit.ship = "fun";
-	//			break;
-	//		case "dev":
-	//			window.urbit = new Urbit(
-	//				"http://localhost:8080",
-	//				"",
-	//				"magsub-micsev-bacmug-moldex"
-	//			);
-	//			window.urbit.ship = "dev";
-	//			break;
-	//		default:
-				window.urbit = new Urbit("");
-				window.urbit.ship = window.ship;
-	//			break;
-	//	}
+		switch (ship) {
+			case "fun":
+				window.urbit = new Urbit(
+					"http://localhost:8081",
+					"",
+					"dolsyt-lavref-mormyr-rissep"
+				);
+				window.urbit.ship = "fun";
+				break;
+			case "dev":
+				window.urbit = new Urbit(
+					"http://localhost:8080",
+					"",
+					"magsub-micsev-bacmug-moldex"
+				);
+				window.urbit.ship = "dev";
+				break;
+			default:
+			window.urbit = new Urbit("");
+			window.urbit.ship = window.ship;
+				break;
+		}
 
 		window.urbit.onOpen = () => this.setState({ conn: "ok" });
 		window.urbit.onRetry = () => this.setState({ conn: "try" });
 		window.urbit.onError = () => this.setState({ conn: "err" });
 
-		// console.log(scryGroups());
-		// scryGroups();
 	}
 	render() {
 		return (

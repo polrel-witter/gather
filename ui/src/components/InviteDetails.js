@@ -11,10 +11,11 @@ import {
 	StatelessRadioButtonField,
 } from "@tlon/indigo-react";
 import { useStore } from "../data/store";
-import { patpValidate } from "../utils";
+import { patpValidate, getBaseURL } from "../utils";
 import Location from "./Location";
 import { useAlert } from "react-alert";
 import Alert from "./Alert";
+import moment from 'moment';
 
 const InviteDetails = (props) => {
 	const invites = useStore((state) => state.invites);
@@ -47,6 +48,7 @@ const InviteDetails = (props) => {
 	const _alert = useAlert();
 	const redAlert = (str) => _alert.show(<Alert str={str} color={"red"} />);
 	const greenAlert = (str) => _alert.show(<Alert str={str} color={"green"} />);
+
 
 	return (
 		<div className="invitedetails">
@@ -181,15 +183,13 @@ const InviteDetails = (props) => {
 					<div className="invitedetails-accesslink textrow">
 						Mars Link: {invite.marsLink}
 					</div>
+					{invite.earthLink !== '' &&
 					<div className="invitedetails-accesslink textrow">
-						{'Earth Link: ' + window.location.protocol +
-							"//" +
-							window.location.hostname +
-							":" +
-							window.location.port +
-							"/gather/" +
+						{"Earth Link: " +
+								getBaseURL() +
 							invite.earthLink}
 					</div>
+					}
 				</div>
 				<div className="invitedetails-guestlist">
 					<div className="divider">Guest List</div>
@@ -230,6 +230,7 @@ const InviteDetails = (props) => {
 									? "~"
 									: new Date(guest.shipInvite.rsvpDate * 1000).toLocaleString()}
 							</span>
+							{ _invite.guestStatus === null &&
 							<button
 								className="button invitedetails-guestlist-button"
 								onClick={() =>
@@ -238,6 +239,7 @@ const InviteDetails = (props) => {
 							>
 								Uninvite
 							</button>
+							}
 						</div>
 					))}
 				</div>

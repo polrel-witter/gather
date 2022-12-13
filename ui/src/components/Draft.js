@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Location from "./Location";
 import { useStore } from "../data/store";
 import {
+	getBaseURL,
 	createGroup,
 	toggleSelect,
 	deleteGroup,
@@ -51,7 +52,6 @@ const Draft = () => {
 
 	useEffect(() => {
 		// if (Object.keys(settings) !== 0) {
-		// 	console.log(settings['enableChat']);
 		// 	setInvite({
 		// 		...invite,
 		// 		// "excise-comets": settings["exciseComets"],
@@ -428,23 +428,12 @@ const Draft = () => {
 						<input
 							type="text"
 							value={
-								window.location.protocol +
-								"//" +
-								window.location.hostname +
-								":" +
-								window.location.port +
-								"/gather/" +
+								getBaseURL() +
 								invite["earth-link"]
 							}
 							onChange={(e) => {
 								const re = /^[a-zA-Z0-9_-]*$/;
-								const baseUrl =
-									window.location.protocol +
-									"//" +
-									window.location.hostname +
-									":" +
-									window.location.port +
-									"/gather/";
+								const baseUrl = getBaseURL();
 								if (re.test(e.currentTarget.value.slice(baseUrl.length)))
 									setInvite({
 										...invite,

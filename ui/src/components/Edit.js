@@ -1,7 +1,9 @@
 import React, { Component, useState } from "react";
 import { useStore } from "../data/store";
 import { useAlert } from "react-alert";
+import { getBaseURL } from "../utils";
 import Location from "./Location";
+import moment from "moment";
 
 const Edit = (props) => {
 	const invites = useStore((state) => state.invites);
@@ -27,7 +29,6 @@ const Edit = (props) => {
 		"enable-chat": invite.enableChat,
 	});
 	const alert = useAlert();
-	console.log(eInvite);
 	return (
 		<div className="edit">
 			<div className="invitedetails-topbar">
@@ -91,7 +92,7 @@ const Edit = (props) => {
 					<span>Access link</span>
 					<input
 						type="text"
-						value={eInvite['access-link']}
+						value={eInvite["access-link"]}
 						onChange={(e) => {
 							setEditedInvite({
 								...eInvite,
@@ -164,12 +165,16 @@ const Edit = (props) => {
 						<span> Date Begin </span>
 						<input
 							type="datetime-local"
-							value={(eInvite.date.begin === null ? null : (new Date(eInvite.date.begin *1000)).toISOString().slice(0, -1))}
+							value={
+								eInvite.date.begin === null
+									? null
+									: moment(eInvite.date.begin * 1000).format("YYYY-MM-DDTHH:mm")
+							}
 							onChange={(e) =>
 								setEditedInvite({
 									...eInvite,
 									date: {
-										begin: new Date(e.currentTarget.value).toUTCString(),
+										begin: moment(new Date(e.currentTarget.value)).unix(),
 										end: eInvite.date.end,
 									},
 								})
@@ -180,16 +185,21 @@ const Edit = (props) => {
 						<span> Date End </span>
 						<input
 							type="datetime-local"
-							value={(eInvite.date.end === null ? null : (new Date(eInvite.date.end *1000)).toISOString().slice(0, -1))}
-							onChange={(e) =>
+							value={
+								eInvite.date.end === null
+									? null
+									: moment(eInvite.date.end * 1000).format("YYYY-MM-DDTHH:mm")
+							}
+							onChange={(e) => {
+								const end = new Date(e.currentTarget.value).toISOString();
 								setEditedInvite({
 									...eInvite,
 									date: {
 										begin: eInvite.date.begin,
-										end: new Date(e.currentTarget.value).toUTCString(),
+										end: moment(new Date(e.currentTarget.value)).unix(),
 									},
-								})
-							}
+								});
+							}}
 						/>
 					</div>
 				</div>
@@ -262,28 +272,17 @@ const Edit = (props) => {
 							<input
 								type="text"
 								value={
-									window.location.protocol +
-									"//" +
-									window.location.hostname +
-									":" +
-									window.location.port +
-									"/gather/" +
-									eInvite['earth-link']
+									getBaseURL() +
+									eInvite["earth-link"]
 								}
 								onChange={(e) => {
 									const re = /^[a-zA-Z0-9_-]*$/;
-									const baseUrl =
-										window.location.protocol +
-										"//" +
-										window.location.hostname +
-										":" +
-										window.location.port +
-										"/gather/";
-									if (re.test(e.currentTarget.value.slice(baseUrl.length)))
+									const baseUrl = getBaseURL();
 										setEditedInvite({
 											...eInvite,
 											"earth-link": e.currentTarget.value.slice(baseUrl.length),
 										});
+									// if (re.test(e.currentTarget.value.slice(baseUrl.length)))
 								}}
 							/>
 						</div>
@@ -293,7 +292,10 @@ const Edit = (props) => {
 			<button
 				className="edit-save send"
 				onClick={() => {
-					pEditInvite(eInvite);
+					const begin = eInvite.date.begin === null ? null : new Date(eInvite.date.begin * 1000).toUTCString().slice(0, -4);
+					const end = eInvite.date.end === null ? null : (new Date(eInvite.date.end * 1000).toUTCString()).slice(0, -4);
+					const date = { begin, end };
+					pEditInvite({...eInvite, date});
 					alert.show(<div style={{ color: "green" }}>Edit Saved</div>);
 				}}
 			>

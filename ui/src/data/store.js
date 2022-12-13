@@ -162,7 +162,6 @@ export const useStore = create((set) => ({
 			console.log(all);
 			if (Object.keys(all)[0] === "initAll") {
 				const settings = all.initAll.settings;
-				console.log(settings);
 				set((state) => ({
 					invites: all.initAll.invites.map((item) => ({
 						id: item.id,
@@ -214,7 +213,6 @@ export const useStore = create((set) => ({
 				}));
 			} else if (Object.keys(all)[0] === "updateInvite") {
 				const item = all.updateInvite.invite;
-				console.log(item);
 				set((state) => ({
 					invites: dedup(
 						"id",

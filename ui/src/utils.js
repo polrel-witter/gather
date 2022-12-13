@@ -764,7 +764,6 @@ export const sortSelected = (a, b) => {
 };
 
 export const filterInvites = (mode, invites, settings) => {
-	console.log(invites);
 	switch (mode) {
 		case "hosting-open":
 			return invites.filter(
@@ -857,4 +856,15 @@ export const getColType = (col) => {
 	if (col.collection.resource !== "~") return " (group)";
 	if (col.collection.title[0] === "~") return " (ship)";
 	return " (collection)";
+};
+
+export const getBaseURL = () => {
+	const port = window.location.port === '' ? "" : ":" + window.location.port;
+	return (
+		window.location.protocol +
+		"//" +
+		window.location.hostname +
+		port +
+		"/gather/"
+	);
 };
