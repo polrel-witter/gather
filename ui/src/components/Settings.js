@@ -23,7 +23,7 @@ const Banned = () => {
 					className="flexgrow"
 					type="text"
 					value={banSearch}
-					placeholder={'~sampel-menace'}
+					placeholder={'~sampel-minnes'}
 					onChange={(e) => {
 						setBanSearch(e.currentTarget.value);
 					}}
