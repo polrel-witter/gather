@@ -23,7 +23,7 @@ const Chat = (props) => {
 							invite.chat.map((chat) => (
 								<div className="chat-message-message">
 									<div className='chat-message-message-firstrow flexrow'>
-										<div className='flexgrow'>Sender: {chat.who}</div>
+										<div className='flexgrow'>{chat.who}</div>
 									<div > {new Date(chat.wen * 1000).toLocaleString()}</div>
 									</div>
 									<span>{chat.wat}</span>

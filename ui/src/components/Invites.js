@@ -114,7 +114,7 @@ export const Invites = (props) => {
 						<input
 							className="flexgrow"
 							type="text"
-							placeholder="~{ship}/gather/{invite-id}"
+							placeholder="~sampel-palnet/gather/0v6.1nmgo.hecph.32thg"
 							onChange={(e) => setMarsLink(e.currentTarget.value)}
 						/>
 						<button

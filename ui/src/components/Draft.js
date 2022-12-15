@@ -119,7 +119,7 @@ const Draft = () => {
 
 			<div className="draft-date flexrow">
 				<div className="draft-date-datebegin flexcol flexgrow">
-					<span>Date Begin</span>
+					<span>Start date</span>
 					<input
 						type="datetime-local"
 						onChange={(e) => {
@@ -135,7 +135,7 @@ const Draft = () => {
 					/>
 				</div>
 				<div className="draft-date-dateend flexcol flexgrow">
-					<span>Date End</span>
+					<span>End date</span>
 					<input
 						type="datetime-local"
 						onChange={(e) => {
@@ -199,7 +199,7 @@ const Draft = () => {
 				</div>
 
 				<div className="draft-rr-rsvplimit flexcol flexgrow">
-					<span>Limit # of RSVPs accepted</span>
+					<span>RSVP limit</span>
 					<input
 						type="number"
 						min="0"
@@ -219,7 +219,7 @@ const Draft = () => {
 			<div className="draft-optionstitle divider"> Options </div>
 			<div className="draft-options radiobox">
 				<div className="draft-options-accesstype radio">
-					<span> Access Type </span>
+					<span> Access type </span>
 					<div>
 						<input
 							type="radio"
@@ -245,7 +245,7 @@ const Draft = () => {
 					</div>
 				</div>
 				<div className="draft-options-locationtype radio">
-					<span> Location Type </span>
+					<span> Location type </span>
 					<div>
 						<input
 							type="radio"
@@ -267,14 +267,14 @@ const Draft = () => {
 								setInvite({ ...invite, "location-type": "virtual" });
 							}}
 						/>
-						<span> Virtual </span>
+						<span> Cyberspace </span>
 					</div>
 				</div>
 			</div>
 
 			<div className="draft-optionstitle divider"> Invitees </div>
 			{invite["access"] === "public" && (
-				<div className="draft-links">A mars link will be generated upon creation, which makes the invite shareable with anyone on mars. To share the invite with normies, include a url-safe name for the earth link below.</div>
+				<div className="draft-links">A mars-link will be generated upon creation, which can be shared so others can subscribe to your invite. The earth-link (modifiable below) is a url that makes your invite viewable on the clearweb. To publish a clearweb invite your ship must have a domain.</div>
 			)}
 
 			{invite["access"] === "private" && (
@@ -294,7 +294,7 @@ const Draft = () => {
 						<div className="draft-listselect-ship flexrow">
 							<input
 								className="flexgrow"
-								placeholder="~{ship}"
+								placeholder="~sampel-palnet"
 								type="text"
 								onChange={(e) => setNewCollectionString(e.currentTarget.value)}
 							/>
@@ -317,7 +317,7 @@ const Draft = () => {
 						<div className="draft-listselect-group flexrow">
 							<input
 								className="flexgrow"
-								placeholder="~{patp}/{groupname}"
+								placeholder="~sampel-palnet/group-title"
 								onChange={(e) => setNewCollectionString(e.currentTarget.value)}
 								type="text"
 							/>
@@ -329,7 +329,7 @@ const Draft = () => {
 									)
 								}
 							>
-								Create Group
+								Pull Group
 							</button>
 						</div>
 					)}
@@ -408,13 +408,13 @@ const Draft = () => {
 					onClick={() => {
 						if (invite["send-to"].length === 0) {
 							// alert.show(<div style={{ color: "green" }}>Invite Sent</div>);
-							redAlert("No Collection Selected!");
+							redAlert("No collection selected");
 						} else if (invite.title === "") {
-							redAlert("No title!");
+							redAlert("No title");
 							pNewInvite(invite);
 						} else {
 							pNewInvite(invite);
-							greenAlert("Invite Sent!");
+							greenAlert("Sent");
 						}
 					}}
 				>
@@ -424,7 +424,7 @@ const Draft = () => {
 			{invite.access === "public" && (
 				<div className="draft-public">
 					<div className="draft-public-earthlink flexcol">
-						<span className="label">Earth Link</span>
+						<span className="label">earth-link</span>
 						<input
 							type="text"
 							value={
@@ -446,11 +446,11 @@ const Draft = () => {
 						className="send"
 						onClick={() => {
 							if (invite["title"] !== '') {
-								alert.show(<div style={{ color: "green" }}>Invite Sent</div>);
+								alert.show(<div style={{ color: "green" }}>Created</div>);
 								pNewInvite(invite);
 							} else
 								alert.show(
-									<div style={{ color: "red" }}>No title!</div>
+									<div style={{ color: "red" }}>No title</div>
 								);
 						}}
 					>

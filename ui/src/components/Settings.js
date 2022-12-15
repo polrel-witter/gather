@@ -17,13 +17,13 @@ const Banned = () => {
 	const greenAlert = (str) => _alert.show(<Alert str={str} color={"green"} />);
 	return (
 		<div className="settings-banned">
-			<span>Banned Ships</span>
+			<span>Banned ships</span>
 			<div className="flexrow">
 				<input
 					className="flexgrow"
 					type="text"
 					value={banSearch}
-					placeholder={'~{ship}'}
+					placeholder={'~sampel-menace'}
 					onChange={(e) => {
 						setBanSearch(e.currentTarget.value);
 					}}
@@ -124,7 +124,7 @@ const Settings = () => {
 	return (
 		<div>
 			<div className="settings-radius flexcol">
-				<span>My Radius (km)</span>
+				<span>My radius (km)</span>
 				<input
 					type="number"
 					min="0"
@@ -262,7 +262,7 @@ const Settings = () => {
 			<div className="divider">Advanced host options</div>
 			<div className="settings-advanced">
 				<div className="radio">
-					<span>Excise Comets</span>
+					<span>Excise comets</span>
 					<div>
 						<input
 							type="radio"
@@ -293,7 +293,7 @@ const Settings = () => {
 					</div>
 				</div>
 				<div className="radio">
-					<span>Enable Chat</span>
+					<span>Enable chat</span>
 					<div>
 						<input
 							type="radio"
@@ -426,7 +426,7 @@ const Settings = () => {
 					</div>
 				</div>
 				<div className="radio">
-					<span>Chat Access can be seen by</span>
+					<span>Chat can be accessed by</span>
 					<div>
 						<input
 							type="radio"
