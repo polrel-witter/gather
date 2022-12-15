@@ -197,7 +197,7 @@ const InviteDetails = (props) => {
 						<div className="invitedetails-guestlist-addship flexrow">
 							<input
 								className="flexgrow"
-								placeholder="~{ship}"
+								placeholder="~sampel-palnet"
 								value={shipInvite}
 								type="text"
 								onChange={(e) => {
