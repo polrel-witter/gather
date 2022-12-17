@@ -274,7 +274,7 @@ const Draft = () => {
 
 			<div className="draft-optionstitle divider"> Invitees </div>
 			{invite["access"] === "public" && (
-				<div className="draft-links">A mars-link will be generated upon creation, which can be shared so others can subscribe to your invite. The earth-link (modifiable below) is a url that makes your invite viewable on the clearweb. To publish a clearweb invite your ship must have a domain.</div>
+				<div className="draft-links">A mars-link will be generated upon creation, which can be shared so others can subscribe to your invite. The earth-link (modifiable below) is a url that makes your invite viewable on the clearweb. Your ship must have a domain for it to be accessible.</div>
 			)}
 
 			{invite["access"] === "private" && (

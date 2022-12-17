@@ -3,7 +3,8 @@
 ::  Distro moon: ~pontus-fadpun-polrel-witter
 :: 
 ::
-/-  *gather, odyssey, group, res-sur=resource, hark=hark-store
+/-  *gather, odyssey
+/-  ha=hark, group, res-sur=resource
 /+  *gather, res-lib=resource, default-agent, dbug, agentio
 |%
 ::
@@ -83,8 +84,15 @@
                  %anyone
                  *reminders
                  [%.y %.n]
-                 `%.n
-                 `[%host-only %rsvp-only %host-only %host-only %rsvp-only %host-only]
+                 `%.y
+                 %-  some
+                   :*  %host-only 
+                       %rsvp-only 
+                       %host-only 
+                       %host-only 
+                       %rsvp-only 
+                       %host-only
+                   ==
                  %.y
   ==          ==
 :: 
@@ -145,7 +153,7 @@
          receive-invite.old-settings
          *reminders
          [%.y %.n]
-         `%.n
+         `%.y
          %-  some
            :*  %host-only 
                %rsvp-only 
@@ -349,7 +357,6 @@
             !>(`shoot:odyssey`[%del:odyssey id.act earth-link.inv])
          ==   
       :(welp ~[pok] (relay:hc [%init-all invites settings]))
-     ~&  fak
      [fak this]
   :: 
        %alt-host-status
@@ -372,24 +379,23 @@
        ?>  ?|  ?=(%open host-status.inv)
                ?=(%closed host-status.inv)
            ==
-       =.  host-status.inv  new 
-       :-  ?:  =('' earth-link.invite)
-             (relay:hc [%init-all invites settings]) 
-           =/  =path
-               /(scot %p our.bol)/[%odyssey]/(scot %uv id.act)
-           =+  air=(veil:hc [%invite inv])
-           ;:  welp  (relay:hc [%init-all invites settings])
-              :~  :*
-                    %give  %fact
-                    ~[path] 
-                    odyssey-shake+!>(`shake:odyssey`[%foto:odyssey air])
-           ==  ==  ==
-       %=  this 
-          invites  %+  ~(jab by invites) 
-                     id 
-                  |=  [=guest-status =invite]
-                  [[~] inv]
-       ==
+       =.  invites  %+  ~(jab by invites)
+                      id
+                    |=  [=guest-status =invite] 
+                    =.  host-status.invite  new
+                    [[~] invite]
+       :_  this
+       ?:  =('' earth-link.invite)
+          (relay:hc [%init-all invites settings]) 
+       =/  =path
+           /(scot %p our.bol)/[%odyssey]/(scot %uv id.act)
+       =+  air=(veil:hc [%invite inv])
+       ;:  welp  (relay:hc [%init-all invites settings])
+          :~  :*
+                 %give  %fact
+                 ~[path] 
+                 odyssey-shake+!>(`shake:odyssey`[%foto:odyssey air])
+       ==  ==  ==
      ++  cancel
        |=  [=id inv=invite]
        ^-  (quip card _this)
@@ -415,7 +421,6 @@
          ::
          =+  kik=~[[%give %kick ~[invite.pax rsvp.pax] ~]]
          =/  inv=invite  +:(~(got by invites) id)
-         ~&  host-status.inv
          =/  fak=(list card)  
              =/  mol=(list card)
                ;:  welp  (relay:hc [%update-invite id inv])
@@ -425,7 +430,6 @@
              =/  =path
                  /(scot %p our.bol)/[%odyssey]/(scot %uv id.act)
              =+  air=(veil:hc [%invite inv])
-             ~&  mol
              ;:  welp  mol
                 :~  :*
                       %give  %fact
@@ -589,9 +593,10 @@
                      ==
         =/  inv=invite  +:(~(got by invites) id.act)
         =/  fak=(list card)
-          ?:  ?&   =('' earth-link.inv)            :: $earth-link cannot be empty
-                   ?=(%public access.inv)          :: and invite must be %public to
-              ==                                   :: send facts to %odyssey
+          ?.  ?&   ?=(%public access.inv)         :: invite must be public,
+                   ?!  =('' earth-link.inv)       :: earth-link not empty,
+                   ?~  pok  %.y  %.n              :: and pok non-null
+              ==                                  :: to send odyssey fact
              *(list card)    
           =/  =path
               /(scot %p our.bol)/[%odyssey]/(scot %uv id.act)
@@ -608,27 +613,23 @@
                       (relay:hc [%init-all invites settings])
             ==  
      %=  $
-        pok  ?.  ?=(%earth-link i.alt)  *(list card)    :: $earth-link has changed, one of two things can occur:
+        pok  ?.  ?=(%earth-link i.alt)  *(list card) 
              =/  =path                            
                  /(scot %p our.bol)/[%odyssey]/(scot %uv id.act)
-             ?:  =('' earth-link.act)                   :: if prev 'x', and now '', del on %odyssey
-               :~  :* 
-                      %pass  path
-                      %agent  [our.bol %odyssey]
-                      %poke  %odyssey-shoot
-                      !>(`shoot:odyssey`[%del:odyssey id.act earth-link.inv])
-               ==  ==
-             ?.  ?|  =('' earth-link.inv)               :: was '', and now 'x' so pub on %odyssey
-                     ?!  %-  earth-link-dupe 
-                           [our.bol invites earth-link.act]
-                 ==
+             ?:  (earth-link-dupe [our.bol invites earth-link.act])
                 *(list card)
-             :~  :*
+             :~  :* 
+                     %pass  path
+                     %agent  [our.bol %odyssey]
+                     %poke  %odyssey-shoot
+                     !>(`shoot:odyssey`[%del:odyssey id.act earth-link.inv])
+                   ==
+                 :*
                      %pass  path
                      %agent  [our.bol %odyssey]
                      %poke  %odyssey-shoot
                      !>(`shoot:odyssey`[%pub:odyssey id.act])
-             ==  ==
+             ==    ==
         invites  %+  ~(jab by invites)
                    id.act
                  |=  [our=guest-status inv=invite]
@@ -647,10 +648,6 @@
                     %enable-chat     [[~] inv(enable-chat enable-chat.act)]
                     %earth-link      
                   :-  [~]
-                  ?.  ?|  =('' earth-link.inv)       :: if prev '', don't change
-                          =('' earth-link.act)       :: if prev 'x', but now '', change
-                      ==
-                    inv
                   ?:  (earth-link-dupe [our.bol invites earth-link.act])  :: if dupe, don't change
                     inv
                   inv(earth-link earth-link.act)
@@ -660,7 +657,7 @@
                   %=  inv
                      rsvp-limit  ?.  (lte (need rsvp-count.inv) (need rsvp-limit.act))
                                    ?.  =(0 (need rsvp-limit.act))
-                                     ~&  "%gather... fail: new RSVP limit is below the number of existing RSVPs"
+                                     ~&  "%gather: fail... new RSVP limit is below the number of existing RSVPs"
                                      !!
                                    rsvp-limit.act
                                  rsvp-limit.act
@@ -1092,7 +1089,7 @@
   ^-  (quip card _this)
   |^
   ?.  ?=([@ @ @ ~] wire)
-    ?.  ?=([@ @ ~] wire)                      :: TODO this is a mess; clean up so %gather, %settings, and %hark wire are the same structure
+    ?.  ?=([@ @ ~] wire)                      :: TODO this is a mess; clean up so %gather, %settings, and %hark wires are same length
       ?+   wire  ~&([dap.bol %strange-wire wire] [~ this])
           [%gather ~]          
         ?+   -.sign  (on-agent:def wire sign)
@@ -1101,16 +1098,15 @@
           ~&  "%gather: frontend failed to subscribe to %gather agent."
           [~ this]
         ==
+          [%hark ~]     
+        ?+    -.sign  (on-agent:def wire sign)
+            %poke-ack
+          ?~  p.sign  [~ this]
+          ~&  "%gather: failed to notify"
+          [~ this]
+        == 
       == 
     ?+   `@tas`(slav %tas +<:wire)  ~&([dap.bol %strange-wire wire] [~ this])
-        %hark      
-      ?+    -.sign  (on-agent:def wire sign)
-          %poke-ack
-        ?~  p.sign  [~ this]
-        ~&  "%gather: failed to notify"
-        [~ this]
-      == 
-    ::
         %settings
       ?+    -.sign  (on-agent:def wire sign)
           %poke-ack
@@ -1351,22 +1347,18 @@
                 id
              ==
          ^-  (list card)
-         :*
-            ?.  .^(? %gu /(scot %p our.bol)/hark-store/(scot %da now.bol))  ~
-            =/  =bin:hark      :*  /[dap.bol] 
-                                   q.byk.bol 
-                                   /(scot %p src.bol)/[%reminder] 
-                               ==
-            =/  =body:hark     :*  ~[text+inscript]
-                                   ~
-                                   now.bol
-                                   /
-                                   /gather
-                               == 
-            =/  =action:hark   [%add-note bin body]
-            =/  =cage          [%hark-action !>(action)]
-            [%pass /(scot %p our.bol)/hark %agent [our.bol %hark-store] %poke cage]~
-         ==
+         ?.  .^(? %gu /(scot %p our.bol)/hark/(scot %da now.bol))  ~
+         =/  =dock  [our.bol %hark]
+         =/  =yarn:ha  
+           =/  hark-id=@  (end [7 1] (shax eny.bol))
+           =/  =rope:ha  
+               [~ ~ q.byk.bol /reminders/gathering/id]  
+           =/  con=(list content:ha)  ~[inscript]
+           =/  wer=path  
+               /gather/reminders/gathering/id
+           [hark-id rope now.bol con wer [~]]
+         =/  =cage  hark-action+!>([%add-yarn & & yarn])
+         [%pass /hark %agent dock %poke cage]~
        (on-arvo:def wire sign-arvo)
     ==   
   == 
@@ -1377,7 +1369,6 @@
        [%x %invite @ ~]                          :: TODO used with %find; for when remote scries are supported
      ?<  =(our.bol src.bol)
      =/  =id  (need (slaw %uv i.t.t.path))
-     ~&  id
      =/  is-nul=(unit [guest-status invite])  (~(get by invites) id)
      ?~  is-nul  ~
      =/  inv=invite  +:(need is-nul)
@@ -1464,32 +1455,31 @@
 ++  harken
   |=  [talker=(unit @p) =hark-type title=@t]
   ^-  (list card)
-  ?.  .^(? %gu /(scot %p our.bol)/hark-store/(scot %da now.bol))  ~
+  ?.  .^(? %gu /(scot %p our.bol)/hark/(scot %da now.bol))  ~
   |^ 
   ?-    hark-type
        %new-invite      (seal [talker ' has sent you an invite']) 
-       %cancelled       (seal [[~] (crip "{<title>} has been revoked")])
-       %address         (seal [[~] (crip "{<title>}'s address has changed")])
-       %access-link     (seal [[~] (crip "{<title>}'s access-link has changed")])
-       %location-type   (seal [[~] (crip "{<title>}'s location-type has changed")])
+       %cancelled       (seal [[~] 'Cancelled: '])
+       %address         (seal [[~] 'Address has changed for '])
+       %access-link     (seal [[~] 'Access-link has changed for '])
+       %location-type   (seal [[~] 'Location-type has changed for '])
   ==
   ++  seal
     |=  [talker=(unit @p) letter=@t]
     ^-  (list card)
-    =/  =bin:hark      :*  /[dap.bol] 
-                           q.byk.bol 
-                           /(scot %p src.bol)/[%invite]          :: TODO may need to change src.bol
-                       ==
-    =/  =body:hark     :*  ?~  talker  ~[text+letter]    
-                           ~[ship+(need talker) text+letter]
-                           ~
-                           now.bol
-                           /
-                           /gather
-                       == 
-    =/  =action:hark   [%add-note bin body]
-    =/  =cage          [%hark-action !>(action)]
-    [%pass /(scot %p our.bol)/hark %agent [our.bol %hark-store] %poke cage]~ 
+    =/  =dock  [our.bol %hark]
+    =/  =yarn:ha  
+      =/  id  (end [7 1] (shax eny.bol))
+      =/  =rope:ha  
+          [~ ~ q.byk.bol /invite/(scot %p src.bol)]  
+      =/  con=(list content:ha)  
+        ?~  talker  ~[letter title] 
+          ~[[%ship (need talker)] letter]
+      =/  wer=path  
+          /gather/invite/(scot %p src.bol)
+      [id rope now.bol con wer [~]]
+    =/  =cage  hark-action+!>([%add-yarn & & yarn])
+    [%pass /hark %agent dock %poke cage]~
   --
 ::
 ::
