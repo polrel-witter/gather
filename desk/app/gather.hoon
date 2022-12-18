@@ -384,13 +384,17 @@
                     |=  [=guest-status =invite] 
                     =.  host-status.invite  new
                     [[~] invite]
+       =/  upd=invite  +:(~(got by invites) id)
        :_  this
        ?:  =('' earth-link.invite)
-          (relay:hc [%init-all invites settings]) 
+         ;:  welp  (relay:hc [%update-invite id upd])
+                   (relay:hc [%init-all invites settings])
+         == 
        =/  =path
            /(scot %p our.bol)/[%odyssey]/(scot %uv id.act)
-       =+  air=(veil:hc [%invite inv])
-       ;:  welp  (relay:hc [%init-all invites settings])
+       =+  air=(veil:hc [%invite upd])
+         ;:  welp  (relay:hc [%update-invite id upd])
+                   (relay:hc [%init-all invites settings])
           :~  :*
                  %give  %fact
                  ~[path] 
@@ -401,7 +405,7 @@
        ^-  (quip card _this)
        ?.  =(our.bol src.bol)
          ?>  =(src.bol host.inv)
-         ~&  "%gather: {<title.inv>} has been revoked"
+         ~&  "%gather: {<title.inv>} has been cancelled"
          :_  this
          ^-  (list card)
          :*  ?.  invite-updates.notifications.settings  ~
@@ -420,16 +424,16 @@
                       [[~] invite]
          ::
          =+  kik=~[[%give %kick ~[invite.pax rsvp.pax] ~]]
-         =/  inv=invite  +:(~(got by invites) id)
+         =/  upd=invite  +:(~(got by invites) id)
          =/  fak=(list card)  
              =/  mol=(list card)
-               ;:  welp  (relay:hc [%update-invite id inv])
+               ;:  welp  (relay:hc [%update-invite id upd])
                          (relay:hc [%init-all invites settings])
                ==
              ?:  =('' earth-link.inv)  mol
              =/  =path
                  /(scot %p our.bol)/[%odyssey]/(scot %uv id.act)
-             =+  air=(veil:hc [%invite inv])
+             =+  air=(veil:hc [%invite upd])
              ;:  welp  mol
                 :~  :*
                       %give  %fact
