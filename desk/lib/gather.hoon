@@ -1,8 +1,6 @@
 /-  *gather, res-sur=resource
 |%
 ::
-::
-::
 :: Remove a single ship from a list
 ++  remove-our
   |=  [ship=@p import=(list @p)]
@@ -16,6 +14,15 @@
   ^-  (list @p)
   =/  import=(set @p)  `(set @p)`(silt import)
   ~(tap in (~(dif in import) banned))
+::
+::
+:: Only trust those with skin in the game
+++  remove-comets
+  |=  l=(list @p)
+  ^-  (list @p)
+  %+  skim  `(list @p)`l
+  |=  a=@p  
+  ?!  ?=(%pawn (clan:title a))
 ::
 ::
 :: Remove duplicate ships from a list
@@ -79,45 +86,89 @@
   $(group-ids (weld group-ids `(list id)`~[i.ids]), ids t.ids)
 ::
 ::
-:: Constructs the $receive-ships map for invites :: TODO probably can be faster using combo of ++turn and somehow pinning the [%pending] as value
-++  make-receive-ships-map
+:: Constructs the $guest-list map for invites 
+:: TODO probably can be faster using combo of ++turn and somehow pinning the [%pending] as value
+++  blend 
   |=  send-to=(list @p)
   ^-  (map @p =ship-invite)
-  =|  receive-ships=(map @p =ship-invite)
+  =/  si=ship-invite  `[`%pending [~]]
+  =|  guest-list=(map @p =ship-invite)
   |-
-  ?~  send-to  receive-ships
-  $(receive-ships (~(put by receive-ships) i.send-to *ship-invite), send-to t.send-to)
+  ?~  send-to  guest-list
+  $(guest-list (~(put by guest-list) i.send-to si), send-to t.send-to)
 ::
 ::
-:: Get a list of ids we've accepted
-++  get-accepted-ids
+:: Get a list of ids to which we've rsvpd
+++  get-rsvpd-ids
   |=  [our=@p invites=invites ids=(list id)]
-  =|  accepted-ids=(list id)
+  =|  rsvpd-ids=(list id)
   |-  ^-  (list id)
-  ?~  ids  accepted-ids
-  =+  inv=(need (~(get by invites) i.ids)) 
-  ?.  =(%accepted +1:(need (~(get by receive-ships.inv) our)))
+  ?~  ids  rsvpd-ids
+  =/  inv=invite  +:(need (~(get by invites) i.ids)) 
+  ?.  =(%rsvpd +:(need (~(got by guest-list.inv) our)))
      $(ids t.ids)  
   %=  $ 
-    accepted-ids  (weld accepted-ids ~[i.ids])
-    ids           t.ids
+    rsvpd-ids  (weld rsvpd-ids ~[i.ids])
+    ids  t.ids
   ==
 ::
 ::
-:: Makes list of all invite ids for a ship when our.bol = 
-:: init-ship and the ship in question is in the corresponding
-:: $receive-ships map.
+:: Makes list of all invite ids for a ship when our.bol is 
+:: host and the ship in question is in the corresponding
+:: $guest-list map.
 ++  id-comb
-  |=  [init=@p menace=@p invites=invites]
+  |=  [init=@p menace=@p =invites]
   =/  ids=(list id)  ~(tap in ~(key by invites))
   =|  export=(list id)
   |-  ^-  (list id)
   ?~  ids  export
-  =+  dets=(need (~(get by invites) i.ids))
-  ?.  ?&  =(init init-ship:dets)
-          (~(has by receive-ships.dets) menace) 
+  =/  detail=invite  +:(need (~(get by invites) i.ids))
+  ?.  ?&  =(init host:detail)
+          (~(has by guest-list.detail) menace) 
       ==
     $(ids t.ids)
   $(export (weld export `(list id)`~[i.ids]), ids t.ids)
+::
+::
+:: Removes ships from $guest-list map if guest-status=%pending 
+++  drop-pending-ships
+  |=  guest-list=(map @p ship-invite)
+  ^-  (map @p ship-invite)
+  =/  ships=(list @p)  ~(tap in ~(key by guest-list))
+  |-
+  ?~  ships  guest-list
+  =/  gs=guest-status  
+    -:(need (~(got by guest-list) i.ships))
+  ?.  ?=(%pending (need gs))
+    $(ships t.ships)
+  $(guest-list (~(del by guest-list) i.ships), ships t.ships)
+::
+::
+:: Check $collection titles for dupes
+++  collection-dupe
+  |=  [collections=(map id collection) new-title=@t]
+  =/  a=?  %.n
+  =/  ids=(list id)  ~(tap in ~(key by collections))
+  |-  ^-  ?
+  ?~  ids  a
+  =/  old-title=@t  -:(~(got by collections) i.ids)
+  ?.  =(old-title new-title)
+    $(ids t.ids)
+  $(a %.y, ids t.ids)
+::
+::
+:: Check for $earth-link dupes
+++  earth-link-dupe
+  |=  [=ship =invites =earth-link]
+  =/  a=?  %.n
+  =/  ids=(list id)  ~(tap in ~(key by invites))
+  |-  ^-  ?
+  ?~  ids  a
+  =/  detail=invite  +:(need (~(get by invites) i.ids))
+  ?.  ?&  =(ship host.detail)
+          =(earth-link earth-link.detail)
+      ==
+    $(ids t.ids)
+  $(a %.y, ids t.ids)
 --
 

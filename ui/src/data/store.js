@@ -1,128 +1,276 @@
-import create from 'zustand';
-import { doPoke, subscribe, dedup, properPosition } from '../utils';
-import _ from 'lodash';
+import create from "zustand";
+import {
+	doPoke,
+	subscribe,
+	dedup,
+	properPosition,
+	unit,
+	chat,
+	notifications,
+	unixToDa,
+	daToUnix,
+	dateToDa,
+} from "../utils";
+import _ from "lodash";
 
 export const useStore = create((set) => ({
-	/* FRONTEND ONLY STATE 
+	/* FRONTEND ONLY STATE
 	 *
 	 */
 	/* possible values for route: 
 		 invites, draft, settings
 	*/
 	route: "draft",
-	/* all, hosting, received */
-	inviteRoute: "all",
-	focusedInvite: {},
-	setRoute: (route) => set(state => ({ route : route })),
-	focusInvite: (invite) => {  set(state => ({ focusedInvite : invite }))},
-	unFocusInvite: () => {  set(state => ({ focusedInvite : {} }))},
-	/* STATE
-	 *
-	 */
-	invites: [
-	],
+
+	/* sorting inside invites tab */
+	invitesMode: "hosting-open",
+	/* view, edit, chat */
+	inviteMode: "view",
+
+	inviteDetails: "",
+	setRoute: (route) => set((state) => ({ route: route })),
+	focusInvite: (id) => {
+		set((state) => ({ inviteDetails: id }));
+	},
+	unFocusInvite: () => {
+		set((state) => ({ inviteDetails: "" }));
+	},
+	setInvitesMode: (mode) => set((state) => ({ invitesMode: mode })),
+	setInviteMode: (mode) => set((state) => ({ inviteMode: mode })),
+	draftInvite: {
+		"send-to": [],
+		"location-type": "meatspace",
+		position: null,
+		address: "",
+		"access-link": "",
+		radius: null,
+		"rsvp-limit": null,
+		desc: "",
+		title: "",
+		image: "",
+		date: { begin: null, end: null },
+		access: "private",
+		"earth-link": "",
+		// TODO fix excise-comets and enable-chat
+		"excise-comets": true,
+		"enable-chat": true,
+	},
+	setDraftInvite: (invite) => set(state => ({ draftInvite: invite })),
+
+	/*  STATE  */
+
+	invites: [],
 	settings: {},
-	/*  ACTIONS
-	 *
-	 */
-	pAddress: (address) => {doPoke({'address': { address: address}}, () => console.log('onSucc'), ()=>{})},
-	pPosition: (position) => {doPoke({'position': position}, () => console.log('onSucc'), ()=>{})},
-	pRadius: (radius) => {doPoke({'radius': {'radius': '.' + radius}}, () => console.log('onSucc'), ()=>{})},
-	pCreateCollection: (collection) => {doPoke({'create-collection': collection}, () => console.log('onSucc'), ()=>{})},
-	pEditCollection: (collection) => {doPoke({'edit-collection': collection}, () => console.log('onSucc'), ()=>{})},
-	pDeleteCollection: (id) => {doPoke({'del-collection': {id: id}}, () => console.log('onSucc'), ()=>{})},
-	pEditCollectionTitle: (radius) => {doPoke({'radius': radius}, () => console.log('onSucc'), ()=>{})},
-	pAddToCollection: (radius) => {doPoke({'radius': radius}, () => console.log('onSucc'), ()=>{})},
-	pDelFromCollection: (radius) => {doPoke({'radius': radius}, () => console.log('onSucc'), ()=>{})},
-	pDelCollection: (radius) => {doPoke({'radius': radius}, () => console.log('onSucc'), ()=>{})},
-	pReceiveInvite: (receiveInvite) => {doPoke({'receive-invite': {'receive-invite': receiveInvite}}, () => console.log('onSucc'), ()=>{})}, //?
-	pDelReceiveShip: (id, ship) => {doPoke({'del-receive-ship': {'id': id, 'del-ships': [ship]}}, () => console.log('onSucc'), ()=>{})},
-	pAddReceiveShip: (id, ship) => {doPoke({'add-receive-ship': {'id': id, 'add-ships': [ship]}}, () => console.log('onSucc'), ()=>{})},
-	pEditMaxAccepted: (id, maxAccepted) => {doPoke({'edit-max-accepted': {'id': id, 'qty': maxAccepted}}, () => console.log('onSucc'), ()=>{})},
-	pEditDesc: (id, desc) => {doPoke({'edit-desc': {'id': id, 'desc': desc}}, () => console.log('onSucc'), ()=>{})},
-	pEditInviteLocation: (id, locationType) => {doPoke({'edit-invite-location': {'id': id, 'location-type': locationType}}, () => console.log('onSucc'), ()=>{})},
-	pEditInvitePosition: (id, position) => {doPoke({'edit-invite-position': {'id': id, 'position': position}}, () => console.log('onSucc'), ()=>{})},
-	pEditInviteAddress: (id, address) => {doPoke({'edit-invite-address': {'id': id, 'address': address}}, () => console.log('onSucc'), ()=>{})},
-	pEditInviteAccessLink: (id, accessLink) => {doPoke({'edit-invite-access-link': {'id': id, 'access-link': '~.' + accessLink}}, () => console.log('onSucc'), ()=>{})},
-	// pEditInviteAccessLink: (id, accessLink) => {doPoke({'edit-invite-access-link': {'id': id, 'access-link': accessLink}}, () => console.log('onSucc'), ()=>{})},
-	pEditInviteRadius: (id, radius) => {doPoke({'edit-invite-radius': {'id': id, 'radius': '.' + radius}}, () => console.log('onSucc'), ()=>{})},
-	pCancel: (id) => {doPoke({'cancel': {'id': id}}, () => console.log('onSucc'), ()=>{})},
-	pComplete: (id) => {doPoke({'complete': {'id': id}}, () => console.log('onSucc'), ()=>{})},
-	pClose: (id) => {doPoke({'close': {'id': id}}, () => console.log('onSucc'), ()=>{})},
-	pReopen: (id) => {doPoke({'reopen': {'id': id}}, () => console.log('onSucc'), ()=>{})},
-	pSendInvite: (myInvite) => doPoke({"send-invite": myInvite}, () => console.log('onSucc'), ()=>{}),
-	pAccept: (id) => doPoke({"accept": {'id': id}}, () => {console.log('onSucc')}, () => {}),
-	pDeny: (id) => doPoke({"deny": {'id': id}}, () => {console.log('onSucc')}, () => {}),
-	pBan: (ship) => doPoke({"ban": {'ship': ship}}, () => {console.log('onSucc')}, () => {}),
-	pUnban: (ship) => doPoke({"unban": {'ship': ship}}, () => {console.log('onSucc')}, () => {}),
-	/*  SUBSCRIPTIONS
-	 *
-	 */
-	sAll: (handler) => subscribe('/all', (all) => {
-			console.log('all--------')
-			console.log(all)
-		if(Object.keys(all)[0] === 'initAll') {
-			const settings = all.initAll.settings;
-			console.log('settings--------x');
-			console.log(settings);
-			set(state => ({
-				invites: all.initAll.invites.map(
-				item => ({ 
-				'id' : item.id,
-				'invite': {
-					initShip: item.invite.initShip,
-					title: '',
-					desc: item.invite.desc,
-					radius: item.invite.inviteRadius.slice(1), 
-					maxAccepted: item.invite.maxAccepted,
-					position: properPosition(item.invite.invitePosition),
-					address: item.invite.inviteAddress,
-					locationType: item.invite.locationType, 
-					accessLink: item.invite.accessLink.slice(2),
-					receiveShips: item.invite.receiveShips.map(x => ({ship: x.ship, shipInvite: x.shipInvite})),
-					hostStatus: item.invite.hostStatus
-				}})),
-				settings: {
-					position: properPosition(settings.position),
-					radius: settings.radius.slice(1),
-					address: settings.address,
-					collections: settings.collections,
-					banned: settings.banned.banned,
-					receiveInvite: settings.receiveInvite,
-				}
-			}))
-		}
-		else if(Object.keys(all)[0] === 'updateInvite') {
-			const item = all.updateInvite;
-			console.log('updateInvite---')
-			console.log(item)
-			set(state => ({ invites: dedup('id', state.invites.concat({
-				'id' : item.id,
-				'invite': 
-				{ hostStatus: item.invite.hostStatus,
-					initShip: item.invite.initShip,
-					desc: item.invite.desc, 
-					radius: item.invite.inviteRadius.slice(1), 
-					maxAccepted: item.invite.maxAccepted,
-					locationType: item.invite.locationType,
-					accessLink: item.invite.accessLink.slice(2),
-					position: properPosition(item.invite.invitePosition),
-					address: item.invite.inviteAddress,
-					receiveShips: item.invite.receiveShips.map(x => ({ship: x.ship, shipInvite: x.shipInvite}))}}
-			))}));
-		}
-		else if(Object.keys(all)[0] === 'updateSettings') {
-			const settings = all.updateSettings.settings;
-			set(state => ({
-				settings: {
-					position: properPosition(settings.position),
-					radius: settings.radius.slice(1),
-					address: settings.address,
-					collections: settings.collections,
-					banned: settings.banned.banned,
-					receiveInvite: settings.receiveInvite,
-				}
+
+	/*  ACTIONS  */
+
+	pGatheringReminder: (data) => {
+		doPoke({ "gathering-reminder": data });
+	},
+	pEditSettings: (data) => {
+		doPoke({ "edit-settings": data });
+	},
+	pCreateCollection: (collection) => {
+		set((state) => ({ collectionWaiting: true }));
+		doPoke({ "create-collection": collection });
+	},
+	pEditCollection: (collection) => {
+		const formattedCollection = {
+			id: collection.id,
+			collection: {
+				members: collection.members,
+				resource: collection.resource,
+				selected: collection.selected,
+				title: collection.title,
+			},
+		};
+		set((state) => ({
+			settings: {
+				...state.settings,
+				collections: state.settings.collections
+					.filter((x) => x.id !== collection.id)
+					.concat([formattedCollection]),
+			},
+		}));
+		doPoke({ "edit-collection": collection });
+	},
+	pDeleteCollection: (id) => {
+		set((state) => ({
+			settings: {
+				...state.settings,
+				collections: state.settings.collections.filter((x) => x.id !== id),
+			},
+		}));
+		doPoke({ "del-collection": { id: id } });
+	},
+	pDelInvite: (data) => {
+		doPoke({ "del-invite": data });
+	},
+	pAltHostStatus: (data) => {
+		doPoke({ "alt-host-status": data });
+	},
+	pInviteShips: (data) => {
+		doPoke({ "invite-ships": data });
+	},
+	pUnInviteShips: (data) => {
+		doPoke({ "uninvite-ships": data });
+	},
+	pEditInvite: (data) => {
+		doPoke({ "edit-invite": {...data, 'earth-link': '' }});
+		doPoke({ "edit-invite": data });
+	},
+	pNewInvite: (data) => {
+		doPoke({ "new-invite": data });
+	},
+	pAdd: (data) => {
+		doPoke({ 'add': data });
+	},
+	pRSVP: (data) => {
+		doPoke({ 'rsvp': data });
+	},
+	pUnRSVP: (data) => {
+		doPoke({ unrsvp: data });
+	},
+	// pSubRSVP: (data) => {},
+	// pSubInvite: (data) => {},
+	pPost: (data) => {
+		doPoke({ post: data });
+	},
+	pBan: (ship) => {
+		// set((state) => ({
+		// 	settings: {
+		// 		...state.settings,
+		// 		banned: state.settings.banned.concat([ship]),
+		// 	},
+		// }));
+		doPoke({ ban: { ship: ship } });
+	},
+	pUnban: (ship) => {
+		// set((state) => ({
+		// 	settings: {
+		// 		...state.settings,
+		// 		banned: state.settings.banned.filter((x) => x !== ship),
+		// 	},
+		// }));
+		doPoke({ unban: { ship: ship } });
+	},
+
+	/*  SUBSCRIPTIONS  */
+
+	sAll: (handler) => {
+		subscribe("/all", (all) => {
+			console.log(all);
+			if (Object.keys(all)[0] === "initAll") {
+				const settings = all.initAll.settings;
+				set((state) => ({
+					invites: all.initAll.invites.map((item) => ({
+						id: item.id,
+						guestStatus: unit(item.guestStatus),
+						invite: {
+							initShip: item.invite.initShip,
+							desc: item.invite.desc,
+							guestList: item.invite.guestList.map((x) => ({
+								ship: x.ship,
+								shipInvite: x.shipInvite,
+							})),
+							locationType: item.invite.locationType,
+							position: unit(item.invite.position),
+							address: item.invite.address,
+							accessLink: unit(item.invite.accessLink),
+							radius: unit(item.invite.radius),
+							rsvpLimit: unit(item.invite.rsvpLimit),
+							rsvpCount: unit(item.invite.rsvpCount),
+							hostStatus: item.invite.hostStatus,
+							title: item.invite.title,
+							date: {
+								begin: unit(item.invite.date.begin),
+								end: unit(item.invite.date.end),
+							},
+							lastUpdated: item.invite.lastUpdated,
+							access: item.invite.access,
+							marsLink: unit(item.invite.marsLink),
+							earthLink: unit(item.invite.earthLink),
+							exciseComets: unit(item.invite.exciseComets),
+							chat: unit(item.invite.chat),
+							catalog: unit(item.invite.catalog),
+							enableChat: item.invite.enableChat,
+							image: item.invite.image
+						},
+					})),
+					settings: {
+						position: unit(settings.position),
+						radius: unit(settings.radius),
+						address: settings.address,
+						collections: settings.collections,
+						banned: settings.banned.banned,
+						receiveInvite: settings.receiveInvite,
+						reminders: settings.reminders,
+						notifications: settings.notifications,
+						exciseComets: unit(settings.exciseComets),
+						catalog: unit(settings.catalog),
+						enableChat: settings.enableChat,
+					},
 				}));
-		}
-	}),
+			} else if (Object.keys(all)[0] === "updateInvite") {
+				const item = all.updateInvite.invite;
+				set((state) => ({
+					invites: dedup(
+						"id",
+						state.invites.concat({
+							id: all.updateInvite.id,
+							guestStatus: unit(all.updateInvite.guestStatus),
+							invite: {
+								initShip: item.initShip,
+								desc: item.desc,
+								guestList: item.guestList.map((x) => ({
+									ship: x.ship,
+									shipInvite: unit(x.shipInvite),
+								})),
+								locationType: item.locationType,
+								position: unit(item.position),
+								address: item.address,
+								accessLink: unit(item.accessLink),
+								radius: unit(item.radius),
+								rsvpLimit: unit(item.rsvpLimit),
+								rsvpCount: unit(item.rsvpCount),
+								hostStatus: item.hostStatus,
+								title: item.title,
+								date: {
+									begin: unit(item.date.begin),
+									end: unit(item.date.end),
+								},
+								lastUpdated: item.lastUpdated,
+								access: item.access,
+								marsLink: unit(item.marsLink),
+								earthLink: unit(item.earthLink),
+								exciseComets: unit(item.exciseComets),
+								chat: unit(item.chat),
+								catalog: unit(item.catalog),
+								enableChat: item.enableChat,
+								image: item.image
+							},
+						})
+					),
+				}));
+			} else if (Object.keys(all)[0] === "updateSettings") {
+				const settings = all.updateSettings.settings;
+				set((state) => ({
+					collectionWaiting: false,
+					settings: {
+						position: unit(settings.position),
+						radius: unit(settings.radius),
+						address: settings.address,
+						collections: settings.collections,
+						banned: settings.banned.banned,
+						receiveInvite: settings.receiveInvite,
+						reminders: settings.reminders,
+						notifications: settings.notifications,
+						exciseComets: unit(settings.exciseComets),
+						catalog: unit(settings.catalog),
+						enableChat: settings.enableChat,
+					},
+				}));
+			}
+		})},
+	
 }));
