@@ -103,10 +103,10 @@ const InviteDetails = (props) => {
 				<div className="invitedetails-columns">
 					<div className="invitedetails-firstcol">
 						<div className="invitedetails-host">
-							<span className="bold">Host</span> {invite.initShip}
+							<span className="bold">Host:</span> {invite.initShip}
 						</div>
 						<div className="invitedetails-datebegin">
-							<span className="rightmargin">Start Date:</span>
+							<span className="rightmargin bold">Start date:</span>
 							<span className="leftmargin">
 								{invite.date.begin === null
 									? ""
@@ -114,7 +114,7 @@ const InviteDetails = (props) => {
 							</span>
 						</div>
 						<div className="invitedetails-dateend">
-							<span className="rightmargin">End Date:</span>
+							<span className="rightmargin bold">End date:</span>
 							<span className="leftmargin">
 								{invite.date.end === null
 									? ""
@@ -131,8 +131,8 @@ const InviteDetails = (props) => {
 						<div className="invitedetails-hoststatus">{invite.hostStatus}</div>
 						{/* <span>Last Updated:</span> */}
 						<div className="invitedetails-lastupdated textrow">
-							{"Last Updated: " +
-								new Date(invite.lastUpdated * 1000).toLocaleString()}
+							<span className="bold">Last updated:</span>
+		                                        <span>{new Date(invite.lastUpdated * 1000).toLocaleString()}</span>
 						</div>
 					</div>
 				</div>
@@ -161,38 +161,38 @@ const InviteDetails = (props) => {
 				</div>
 				<div className="invitedetails-firstcol">
 					<div className="invitedetails-rsvpcount textrow">
-						<span>Access Type:</span>
+						<span className="bold">Access type:</span>
 						<span>{invite.access}</span>
 					</div>
 					<div className="invitedetails-radius textrow">
-						<span>Delivery Radius:</span>
+						<span className="bold">Delivery radius:</span>
 						<span>{invite.radius}</span>
 					</div>
 					<div className="invitedetails-address textrow">
-						<span>Happening in:</span>
+						<span className="bold">Happening in:</span>
 						<span>{invite.locationType}</span>
 					</div>
 					<div className="invitedetails-radius textrow">
-						<span>Address:</span>
+						<span className="bold">Address:</span>
 						<span>{invite.address}</span>
 					</div>
 					<div className="invitedetails-address textrow">
-						<span>Access Link:</span>
+						<span className="bold">Access link:</span>
 						<span>{invite.accessLink}</span>
 					</div>
 					<div className="invitedetails-accesslink textrow">
-						Mars Link: {invite.marsLink}
+						<span className="bold">Mars link:</span>
+		                                <span>{invite.marsLink}</span>
 					</div>
 					{invite.earthLink !== '' &&
 					<div className="invitedetails-accesslink textrow">
-						{"Earth Link: " +
-								getBaseURL() +
-							invite.earthLink}
+						<span className="bold">Earth link:</span>
+						<span>{getBaseURL() + invite.earthLink}</span>
 					</div>
 					}
 				</div>
 				<div className="invitedetails-guestlist">
-					<div className="divider">Guest List</div>
+					<div className="divider bold">Guest list</div>
 					{invite.initShip === "~" + window.urbit.ship && (
 						<div className="invitedetails-guestlist-addship flexrow">
 							<input
