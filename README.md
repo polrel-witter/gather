@@ -13,11 +13,13 @@ In Dojo: `|install ~pontus-fadpun-polrel-witter %gather`
 New invites can be created under the Draft page. Before creating, you'll want to decide whether you want the invite to be public or private, and make sure your Advanced Host Options (in Settings) are set to your preferences for this invite. The invite will function differently based on your choices.
 
 **Private Invites**
+
 To send a private invite, you'll need to build an invitee list at the bottom of the Draft page. There are three methods to do so, and you can use a combination of all three: add ships individually, pull in fellow members of groups you're a part of, or select a collection that you've previously made. If you have any collections, they'll already appear in the list; you'll just need to select them to include the ships they contain. You can create a collection by selecting ships, groups, or other collections, entering a name in the collection field and clicking "Create Collection".
 
 Once your list is made, you can click "Send" which will pass the invite to each ship.
 
 **Public Invites**
+
 Since public invites don't have invitee lists, a mars-link is generated upon creation which can be shared so others can view your invite. The mars-link is created by appending the invite's `@uv` ID to your ship's `@p` + gather, so it looks like: `~sampel-palnet/gather/0v6.yrj9.89y6.lah0`. The backend does this automatically for all public invites, and can be found in the invite details, post-creation. 
 
 Additionally, if your ship has a domain, you can publish your public invites to the clearweb so that anyone can view them. To do this, you just need to append an invite-specific name to the URL you use to access your ship. A field for this is shown at the bottom of the Draft page if you have "public" selected. It would look something like `https://sampel-palnet.com/gather/gathering-title`
