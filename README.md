@@ -1,52 +1,64 @@
 # Gather
-Gather is an [Urbit](https://urbit.org)-native meetup app that allows hosts to easily send invites to individual ships and/or members of groups they're a part of. And, from a guest's perspective, they can RSVP to invites they've received. 
+A meetup app for Urbit. Host and attend gatherings. 
 
-Additionally, it connects to [Nominatim's API](https://nominatim.org/release-docs/develop/api/Search/) to pull in addresses which are used for location-based filtering. 
+## Install
+In Grid: `~pontus-fadpun-polrel-witter/gather`
 
-## Basic Functionality
-### Draft Page
-- Hosts can construct invites that contain a description, location type, location address, delivery radius, and number of RSVPs they'll accept.
-- They can then build an invite list through any of the following methods:
-  - Enter a ship manually and click "Add".
-  - Either enter a group title containing the host ship (i.e. `~sampel-palnet/group-title`) and click "Add", or "Select" a group from the list which was pulled in upon opening the app.
-  - Create a collection by selecting one or more ships and/or groups, then entering a title in the "Search ships, your groups, and create collections" field and click "Add".
-- Clicking "Send" will pass the invite to all ships in the invite list.
+In Dojo: `|install ~pontus-fadpun-polrel-witter %gather`
 
-### Invites
-- This is where sent and received invites appear. 
-- Invites you've sent include the following actions:
-  - Inspect 
-    - Make changes to your invite like adding new ships, changing the RSVP #, uninviting ships, etc.
-    - See the invite list and who has RSVP'd.
-  - Close
-    - Stop receiving RSVPs.
-  - Reopen
-    - Begin receiving RSVPs again.
-  - Complete
-    - Essentially archives the invite; not possible to reopen once it's completed.
-  - Delete
-    - Deletes it locally. Others may choose to hold onto the invite.
-  - Cancel
-    - Ditto - deletes the invite from the host and all guests' ships.
-- Invites you've received include the following actions:
-  - RSVP
-    - Let the host know you're planning on attending.
-  - UnRSVP
-    - Revoke your RSVP.
-  - Delete
-    - Deletes the invite locally.
-  - Ban
-    - Adds the host ship to your Banned Ships list in Settings (more info below).
+## Usage
+
+### Host a Gathering
+
+New invites can be created under the Draft page. Before creating, you'll want to decide whether you want the invite to be public or private, and make sure your Advanced Host Options (in Settings) are set to your preferences for this invite. The invite will function differently based on your choices.
+
+**Private Invites**
+To send a private invite, you'll need to build an invitee list at the bottom of the Draft page. There are three methods to do so, and you can use a combination of all three: add ships individually, pull in fellow members of groups you're a part of, or select a collection that you've previously made. If you have any collections, they'll already appear in the list; you'll just need to select them to include the ships they contain. You can create a collection by selecting ships, groups, or other collections, entering a name in the collection field and clicking "Create Collection".
+
+Once your list is made, you can click "Send" which will pass the invite to each ship.
+
+**Public Invites**
+Since public invites don't have invitee lists, a mars-link is generated upon creation which can be shared so others can view your invite. The mars-link is created by appending the invite's `@uv` ID to your ship's `@p` + gather, so it looks like: `~sampel-palnet/gather/0v6.yrj9.89y6.lah0`. The backend does this automatically for all public invites, and can be found in the invite details, post-creation. 
+
+Additionally, if your ship has a domain, you can publish your public invites to the clearweb so that anyone can view them. To do this, you just need to append an invite-specific name to the URL you use to access your ship. A field for this is shown at the bottom of the Draft page if you have "public" selected. It would look something like `https://sampel-palnet.com/gather/gathering-title`
+
+### Attend a Gathering
+
+Not much to note here other than a few highlights:
+- With a mars-link, you can search for its invite details under Invites > Inbox > Pending
+- There's a button to RSVP and unRSVP
+- If the host enabled chat, you'll see a button to join at the top-right of an invite. 
 
 ### Settings
-- Location is intended to be where you are so the Radius feature can determine which invites to filter out. For obvious privacy concerns, this field is left open-ended, and is not required. 
-- "My Radius" is the distance within which you're open to receiving invites, _if_ the invite includes a location address. So for example, if your location is set to an address in downtown Austin, your radius is set to 100 Kilometers, and you have "Only in radius" selected, you won't see invites appear in your queue that contain location addresses outside that distance. This feature calculates everything in Kilometers.
-- "Banned Ships" is your personal blacklist. Halt all sending and receiving invites to/from ships listed here. Adding a ship here does not notify it so your @p may be included in their future invites, but you won't actually recieve them. Additionally, a banned ship may be included in one or more collection or group of yours, however the backend will ensure it's removed from an invite before it is sent.
-- "Receive invites from" is set to "Anyone" by default, which means what it says, and "Only in radius" can be toggled on, which is paired with "My Radius" and Location to filter out invites from galaxies far, far away.
+If you prefer to filter meatspace invites happening far away, you can set a location and radius to create a bubble for yourself. The filter will apply to invites with a venue location, in which case they'll appear in your "Out-of-range" tab under Invites > Inbox. The location feature uses [Nominatim's API](https://nominatim.org/release-docs/develop/api/Search/) to pull coordinates which are stored locally and not shared with other ships. 
 
-## Install on Urbit
-If in Grid, search: 
-`~pontus-fadpun-polrel-witter/gather`
+You can also ban ships, toggle notifications, and further permission your invite info with Advanced Host Options. 
 
-If in Dojo, run:
-`|install ~pontus-fadpun-polrel-witter %gather`
+## Deploy
+
+1. Boot a fake ship
+2. Merge and mount a desk:
+```
+|merge %work our %base
+|mount %work
+```
+3. Run the install script to put the desk files into the new %work folder mounted on your OS filesystem (i.e. where your fake ship's pier folder is). You can hit `ctl+z` once the files copy over.
+4. Then, `cd` into the `ui` directory and run `npm run build` to bundle the frontend code. If you don't have npm installed, you'll first need to run `npm install`.
+5. Still in the `ui` directory, run `rsync -avL --delete dist/ ~/zod/work/gather` where `~zod` is your fake ship's pier.
+5. After this, return to the dojo and run `|commit %work` so your fake ship recognizes the changes.
+6. Switch dojo's working directory with `=dir /=garden`
+7. Make the glob: `-make-glob %work /gather` 
+8. The glob file (appended with `.glob`) can be found in `~zod/.urb/put` 
+9. You can now upload the glob to a publicly available HTTP endpoint that can serve files. 
+10. After uploading the glob, you'll want to update the docket file at `desk/desk.docket-0`. The URL and hash should be updated to match the glob we created.
+11. In the dojo, run `|commit %work` one more time so your ship recognizes the change. 
+
+## Gather Agents
+
+`%gather` handles all operations excluding clearweb beaming, which is `%odyssey`'s job. `%terraform` builds the clearweb page using [rudder](https://github.com/Fang-/suite/blob/master/lib/rudder.hoon).
+
+## Qs & Feedback
+
+Drop us a line in `~polrel-witter/proposal-gather`.
+
+Or DM us at `~polrel-witter` or `~pontus-fadpun`.
