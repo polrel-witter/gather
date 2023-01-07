@@ -1359,7 +1359,7 @@
                [~ ~ q.byk.bol /reminders/gathering/id]  
            =/  con=(list content:ha)  ~[inscript]
            =/  wer=path  
-               /gather/reminders/gathering/id
+               /invite/(scot %uv id)
            [hark-id rope now.bol con wer [~]]
          =/  =cage  hark-action+!>([%add-yarn & & yarn])
          [%pass /hark %agent dock %poke cage]~
@@ -1480,7 +1480,7 @@
         ?~  talker  ~[letter title] 
           ~[[%ship (need talker)] letter]
       =/  wer=path  
-          /gather/invite/(scot %p src.bol)
+          /invite/(scot %uv id)
       [id rope now.bol con wer [~]]
     =/  =cage  hark-action+!>([%add-yarn & & yarn])
     [%pass /hark %agent dock %poke cage]~
