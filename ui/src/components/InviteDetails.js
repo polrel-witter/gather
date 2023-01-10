@@ -1,4 +1,5 @@
-import React, { Component, useState } from "react";
+import React, { Component, useState, useEffect} from "react";
+
 import {
 	Icon,
 	Text,
@@ -18,6 +19,7 @@ import Alert from "./Alert";
 import moment from 'moment';
 
 const InviteDetails = (props) => {
+
 	const invites = useStore((state) => state.invites);
 	const inviteDetails = useStore((state) => state.inviteDetails);
 	const _invite = invites.filter((x) => x.id === inviteDetails)[0];
@@ -49,6 +51,7 @@ const InviteDetails = (props) => {
 	const redAlert = (str) => _alert.show(<Alert str={str} color={"red"} />);
 	const greenAlert = (str) => _alert.show(<Alert str={str} color={"green"} />);
 
+	window.history.replaceState(null, "New Page Title", "/apps/gather/invite/" + _invite.id)
 
 	return (
 		<div className="invitedetails">

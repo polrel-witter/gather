@@ -8,7 +8,7 @@ import Settings from "./components/Settings";
 import patpValidate from "./patpValidate";
 import { Box, Text } from "@tlon/indigo-react";
 import { useStore } from "./data/store";
-import { scryGroups } from "./utils";
+import { scryGroups, IDinInvites } from "./utils";
 import { useAlert } from "react-alert";
 
 const ship = 'dev';
@@ -16,11 +16,18 @@ const ship = 'dev';
 const AppSwitch = () => {
 	const route = useStore((state) => state.route);
 	const sAll = useStore((state) => state.sAll);
+	const setRoute = useStore(state => state.setRoute);
+	const focusInvite = useStore((state) => state.focusInvite);
 
 	const allState = useStore((state) => state);
 
 	useEffect(() => {
 		sAll();
+		const id = IDinInvites(allState.invites);
+		if (id !== '') {
+			setRoute('invites');
+			focusInvite(id);
+		}
 	}, []);
 
 	console.log(allState);
@@ -42,8 +49,8 @@ class App extends Component {
 	constructor(props) {
 		super(props);
 
-	//	window.urbit = new Urbit("http://localhost:8080","","lidlut-tabwed-pillex-ridrup");
-	//	window.urbit.ship = 'zod';
+		window.urbit = new Urbit("http://localhost:8080","","lidlut-tabwed-pillex-ridrup");
+		window.urbit.ship = 'zod';
 	//	window.urbit = new Urbit("http://localhost:8081","","ranser-masfyr-parwyd-sabdux");
 	//	window.urbit.ship = 'taclev-togpub-pontus-fadpun';
 
@@ -65,8 +72,8 @@ class App extends Component {
 	//			window.urbit.ship = "dev";
 	//			break;
 	//		default:
-			window.urbit = new Urbit("");
-			window.urbit.ship = window.ship;
+			// window.urbit = new Urbit("");
+			// window.urbit.ship = window.ship;
 	//			break;
 	//	}
 

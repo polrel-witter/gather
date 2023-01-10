@@ -35,6 +35,7 @@ export const Invites = (props) => {
 	const setInvitesMode = useStore((state) => state.setInvitesMode);
 	const pAdd = useStore((state) => state.pAdd);
 	const [marsLink, setMarsLink] = useState("");
+	const totalInvites = useStore((state) => state.invites);
 
 	if (inviteDetails === "")
 		return (
@@ -132,9 +133,12 @@ export const Invites = (props) => {
 				))}
 			</div>
 		);
-	else if (inviteMode === "view") return <InviteDetails />;
+	else {
+	if (inviteMode === "view" && totalInvites.filter((x) => x.id === inviteDetails)[0] !== undefined) return <InviteDetails />;
+	
 	if (inviteMode === "edit") return <Edit />;
 	if (inviteMode === "chat") return <Chat />;
+	}
 };
 
 export default Invites;
