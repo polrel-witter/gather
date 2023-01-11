@@ -868,3 +868,17 @@ export const getBaseURL = () => {
 		"/gather/"
 	);
 };
+
+export const IDinInvites = (invites) => {
+	const pathname = window.location.pathname.split('/');
+	console.log( pathname[4]);
+	console.log(invites);
+	if(pathname[4] !== undefined)
+		return pathname[4];
+	return '';
+}
+
+export const getRoute = () => {
+	console.log(window.location.pathname.split('/')[window.location.pathname.split('/').length -1]);
+	return (window.location.pathname.split('/')[window.location.pathname.split('/').length -1]);
+}
