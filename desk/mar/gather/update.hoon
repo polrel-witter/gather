@@ -17,7 +17,7 @@
         %update-invite
       %+  frond  'updateInvite'
       %-  pairs 
-      :~  ['id' (tape (trip id.upd))] 
+      :~  ['id' s+id.upd] 
           ['invite' (en-invite invite.upd)]
       ==
     ==
@@ -55,7 +55,7 @@
       %+  turn  ~(tap by invites)
       |=  [=id =guest-status =invite]
       %-  pairs
-      :~  ['id' (tape (trip id))]
+      :~  ['id' s+id]
           ['guestStatus' (en-guest-status guest-status)]
           ['invite' (en-invite invite)]
       == 
@@ -175,7 +175,7 @@
       |=  [=id =alarm]
       ^-  ^json
       %-  pairs
-      :~  ['id' (tape (trip id))]
+      :~  ['id' s+id]
           ['alarm' (sect alarm)]
       ==
     ++  en-catalog                         
@@ -198,7 +198,7 @@
       %+  turn  ~(tap by collections)
       |=  [=id =collection]
       %-  pairs
-      :~  ['id' (tape (trip id))]
+      :~  ['id' s+id]
           ['collection' (en-collection collection)]
       ==
     ++  en-collection
