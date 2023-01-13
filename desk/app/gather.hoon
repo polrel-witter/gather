@@ -409,7 +409,7 @@
          :_  this
          ^-  (list card)
          :*  ?.  invite-updates.notifications.settings  ~
-             (harken:hc [(some host.inv) %cancelled title.inv]) 
+             (harken:hc [(some host.inv) %cancelled title.inv id]) 
          ==
        ?>  =(our.bol host.inv)
        =/  guest-list=(list @p)  
@@ -900,7 +900,7 @@
      ^-  (list card)
      :*  ?.  new-invites.notifications.settings  
            ~
-         ;:  welp  (harken:hc [(some src.bol) %new-invite *@t])
+         ;:  welp  (harken:hc [(some src.bol) %new-invite *@t id.act])
                    [%pass path %agent [src.bol %gather] %watch path]~
      ==  ==
   ::
@@ -1155,7 +1155,7 @@
         ^-  (list card)
         ;:  welp  (relay:hc [%init-all invites settings])
            :*  ?.  invite-updates.notifications.settings  ~
-               (harken-appraisal [inv invite.upd])
+               (harken-appraisal [inv invite.upd id.upd])
            ==
         ==
       ==
@@ -1198,7 +1198,7 @@
         ^-  (list card)
         ;:  welp  (relay:hc [%init-all invites settings])
           :*  ?.  invite-updates.notifications.settings  ~
-              (harken-appraisal [inv invite.upd])
+              (harken-appraisal [inv invite.upd id.upd])
           ==
         ==
       ==
@@ -1216,7 +1216,7 @@
     %new-invite
   :: 
   ++  harken-appraisal
-    |=  [old=invite new=invite]
+    |=  [old=invite new=invite =id]
     ^-  (list card)
     =/  alt=(list invite-changes) 
       %-  inspect-invite
@@ -1239,7 +1239,7 @@
       $(alt t.alt)
     %=  $
        hrk   ;:  welp  hrk 
-                (harken:hc [`src.bol hark-type title.new])
+                (harken:hc [`src.bol hark-type title.new id])
              ==
        alt  
        t.alt
@@ -1457,23 +1457,23 @@
 ::
 :: Notification handler
 ++  harken
-  |=  [talker=(unit @p) =hark-type title=@t]
+  |=  [talker=(unit @p) =hark-type title=@t =id]
   ^-  (list card)
   ?.  .^(? %gu /(scot %p our.bol)/hark/(scot %da now.bol))  ~
   |^ 
   ?-    hark-type
-       %new-invite      (seal [talker ' has sent you an invite']) 
-       %cancelled       (seal [[~] 'Cancelled: '])
-       %address         (seal [[~] 'Address has changed for '])
-       %access-link     (seal [[~] 'Access-link has changed for '])
-       %location-type   (seal [[~] 'Location-type has changed for '])
+       %new-invite      (seal [id talker ' has sent you an invite']) 
+       %cancelled       (seal [id [~] 'Cancelled: '])
+       %address         (seal [id [~] 'Address has changed for '])
+       %access-link     (seal [id [~] 'Access-link has changed for '])
+       %location-type   (seal [id [~] 'Location-type has changed for '])
   ==
   ++  seal
-    |=  [talker=(unit @p) letter=@t]
+    |=  [id=@ talker=(unit @p) letter=@t]
     ^-  (list card)
     =/  =dock  [our.bol %hark]
     =/  =yarn:ha  
-      =/  id  (end [7 1] (shax eny.bol))
+      =/  hark-id  (end [7 1] (shax eny.bol))
       =/  =rope:ha  
           [~ ~ q.byk.bol /invite/(scot %p src.bol)]  
       =/  con=(list content:ha)  
@@ -1481,7 +1481,7 @@
           ~[[%ship (need talker)] letter]
       =/  wer=path  
           /invite/(scot %uv id)
-      [id rope now.bol con wer [~]]
+      [hark-id rope now.bol con wer [~]]
     =/  =cage  hark-action+!>([%add-yarn & & yarn])
     [%pass /hark %agent dock %poke cage]~
   --
