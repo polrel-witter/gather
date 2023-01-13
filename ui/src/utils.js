@@ -859,7 +859,7 @@ export const getColType = (col) => {
 };
 
 export const getBaseURL = () => {
-	const port = window.location.port === '' ? "" : ":" + window.location.port;
+	const port = window.location.port === "" ? "" : ":" + window.location.port;
 	return (
 		window.location.protocol +
 		"//" +
@@ -870,15 +870,25 @@ export const getBaseURL = () => {
 };
 
 export const IDinInvites = (invites) => {
-	const pathname = window.location.pathname.split('/');
-	console.log( pathname[4]);
+	const pathname = window.location.pathname.split("/");
+	console.log(pathname[4]);
 	console.log(invites);
-	if(pathname[4] !== undefined)
+	console.log(pathname);
+	if (
+		pathname[4] !== undefined &&
+		pathname[3] === 'invite'
+	)
 		return pathname[4];
-	return '';
-}
+	return "";
+};
 
 export const getRoute = () => {
-	console.log(window.location.pathname.split('/')[window.location.pathname.split('/').length -1]);
-	return (window.location.pathname.split('/')[window.location.pathname.split('/').length -1]);
-}
+	console.log(
+		window.location.pathname.split("/")[
+			window.location.pathname.split("/").length - 1
+		]
+	);
+	return window.location.pathname.split("/")[
+		window.location.pathname.split("/").length - 1
+	];
+};

@@ -28,6 +28,10 @@ const AppSwitch = () => {
 			setRoute('invites');
 			focusInvite(id);
 		}
+		else {
+			setRoute('draft');
+			focusInvite('');
+		}
 	}, []);
 
 	console.log(allState);
@@ -49,8 +53,9 @@ class App extends Component {
 	constructor(props) {
 		super(props);
 
-		window.urbit = new Urbit("http://localhost:8080","","lidlut-tabwed-pillex-ridrup");
-		window.urbit.ship = 'zod';
+		// window.urbit = new Urbit("http://localhost:8080","","lidlut-tabwed-pillex-ridrup");
+		// window.urbit.ship = 'zod';
+
 	//	window.urbit = new Urbit("http://localhost:8081","","ranser-masfyr-parwyd-sabdux");
 	//	window.urbit.ship = 'taclev-togpub-pontus-fadpun';
 
@@ -72,10 +77,11 @@ class App extends Component {
 	//			window.urbit.ship = "dev";
 	//			break;
 	//		default:
-			// window.urbit = new Urbit("");
-			// window.urbit.ship = window.ship;
 	//			break;
 	//	}
+		
+		window.urbit = new Urbit("");
+		window.urbit.ship = window.ship;
 
 		window.urbit.onOpen = () => this.setState({ conn: "ok" });
 		window.urbit.onRetry = () => this.setState({ conn: "try" });
