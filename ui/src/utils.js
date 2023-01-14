@@ -870,13 +870,16 @@ export const getBaseURL = () => {
 };
 
 export const IDinInvites = (invites) => {
-	const pathname = window.location.pathname.split('/');
-	console.log(pathname[4]);
+	const href = window.location.href.split('%2F');
+	console.log('IdinInvites');
+	console.log(href);
+	console.log(window.location.href);
 	console.log(invites);
+	console.log('------------');
 	// console.log(invites.filter(i => i.id === pathname[4])[0]);
-	if(invites.filter(i => i.id === pathname[4])[0]) 
+	if(invites.filter(i => i.id === href[2])[0] === undefined)
 		return undefined;
-	return pathname[4];
+	return href[2];
 }
 
 export const getRoute = () => {

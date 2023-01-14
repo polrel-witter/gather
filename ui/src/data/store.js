@@ -198,9 +198,16 @@ export const useStore = create((set) => ({
 							"New Page Title",
 							"/apps/gather/draft"
 						);
+					else
+						window.history.replaceState(
+							null,
+							"New Page Title",
+							"/apps/gather/invites/" + idInUrl
+						);
+
 					return {
-						route: idInUrl ? idInUrl : "draft",
-						inviteDetails: idInUrl ? idInUrl : "",
+						route: idInUrl !== undefined ? 'invites' : "draft",
+						inviteDetails: idInUrl !== undefined ? idInUrl : "",
 						invites: all.initAll.invites.map((item) => {
 							// if (idInUrl !== '') {
 							// 	state.setRoute('invites');

@@ -49,8 +49,8 @@ class App extends Component {
 	constructor(props) {
 		super(props);
 
-		window.urbit = new Urbit("http://localhost:8080","","magsub-micsev-bacmug-moldex");
-		window.urbit.ship = 'dev';
+		// window.urbit = new Urbit("http://localhost:8080","","magsub-micsev-bacmug-moldex");
+		// window.urbit.ship = 'dev';
 	//	window.urbit = new Urbit("http://localhost:8081","","ranser-masfyr-parwyd-sabdux");
 	//	window.urbit.ship = 'taclev-togpub-pontus-fadpun';
 
@@ -72,8 +72,8 @@ class App extends Component {
 	//			window.urbit.ship = "dev";
 	//			break;
 	//		default:
-			// window.urbit = new Urbit("");
-			// window.urbit.ship = window.ship;
+			window.urbit = new Urbit("");
+			window.urbit.ship = window.ship;
 	//			break;
 	//	}
 
