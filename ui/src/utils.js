@@ -871,11 +871,12 @@ export const getBaseURL = () => {
 
 export const IDinInvites = (invites) => {
 	const pathname = window.location.pathname.split('/');
-	console.log( pathname[4]);
+	console.log(pathname[4]);
 	console.log(invites);
-	if(pathname[4] !== undefined)
-		return pathname[4];
-	return '';
+	// console.log(invites.filter(i => i.id === pathname[4])[0]);
+	if(invites.filter(i => i.id === pathname[4])[0]) 
+		return undefined;
+	return pathname[4];
 }
 
 export const getRoute = () => {

@@ -23,11 +23,11 @@ const AppSwitch = () => {
 
 	useEffect(() => {
 		sAll();
-		const id = IDinInvites(allState.invites);
-		if (id !== '') {
-			setRoute('invites');
-			focusInvite(id);
-		}
+		// const id = IDinInvites(allState.invites);
+		// if (id !== '') {
+		// 	setRoute('invites');
+		// 	focusInvite(id);
+		// }
 	}, []);
 
 	console.log(allState);
@@ -49,8 +49,8 @@ class App extends Component {
 	constructor(props) {
 		super(props);
 
-		window.urbit = new Urbit("http://localhost:8080","","lidlut-tabwed-pillex-ridrup");
-		window.urbit.ship = 'zod';
+		window.urbit = new Urbit("http://localhost:8080","","magsub-micsev-bacmug-moldex");
+		window.urbit.ship = 'dev';
 	//	window.urbit = new Urbit("http://localhost:8081","","ranser-masfyr-parwyd-sabdux");
 	//	window.urbit.ship = 'taclev-togpub-pontus-fadpun';
 
