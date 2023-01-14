@@ -115,6 +115,7 @@
     ++  de-edit-invite
       %-  ot
       :~  id+(se %uv) 
+
           desc+so
           location-type+(se %tas)
           position+(mu de-position)

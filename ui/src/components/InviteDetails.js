@@ -24,7 +24,7 @@ const InviteDetails = (props) => {
 	const inviteDetails = useStore((state) => state.inviteDetails);
 	const _invite = invites.filter((x) => x.id === inviteDetails)[0];
 	const invite = _invite.invite;
-	const unFocusInvite = useStore((state) => state.unFocusInvite);
+	const focusInvite = useStore((state) => state.focusInvite);
 	const pRSVP = useStore((state) => state.pRSVP);
 	const pUnRSVP = useStore((state) => state.pUnRSVP);
 	const setInviteMode = useStore((state) => state.setInviteMode);
@@ -51,14 +51,13 @@ const InviteDetails = (props) => {
 	const redAlert = (str) => _alert.show(<Alert str={str} color={"red"} />);
 	const greenAlert = (str) => _alert.show(<Alert str={str} color={"green"} />);
 
-	window.history.replaceState(null, "New Page Title", "/apps/gather/invite/" + _invite.id)
 
 	return (
 		<div className="invitedetails">
 			<div className="invitedetails-topbar">
 				<button
 					className="invitedetails-return"
-					onClick={() => unFocusInvite()}
+					onClick={() => focusInvite('')}
 				>
 					Return
 				</button>

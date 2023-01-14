@@ -10,6 +10,7 @@ import {
 	unixToDa,
 	daToUnix,
 	dateToDa,
+	IDinInvites,
 } from "../utils";
 import _ from "lodash";
 
@@ -28,12 +29,38 @@ export const useStore = create((set) => ({
 	inviteMode: "view",
 
 	inviteDetails: "",
-	setRoute: (route) => set((state) => ({ route: route })),
+	setRoute: (route) =>
+		set((state) => {
+			if (state.inviteDetails !== '' && route === 'invites')
+				window.history.replaceState(
+				null,
+				"New Page Title",
+				"/apps/gather/" + route + '/' + state.inviteDetails
+			);
+			else
+			window.history.replaceState(
+				null,
+				"New Page Title",
+				"/apps/gather/" + route
+			);
+
+			return { route: route };
+		}),
 	focusInvite: (id) => {
-		set((state) => ({ inviteDetails: id }));
-	},
-	unFocusInvite: () => {
-		set((state) => ({ inviteDetails: "" }));
+		set((state) => {
+		if ( id === '')
+			window.history.replaceState(
+				null,
+				"New Page Title",
+				"/apps/gather/" + state.route
+			);
+			else
+		window.history.replaceState(
+			null,
+			"New Page Title",
+			"/apps/gather/invite/" + id
+		);
+			return ({ inviteDetails: id })});
 	},
 	setInvitesMode: (mode) => set((state) => ({ invitesMode: mode })),
 	setInviteMode: (mode) => set((state) => ({ inviteMode: mode })),
@@ -55,7 +82,7 @@ export const useStore = create((set) => ({
 		"excise-comets": true,
 		"enable-chat": true,
 	},
-	setDraftInvite: (invite) => set(state => ({ draftInvite: invite })),
+	setDraftInvite: (invite) => set((state) => ({ draftInvite: invite })),
 
 	/*  STATE  */
 
@@ -116,17 +143,17 @@ export const useStore = create((set) => ({
 		doPoke({ "uninvite-ships": data });
 	},
 	pEditInvite: (data) => {
-		doPoke({ "edit-invite": {...data, 'earth-link': '' }});
+		doPoke({ "edit-invite": { ...data, "earth-link": "" } });
 		doPoke({ "edit-invite": data });
 	},
 	pNewInvite: (data) => {
 		doPoke({ "new-invite": data });
 	},
 	pAdd: (data) => {
-		doPoke({ 'add': data });
+		doPoke({ add: data });
 	},
 	pRSVP: (data) => {
-		doPoke({ 'rsvp': data });
+		doPoke({ rsvp: data });
 	},
 	pUnRSVP: (data) => {
 		doPoke({ unrsvp: data });
@@ -162,55 +189,84 @@ export const useStore = create((set) => ({
 			console.log(all);
 			if (Object.keys(all)[0] === "initAll") {
 				const settings = all.initAll.settings;
-				set((state) => ({
-					invites: all.initAll.invites.map((item) => ({
-						id: item.id,
-						guestStatus: unit(item.guestStatus),
-						invite: {
-							initShip: item.invite.initShip,
-							desc: item.invite.desc,
-							guestList: item.invite.guestList.map((x) => ({
-								ship: x.ship,
-								shipInvite: x.shipInvite,
-							})),
-							locationType: item.invite.locationType,
-							position: unit(item.invite.position),
-							address: item.invite.address,
-							accessLink: unit(item.invite.accessLink),
-							radius: unit(item.invite.radius),
-							rsvpLimit: unit(item.invite.rsvpLimit),
-							rsvpCount: unit(item.invite.rsvpCount),
-							hostStatus: item.invite.hostStatus,
-							title: item.invite.title,
-							date: {
-								begin: unit(item.invite.date.begin),
-								end: unit(item.invite.date.end),
-							},
-							lastUpdated: item.invite.lastUpdated,
-							access: item.invite.access,
-							marsLink: unit(item.invite.marsLink),
-							earthLink: unit(item.invite.earthLink),
-							exciseComets: unit(item.invite.exciseComets),
-							chat: unit(item.invite.chat),
-							catalog: unit(item.invite.catalog),
-							enableChat: item.invite.enableChat,
-							image: item.invite.image
+				set((state) => {
+					const idInUrl = IDinInvites(all.initAll.invites);
+					console.log(idInUrl);
+					if (!idInUrl)
+						window.history.replaceState(
+							null,
+							"New Page Title",
+							"/apps/gather/draft"
+						);
+					else
+						window.history.replaceState(
+							null,
+							"New Page Title",
+							"/apps/gather/invites/" + idInUrl
+						);
+
+					return {
+						route: idInUrl !== undefined ? 'invites' : "draft",
+						inviteDetails: idInUrl !== undefined ? idInUrl : "",
+						invites: all.initAll.invites.map((item) => {
+							// if (idInUrl !== '') {
+							// 	state.setRoute('invites');
+							// 	state.focusInvite(idInUrl);
+							// }
+							// else {
+							// 	state.setRoute('draft');
+							// 	state.focusInvite('');
+							// }
+							return {
+								id: item.id,
+								guestStatus: unit(item.guestStatus),
+								invite: {
+									initShip: item.invite.initShip,
+									desc: item.invite.desc,
+									guestList: item.invite.guestList.map((x) => ({
+										ship: x.ship,
+										shipInvite: x.shipInvite,
+									})),
+									locationType: item.invite.locationType,
+									position: unit(item.invite.position),
+									address: item.invite.address,
+									accessLink: unit(item.invite.accessLink),
+									radius: unit(item.invite.radius),
+									rsvpLimit: unit(item.invite.rsvpLimit),
+									rsvpCount: unit(item.invite.rsvpCount),
+									hostStatus: item.invite.hostStatus,
+									title: item.invite.title,
+									date: {
+										begin: unit(item.invite.date.begin),
+										end: unit(item.invite.date.end),
+									},
+									lastUpdated: item.invite.lastUpdated,
+									access: item.invite.access,
+									marsLink: unit(item.invite.marsLink),
+									earthLink: unit(item.invite.earthLink),
+									exciseComets: unit(item.invite.exciseComets),
+									chat: unit(item.invite.chat),
+									catalog: unit(item.invite.catalog),
+									enableChat: item.invite.enableChat,
+									image: item.invite.image,
+								},
+							};
+						}),
+						settings: {
+							position: unit(settings.position),
+							radius: unit(settings.radius),
+							address: settings.address,
+							collections: settings.collections,
+							banned: settings.banned.banned,
+							receiveInvite: settings.receiveInvite,
+							reminders: settings.reminders,
+							notifications: settings.notifications,
+							exciseComets: unit(settings.exciseComets),
+							catalog: unit(settings.catalog),
+							enableChat: settings.enableChat,
 						},
-					})),
-					settings: {
-						position: unit(settings.position),
-						radius: unit(settings.radius),
-						address: settings.address,
-						collections: settings.collections,
-						banned: settings.banned.banned,
-						receiveInvite: settings.receiveInvite,
-						reminders: settings.reminders,
-						notifications: settings.notifications,
-						exciseComets: unit(settings.exciseComets),
-						catalog: unit(settings.catalog),
-						enableChat: settings.enableChat,
-					},
-				}));
+					};
+				});
 			} else if (Object.keys(all)[0] === "updateInvite") {
 				const item = all.updateInvite.invite;
 				set((state) => ({
@@ -247,7 +303,7 @@ export const useStore = create((set) => ({
 								chat: unit(item.chat),
 								catalog: unit(item.catalog),
 								enableChat: item.enableChat,
-								image: item.image
+								image: item.image,
 							},
 						})
 					),
@@ -271,6 +327,6 @@ export const useStore = create((set) => ({
 					},
 				}));
 			}
-		})},
-	
+		});
+	},
 }));
