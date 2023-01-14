@@ -239,8 +239,11 @@
                                id.act
                              alarm.act
      :_  this
-     :~  [%pass /timers/gatherings/(scot %uv id.act) %arvo %b %wait alarm.act]
-     == 
+     ;:  welp  (relay:hc [%init-all invites settings])
+        :~  :*  %pass  /timers/gatherings/(scot %uv id.act) 
+                %arvo  %b 
+                %wait  alarm.act
+     ==  ==  ==
   ::
        %create-collection                                               :: TODO change mentions of $resource to group-store $resource
      ~|  [%unexpected-collection-request %create-collection ~]
