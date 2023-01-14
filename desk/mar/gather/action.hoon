@@ -17,25 +17,25 @@
       %-  of
       :~  
         edit-settings+de-edit-settings
-        gathering-reminder+(ot ~[id+so alarm+du]) 
+        gathering-reminder+(ot ~[id+(se %uv) alarm+du]) 
         ::
         create-collection+de-create-collection
         edit-collection+de-collection                
-        del-collection+(ot ~[id+so])
+        del-collection+(ot ~[id+(se %uv)])
         ::
         edit-invite+de-edit-invite
-        del-invite+(ot ~[id+so])
-        alt-host-status+(ot ~[id+so host-status+(se %tas)])
-        uninvite-ships+(ot ~[id+so del-ships+(ar (se %p))])     
-        invite-ships+(ot ~[id+so add-ships+(ar (se %p))])    
+        del-invite+(ot ~[id+(se %uv)])
+        alt-host-status+(ot ~[id+(se %uv) host-status+(se %tas)])
+        uninvite-ships+(ot ~[id+(se %uv) del-ships+(ar (se %p))])     
+        invite-ships+(ot ~[id+(se %uv) add-ships+(ar (se %p))])    
         ::
         new-invite+de-new-invite
         add+(ot ~[mars-link+so:dejs-soft:format])
-        rsvp+(ot ~[id+so])                    
-        unrsvp+(ot ~[id+so])
-        sub-rsvp+(ot ~[id+so])
-        sub-invite+(ot ~[id+so])       
-        post+(ot ~[id+so note+so])
+        rsvp+(ot ~[id+(se %uv)])                    
+        unrsvp+(ot ~[id+(se %uv)])
+        sub-rsvp+(ot ~[id+(se %uv)])
+        sub-invite+(ot ~[id+(se %uv)])       
+        post+(ot ~[id+(se %uv) note+so])
         :: 
         ban+(ot ~[ship+(se %p)])
         unban+(ot ~[ship+(se %p)])
@@ -68,7 +68,7 @@
       ==
     ++  de-collection 
       %-  ot
-      :~  id+so
+      :~  id+(se %uv)
           title+so
           members+(ar (se %p))
           selected+bo
@@ -114,7 +114,8 @@
       ==
     ++  de-edit-invite
       %-  ot
-      :~  id+so 
+      :~  id+(se %uv) 
+
           desc+so
           location-type+(se %tas)
           position+(mu de-position)

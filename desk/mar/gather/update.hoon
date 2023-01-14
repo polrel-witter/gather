@@ -175,7 +175,7 @@
       |=  [=id =alarm]
       ^-  ^json
       %-  pairs
-      :~  ['id' s+id]
+      :~  ['id' s+(scot %uv id)]
           ['alarm' (sect alarm)]
       ==
     ++  en-catalog                         
@@ -198,7 +198,7 @@
       %+  turn  ~(tap by collections)
       |=  [=id =collection]
       %-  pairs
-      :~  ['id' s+id]
+      :~  ['id' s+(scot %uv id)]
           ['collection' (en-collection collection)]
       ==
     ++  en-collection

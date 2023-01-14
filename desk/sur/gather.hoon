@@ -2,6 +2,7 @@
 ::
 :: Basic types
 +$  ship            @p
+
 +$  host            @p                     
 +$  id              @
 +$  selected        ?
