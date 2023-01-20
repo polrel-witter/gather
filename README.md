@@ -1,5 +1,5 @@
 # Gather
-A meetup app for Urbit. Host and attend gatherings. 
+A meetup app for Urbit.
 
 ## Install
 In Grid: `~pontus-fadpun-polrel-witter/gather`
