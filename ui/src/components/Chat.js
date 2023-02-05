@@ -26,7 +26,7 @@ const Chat = (props) => {
 										<div className='flexgrow'>{chat.who}</div>
 									<div > {new Date(chat.wen * 1000).toLocaleString()}</div>
 									</div>
-									<span>{chat.wat}</span>
+									<span className='chat-message-message-text'>{chat.wat}</span>
 								</div>
 							))
 						) : (
